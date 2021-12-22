@@ -1,3 +1,4 @@
+// Authentication
 export const SIGN_IN = 'SIGN_IN';
 export const SIGN_IN_BY_PHONE = 'SIGN_IN_BY_PHONE';
 export const SIGN_OUT = 'SIGN_OUT';
@@ -8,3 +9,10 @@ export const EMAIL_VERIFICATION_SENDING = 'EMAIL_VERIFICATION_SENDING';
 export const EMAIL_VERIFICATION_DONE = 'EMAIL_VERIFICATION_DONE';
 export const UPDATE_PROFILE = 'UPDATE_PROFILE';
 export const SKIP_UPDATE_PROFILE = 'SKIP_UPDATE_PROFILE';
+
+// Screen Navigation
+export const ACCOUNT_TAB = 'ACCOUNT_TAB';
+export const HOME_TAB = 'HOME_TAB';
+export const BROWSE_TAB = 'BROWSE_TAB';
+export const GROCERY_TAB = 'GROCERY_TAB';
+export const CART_TAB = 'CART_TAB';

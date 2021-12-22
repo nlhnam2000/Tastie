@@ -37,6 +37,7 @@ import {Authentication} from './page/Authentication';
 import {SignupForm} from './screens/SignupForm';
 import {HomeScreen} from './screens/HomeScreen';
 import {SideMenu} from './components/Menu/SideMenu';
+import {Home} from './components/HomePage/Home';
 
 // redux
 
@@ -88,13 +89,20 @@ export default function App() {
     return (
       <NavigationContainer>
         {state.token !== null ? (
-          <Drawer.Navigator drawerContent={props => <SideMenu {...props} />}>
-            <Drawer.Screen
+          // <Drawer.Navigator drawerContent={props => <SideMenu {...props} />}>
+          //   <Drawer.Screen
+          //     name="Home Page"
+          //     component={HomeScreen}
+          //     options={{headerShown: false}}
+          //   />
+          // </Drawer.Navigator>
+          <Stack.Navigator>
+            <Stack.Screen
               name="Home Page"
               component={HomeScreen}
               options={{headerShown: false}}
             />
-          </Drawer.Navigator>
+          </Stack.Navigator>
         ) : (
           <Stack.Navigator>
             <Stack.Screen
@@ -108,6 +116,7 @@ export default function App() {
               component={HomeScreen}
               options={{headerShown: false}}
             />
+            {/* <Stack.Screen name="Home" component={Home} /> */}
             <Stack.Screen name="Location" component={UserMap} />
           </Stack.Navigator>
         )}

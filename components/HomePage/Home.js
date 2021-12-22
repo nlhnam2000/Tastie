@@ -17,17 +17,23 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {createDrawerNavigator} from '@react-navigation/drawer';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {signout} from '../../store/action/auth';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {categoryData} from '../../assets/dummy/categoryData';
 import {popularData} from '../../assets/dummy/popularData';
 
-const Drawer = createDrawerNavigator();
+import {NavigationBar} from '../Menu/NavigationBar';
+import {HomeContent} from './HomeContent/HomeContent';
+import {DetailProvider} from './Detail/DetailProvider';
 
-export const HomePage = () => {
+const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
+
+export const Home = props => {
   const dispatch = useDispatch();
 
   const renderCategoryList = ({item}) => {
@@ -44,82 +50,34 @@ export const HomePage = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerWrapper}>
-        <View style={styles.tabWrapper}>
-          <TouchableOpacity style={styles.tabButton}>
-            <Text style={styles.labelTabButton}>Delivery</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabButton}>
-            <Text style={styles.labelTabButton}>Pickup</Text>
-          </TouchableOpacity>
-        </View>
-        <View
-          style={{
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
-          <View style={styles.searchWrapper}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              <Feather name="map-pin" size={22} />
-              <TextInput
-                placeholder="Search"
-                style={{marginLeft: 5}}
-                maxLength={25}
-              />
-            </View>
-            <TouchableOpacity style={styles.searchButton}>
-              <Feather name="clock" size={20} style={{marginRight: 5}} />
-              <Text>Search</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-      <View style={styles.categoryWrapper}>
-        <FlatList
-          data={categoryData}
-          renderItem={renderCategoryList}
-          keyExtractor={item => item.id}
-          horizontal={true}
+    <>
+      <Stack.Navigator initialRouteName="HomeContent">
+        <Stack.Screen
+          name="HomeContent"
+          component={HomeContent}
+          options={{headerShown: false}}
         />
-      </View>
-      <ScrollView style={styles.contentWrapper}>
-        {popularData.map((item, index) => {
-          return (
-            <TouchableOpacity key={index}>
-              <View style={styles.popularDataWrapper}>
-                <ImageBackground
-                  style={styles.popularImage}
-                  resizeMode="cover"
-                  source={item.image}
-                />
-                <View style={styles.popularDetail}>
-                  <View style={styles.popularInfo}>
-                    <Text style={{fontWeight: 'bold'}}>{item.title}</Text>
-                    <Text>{item.deliveryTime}</Text>
-                  </View>
-                  <View style={styles.popularRating}>
-                    <Text>{item.rating}</Text>
-                  </View>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-    </View>
+        <Stack.Screen
+          name="DetailProvider"
+          component={DetailProvider}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+
+      <NavigationBar active={props.tabname} />
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    flex: 1,
+  },
+  content: {
+    justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#fff',
     flex: 1,
