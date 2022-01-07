@@ -17,7 +17,13 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch} from 'react-redux';
-import {NavigateToAccount, NavigateToHome} from '../../store/action/navigation';
+import {
+  NavigateToAccount,
+  NavigateToHome,
+  NavigateToBrowse,
+  NavigateToCart,
+  NavigateToNotification,
+} from '../../store/action/navigation';
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
@@ -38,7 +44,9 @@ export const NavigationBar = props => {
           Home
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconWrapper}>
+      <TouchableOpacity
+        style={styles.iconWrapper}
+        onPress={() => dispatch(NavigateToBrowse())}>
         {(props.active === 'Browse' && (
           <Feather name="search" size={25} color={'red'} />
         )) || <Feather name="search" size={25} color="black" />}
@@ -52,19 +60,21 @@ export const NavigationBar = props => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconWrapper}>
-        {(props.active === 'Grocery' && (
-          <Feather name="shopping-bag" size={25} color={'red'} />
-        )) || <Feather name="shopping-bag" size={25} color="black" />}
+        {(props.active === 'Notification' && (
+          <Feather name="mail" size={25} color={'red'} />
+        )) || <Feather name="mail" size={25} color="black" />}
         <Text
           style={
-            props.active === 'Grocery'
+            props.active === 'Notification'
               ? {fontWeight: 'bold', color: 'red', marginTop: 5}
               : styles.label
           }>
-          Grocery
+          Notification
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconWrapper}>
+      <TouchableOpacity
+        style={styles.iconWrapper}
+        onPress={() => dispatch(NavigateToCart())}>
         {(props.active === 'Cart' && (
           <Feather name="shopping-cart" size={25} color={'red'} />
         )) || <Feather name="shopping-cart" size={25} color="black" />}

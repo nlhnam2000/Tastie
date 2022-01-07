@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,14 +16,43 @@ import {
   ImageBackground,
 } from 'react-native';
 import {NavigationBar} from '../Menu/NavigationBar';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
+import {signout, retrieveToken, TokenNotFound} from '../../store/action/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const Account = props => {
   const dispatch = useDispatch();
+  const state = useSelector(state => state.UserReducer);
+
+  // useEffect(() => {
+  //   setTimeout(async () => {
+  //     let user_token = await AsyncStorage.getItem('user_token');
+  //     if (user_token !== null) {
+  //       dispatch(retrieveToken(user_token));
+  //     } else {
+  //       dispatch(TokenNotFound());
+  //     }
+  //   }, 1000);
+  // }, []);
+
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
-        <Text>Account</Text>
+        <Button
+          title="logout"
+          onPress={() => {
+            dispatch(signout());
+            // props.navigation.navigate('Login');
+          }}
+        />
+        <Button
+          title="click here"
+          // onPress={async () => {
+          //   let token = await AsyncStorage.getItem('user_token');
+          //   console.log(token);
+          // }}
+          onPress={() => console.log(state)}
+        />
       </SafeAreaView>
 
       <NavigationBar active={props.tabname} />

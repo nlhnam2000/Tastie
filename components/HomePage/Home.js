@@ -29,12 +29,14 @@ import {popularData} from '../../assets/dummy/popularData';
 import {NavigationBar} from '../Menu/NavigationBar';
 import {HomeContent} from './HomeContent/HomeContent';
 import {DetailProvider} from './Detail/DetailProvider';
+import {DetailOrder} from './Detail/DetailFood';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
 export const Home = props => {
   const dispatch = useDispatch();
+  const state = useSelector(state => state.UserReducer);
 
   const renderCategoryList = ({item}) => {
     return (
@@ -51,7 +53,7 @@ export const Home = props => {
 
   return (
     <>
-      <Stack.Navigator initialRouteName="HomeContent">
+      {/* <Stack.Navigator initialRouteName="HomeContent">
         <Stack.Screen
           name="HomeContent"
           component={HomeContent}
@@ -62,9 +64,15 @@ export const Home = props => {
           component={DetailProvider}
           options={{headerShown: false}}
         />
-      </Stack.Navigator>
+        <Stack.Screen
+          name="DetailOrder"
+          component={DetailOrder}
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator> */}
+      <HomeContent {...props} />
 
-      <NavigationBar active={props.tabname} />
+      <NavigationBar active={props.tabname} {...props} />
     </>
   );
 };

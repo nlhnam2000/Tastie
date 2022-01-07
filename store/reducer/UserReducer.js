@@ -7,10 +7,15 @@ import {
   ACCOUNT_REGISTRATION,
   EMAIL_VERIFICATION_DONE,
   EMAIL_VERIFICATION_SENDING,
+  EMAIL_VERIFICATION_FAILED,
   UPDATE_PROFILE,
   SKIP_UPDATE_PROFILE,
+  HOME_TAB,
+  ACCOUNT_TAB,
+  BROWSE_TAB,
+  CART_TAB,
+  NOTIFICATION_TAB,
 } from '../action/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user_id: null,
@@ -25,9 +30,12 @@ const initialState = {
   last_login_at: null,
   delete_at: null,
   signup_form: 1,
+  signup_screen: 'cover', // cover => email + phone => verification => name => password
   isLoading: true,
-  token: null,
+  user_token: null,
   verified_email_token: null,
+  alertMessage: null,
+  currentTab: 'Home',
 };
 
 export const UserReducer = (state = initialState, action) => {
@@ -50,8 +58,7 @@ export const UserReducer = (state = initialState, action) => {
     case SIGN_OUT: {
       return {
         ...state,
-        phone: null,
-        token: null,
+        ...payload,
       };
     }
     case RETRIEVE_TOKEN: {
@@ -86,7 +93,44 @@ export const UserReducer = (state = initialState, action) => {
         signup_form: 3,
       };
     }
+    case EMAIL_VERIFICATION_FAILED: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
     case SKIP_UPDATE_PROFILE: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    // Navigation only
+    case HOME_TAB: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case ACCOUNT_TAB: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case BROWSE_TAB: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case NOTIFICATION_TAB: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case CART_TAB: {
       return {
         ...state,
         ...payload,

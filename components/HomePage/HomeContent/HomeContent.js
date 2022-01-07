@@ -20,11 +20,16 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {categoryData} from '../../../assets/dummy/categoryData';
 import {popularData} from '../../../assets/dummy/popularData';
+import {useDispatch, useSelector} from 'react-redux';
+
+import {signout} from '../../../store/action/auth';
 
 export const HomeContent = props => {
   const headerTab = ['Delivery', 'Pickup'];
 
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
+  const dispatch = useDispatch();
+  const state = useSelector(state => state.UserReducer);
 
   const renderCategoryList = ({item}) => {
     return (
@@ -52,6 +57,7 @@ export const HomeContent = props => {
               return (
                 <TouchableOpacity
                   onPress={() => setSelectedTab(tab)}
+                  // onPress={() => dispatch(signout())}
                   style={
                     tab === selectedTab
                       ? styles.tabButtonClicked

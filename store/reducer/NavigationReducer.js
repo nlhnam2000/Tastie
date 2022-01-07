@@ -25,7 +25,7 @@ export const NavigationReducer = (state = initialState, action) => {
         ...payload,
       };
     }
-    case types.GROCERY_TAB: {
+    case types.NOTIFICATION_TAB: {
       return {
         ...state,
         ...payload,

@@ -27,11 +27,11 @@ export const NavigateToBrowse = () => dispatch => {
   });
 };
 
-export const NavigateToGrocery = () => dispatch => {
+export const NavigateToNotification = () => dispatch => {
   dispatch({
-    type: types.GROCERY_TAB,
+    type: types.NOTIFICATION_TAB,
     payload: {
-      currentTab: 'Grocery',
+      currentTab: 'Notification',
     },
   });
 };

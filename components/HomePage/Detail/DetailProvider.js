@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {createRef, useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -35,14 +35,19 @@ export const DetailProvider = props => {
   data.categories.forEach(item => {
     tabs.push(item.categoryTitle);
   });
+  const [selectedTab, setSelectedTab] = useState(tabs[0]);
 
   // useEffect(() => {
   //   console.log(tabs);
   // }, []);
 
   const height = scrollY.interpolate({
-    inputRange: [-100, 0],
-    outputRange: [HEADER_IMAGE_HEIGHT + 100, HEADER_IMAGE_HEIGHT],
+    inputRange: [-100, 0, 100],
+    outputRange: [
+      HEADER_IMAGE_HEIGHT + 100,
+      HEADER_IMAGE_HEIGHT,
+      HEADER_IMAGE_HEIGHT - 100,
+    ],
     extrapolate: 'clamp',
   });
 
@@ -71,7 +76,8 @@ export const DetailProvider = props => {
   });
 
   const [tabPosition, setTabPosition] = useState([]);
-  const [ref, setRef] = useState(null);
+  // const [ref, setRef] = useState(null);
+  const ref = useRef(null);
 
   const scrollToIndex = index => {
     // if (tabPosition.length > index) {
@@ -83,19 +89,27 @@ export const DetailProvider = props => {
     // } else {
     //   alert('Out of bound');
     // }
-    ref.scrollTo({
+    ref.current.scrollTo({
       x: 0,
-      y: tabPosition[index - 1] + 40,
+      y: tabPosition[index - 1],
       animated: true,
     });
   };
 
   const renderCategoryTitle = ({item}) => {
     let index = item.categoryId;
+    let categoryTitle = item.categoryTitle;
     return (
       <TouchableOpacity
-        style={{marginRight: 20, paddingHorizontal: 10}}
-        onPress={() => scrollToIndex(index)}>
+        style={
+          categoryTitle === selectedTab
+            ? styles.categoryTitleClicked
+            : styles.categoryTitle
+        }
+        onPress={() => {
+          scrollToIndex(index);
+          setSelectedTab(categoryTitle);
+        }}>
         <Text style={{fontSize: 16, fontWeight: 'bold'}}>
           {item.categoryTitle}
         </Text>
@@ -140,12 +154,13 @@ export const DetailProvider = props => {
       </Animated.View>
 
       <Animated.ScrollView
-        ref={ref => setRef(ref)}
+        ref={ref}
         onScroll={Animated.event(
           [{nativeEvent: {contentOffset: {y: scrollY}}}],
           {useNativeDriver: false},
         )}
         scrollEventThrottle={16}
+        //pagingEnabled={true}
         style={styles.wrapper}>
         <Animated.Image
           source={data.image}
@@ -207,7 +222,7 @@ export const DetailProvider = props => {
               </Text>
             </View>
             <TouchableOpacity>
-              <Feather name="arrow-right" size={24} color={'#000'} />
+              <Feather name="chevron-right" size={24} color={'#000'} />
             </TouchableOpacity>
           </View>
           <View
@@ -250,30 +265,6 @@ export const DetailProvider = props => {
                 </TouchableOpacity>
               );
             })}
-            {/* <TouchableOpacity
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'white',
-                padding: 10,
-                paddingHorizontal: 15,
-                borderRadius: 30,
-              }}>
-              <Text style={{fontWeight: 'bold'}}>Delivery</Text>
-              <Text style={{color: 'gray'}}>20-30 mins • $0.49</Text>
-            </TouchableOpacity>
-            <View
-              style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'transparent',
-                padding: 10,
-                paddingHorizontal: 15,
-                borderRadius: 30,
-              }}>
-              <Text style={{fontWeight: 'bold'}}>Pickup</Text>
-              <Text style={{color: 'gray'}}>5-15 mins • 1000+ mi</Text>
-            </View> */}
           </View>
           <View style={styles.promotionWrapper}>
             <View style={styles.promotion}>
@@ -297,7 +288,7 @@ export const DetailProvider = props => {
                   $25 until $100
                 </Text>
               </View>
-              <Feather name="arrow-right" size={20} color={'#000'} />
+              <Feather name="chevron-right" size={20} color={'#000'} />
             </View>
           </View>
           <View style={styles.contentWrapper}>
@@ -337,7 +328,12 @@ export const DetailProvider = props => {
                   <View style={styles.menuContent}>
                     {category.items.map((item, id) => {
                       return (
-                        <View style={styles.foodWrapper} key={item.itemId}>
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate('DetailOrder', {item})
+                          }
+                          style={styles.foodWrapper}
+                          key={item.itemId}>
                           <View style={styles.foodInfo}>
                             <Text style={{fontWeight: '600', fontSize: 18}}>
                               {item.itemTitle}
@@ -349,7 +345,7 @@ export const DetailProvider = props => {
                             style={styles.foodImage}
                             source={item.image}
                           />
-                        </View>
+                        </TouchableOpacity>
                       );
                     })}
                   </View>
@@ -388,6 +384,16 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     marginTop: 10,
+  },
+  categoryTitle: {
+    marginRight: 20,
+    paddingVertical: 5,
+  },
+  categoryTitleClicked: {
+    marginRight: 20,
+    paddingVertical: 5,
+    borderBottomWidth: 2,
+    borderBottomColor: 'black',
   },
   navbarButtonWrapper: {
     flexDirection: 'row',

@@ -20,6 +20,32 @@ export const popularData = [
             price: '$4.99',
             note: '*Limit 2 Pizza Pies per Order*',
             image: require('../image/SlideShowImg/Picture1.jpg'),
+            toppings: [
+              {
+                toppingId: 1,
+                toppingTitle: 'Cheese',
+                price: '$0.99',
+                image: require('../image/Topping/cheese.png'),
+              },
+              {
+                toppingId: 2,
+                toppingTitle: 'Garlic',
+                price: '$0.99',
+                image: require('../image/Topping/garlic.png'),
+              },
+              {
+                toppingId: 3,
+                toppingTitle: 'Ham',
+                price: '$0.99',
+                image: require('../image/Topping/ham.png'),
+              },
+              {
+                toppingId: 4,
+                toppingTitle: 'Tomato',
+                price: '$0.99',
+                image: require('../image/Topping/tomato.png'),
+              },
+            ],
           },
           {
             itemId: 2,
@@ -27,6 +53,32 @@ export const popularData = [
             price: '$4.99',
             note: '*Limit 2 Pizza Pies per Order*',
             image: require('../image/SlideShowImg/Picture2.jpg'),
+            toppings: [
+              {
+                toppingId: 1,
+                toppingTitle: 'Cheese',
+                price: '$7',
+                image: require('../image/Topping/cheese.png'),
+              },
+              {
+                toppingId: 2,
+                toppingTitle: 'Garlic',
+                price: '$10',
+                image: require('../image/Topping/garlic.png'),
+              },
+              {
+                toppingId: 3,
+                toppingTitle: 'Ham',
+                price: '$0.99',
+                image: require('../image/Topping/ham.png'),
+              },
+              {
+                toppingId: 4,
+                toppingTitle: 'Tomato',
+                price: '$0.99',
+                image: require('../image/Topping/tomato.png'),
+              },
+            ],
           },
           {
             itemId: 3,

@@ -1,10 +1,13 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  SafeAreaView,
+  Dimensions,
+  Button,
 } from 'react-native';
 import {Formik, Form, Field} from 'formik';
 import Feather from 'react-native-vector-icons/Feather';
@@ -13,7 +16,10 @@ import {useSelector, useDispatch} from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {AccountRegistration} from '../../../store/action/auth';
+import colors from '../../../colors/colors';
 // Feather.loadFont();
+
+const {width, height} = Dimensions.get('window');
 
 export const SignupScreen = ({navigation}) => {
   const initialValues = {
@@ -25,222 +31,253 @@ export const SignupScreen = ({navigation}) => {
     password2: '',
   };
 
+  const inputRef1 = useRef();
+  const inputRef2 = useRef();
+  const inputRef3 = useRef();
+  const inputRef4 = useRef();
+  const inputRef5 = useRef();
+  const inputRef6 = useRef();
+
   const state = useSelector(state => state.UserRegistration);
   const dispatch = useDispatch();
 
-  const submitForm = async values => {
+  const submitForm = values => {
     dispatch(AccountRegistration(values));
   };
 
-  // useEffect(() => {
-  //   setTimeout(async () => {
-  //     await AsyncStorage.removeItem('token');
-  //   }, 1000);
-  // }, []);
-
-  // useEffect(() => {
-  //   alert(state.first_name);
-  // }, []);
-
   return (
-    <View style={styles.container}>
-      <View style={styles.signupTitleWrapper}>
-        <Text style={styles.signupTitle}>Account registration</Text>
-      </View>
-      <View style={styles.signupForm1Wrapper}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.content}>
         <Formik
           initialValues={initialValues}
           validationSchema={AccountRegistrationValidation}
           onSubmit={values => submitForm(values)}>
           {formikProps => {
-            const {
-              errors,
-              values,
-              touched,
-              handleSubmit,
-              handleChange,
-              handleBlur,
-            } = formikProps;
+            const {errors, values, handleChange, handleBlur, handleSubmit} =
+              formikProps;
             return (
-              <View style={styles.form1Wrapper}>
-                <View style={styles.inputWrapper}>
-                  <Text>First Name</Text>
-                  <TextInput
-                    name="firstname"
-                    style={styles.inputField}
-                    onChangeText={handleChange('firstname')}
-                    onBlur={handleBlur('firstname')}
-                    value={values.firstname}
-                  />
-                  {errors.firstname && touched.firstname && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
-                    />
-                  )}
-                </View>
-                {errors.firstname && touched.firstname && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>First Name</Text>
-                    <Text style={styles.errorText}>{errors.firstname}</Text>
+              <View style={styles.formWrapper}>
+                <View>
+                  <View style={styles.inputWrapperCol2}>
+                    <View style={{width: '47%'}}>
+                      <Text style={{fontWeight: '600'}}>First name:</Text>
+                      <TextInput
+                        clearButtonMode="always"
+                        onChangeText={handleChange('firstname')}
+                        onBlur={() => {
+                          handleBlur('firstname');
+                          inputRef1.current.setNativeProps({
+                            style: {
+                              borderWidth: 0,
+                            },
+                          });
+                        }}
+                        style={styles.inputField}
+                        ref={inputRef1}
+                        onFocus={() =>
+                          inputRef1.current.setNativeProps({
+                            style: {
+                              borderWidth: 1,
+                              borderColor: 'black',
+                            },
+                          })
+                        }
+                      />
+                      <Text style={{color: 'red', marginTop: 5}}>
+                        {errors.firstname ? errors.firstname : null}
+                      </Text>
+                    </View>
+                    <View style={{width: '47%'}}>
+                      <Text style={{fontWeight: '600'}}>Last name:</Text>
+                      <TextInput
+                        clearButtonMode="always"
+                        onChangeText={handleChange('lastname')}
+                        onBlur={() => {
+                          handleBlur('firstname');
+                          inputRef2.current.setNativeProps({
+                            style: {
+                              borderWidth: 0,
+                            },
+                          });
+                        }}
+                        style={styles.inputField}
+                        ref={inputRef2}
+                        onFocus={() =>
+                          inputRef2.current.setNativeProps({
+                            style: {
+                              borderWidth: 1,
+                              borderColor: 'black',
+                            },
+                          })
+                        }
+                        style={styles.inputField}
+                      />
+                      <Text style={{color: 'red', marginTop: 5}}>
+                        {errors.lastname ? errors.lastname : null}
+                      </Text>
+                    </View>
                   </View>
-                )}
-
-                <View style={styles.inputWrapper}>
-                  <Text>Last Name</Text>
-                  <TextInput
-                    name="lastname"
-                    style={styles.inputField}
-                    onChangeText={handleChange('lastname')}
-                    onBlur={handleBlur('lastname')}
-                    value={values.lastname}
-                  />
-                  {errors.lastname && touched.lastname && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
+                  <View style={styles.inputWrapper}>
+                    <Text style={{fontWeight: '600'}}>Email</Text>
+                    <TextInput
+                      autoCapitalize="none"
+                      clearButtonMode="always"
+                      style={styles.inputField}
+                      onChangeText={handleChange('email')}
+                      ref={inputRef3}
+                      onFocus={() =>
+                        inputRef3.current.setNativeProps({
+                          style: {
+                            borderWidth: 1,
+                            borderColor: 'black',
+                          },
+                        })
+                      }
+                      onBlur={() => {
+                        handleBlur('email');
+                        inputRef3.current.setNativeProps({
+                          style: {
+                            borderWidth: 0,
+                          },
+                        });
+                      }}
                     />
-                  )}
-                </View>
-                {errors.lastname && touched.lastname && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>Last Name</Text>
-                    <Text style={styles.errorText}>{errors.lastname}</Text>
+                    <Text style={{color: 'red', marginTop: 5}}>
+                      {errors.email ? errors.email : null}
+                    </Text>
                   </View>
-                )}
-                <View style={styles.inputWrapper}>
-                  <Text>Email</Text>
-                  <TextInput
-                    name="email"
-                    style={styles.inputField}
-                    onChangeText={handleChange('email')}
-                    onBlur={handleBlur('email')}
-                    value={values.email}
-                    autoCapitalize="none"
-                  />
-                  {errors.email && touched.email && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
+                  <View style={styles.inputWrapper}>
+                    <Text style={{fontWeight: '600'}}>Phone</Text>
+                    <TextInput
+                      clearButtonMode="always"
+                      style={styles.inputField}
+                      onChangeText={handleChange('phone')}
+                      ref={inputRef4}
+                      onFocus={() =>
+                        inputRef4.current.setNativeProps({
+                          style: {
+                            borderWidth: 1,
+                            borderColor: 'black',
+                          },
+                        })
+                      }
+                      onBlur={() => {
+                        handleBlur('phone');
+                        inputRef4.current.setNativeProps({
+                          style: {
+                            borderWidth: 0,
+                          },
+                        });
+                      }}
                     />
-                  )}
-                </View>
-                {errors.email && touched.email && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>Email</Text>
-                    <Text style={styles.errorText}>{errors.email}</Text>
+                    <Text style={{color: 'red', marginTop: 5}}>
+                      {errors.phone ? errors.phone : null}
+                    </Text>
                   </View>
-                )}
-                <View style={styles.inputWrapper}>
-                  <Text>Phone Number</Text>
-                  <TextInput
-                    name="phone"
-                    style={styles.inputField}
-                    onChangeText={handleChange('phone')}
-                    onBlur={handleBlur('phone')}
-                    value={values.phone}
-                  />
-                  {errors.phone && touched.phone && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
+                  <View style={styles.inputWrapper}>
+                    <Text style={{fontWeight: '600'}}>Password</Text>
+                    <TextInput
+                      secureTextEntry
+                      clearButtonMode="always"
+                      style={styles.inputField}
+                      onChangeText={handleChange('password1')}
+                      ref={inputRef5}
+                      onFocus={() =>
+                        inputRef5.current.setNativeProps({
+                          style: {
+                            borderWidth: 1,
+                            borderColor: 'black',
+                          },
+                        })
+                      }
+                      onBlur={() => {
+                        handleBlur('password1');
+                        inputRef5.current.setNativeProps({
+                          style: {
+                            borderWidth: 0,
+                          },
+                        });
+                      }}
                     />
-                  )}
-                </View>
-                {errors.phone && touched.phone && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>phone</Text>
-                    <Text style={styles.errorText}>{errors.phone}</Text>
+                    <Text style={{color: 'red', marginTop: 5}}>
+                      {errors.password1 ? errors.password1 : null}
+                    </Text>
                   </View>
-                )}
-                <View style={styles.inputWrapper}>
-                  <Text>Password</Text>
-                  <TextInput
-                    name="password1"
-                    style={styles.inputField}
-                    secureTextEntry={true}
-                    onChangeText={handleChange('password1')}
-                    onBlur={handleBlur('password1')}
-                    value={values.password1}
-                    textContentType="none"
-                  />
-                  {errors.password1 && touched.password1 && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
+                  <View style={styles.inputWrapper}>
+                    <Text style={{fontWeight: '600'}}>Re-enter password</Text>
+                    <TextInput
+                      secureTextEntry
+                      clearButtonMode="always"
+                      style={styles.inputField}
+                      onChangeText={handleChange('password2')}
+                      ref={inputRef6}
+                      onFocus={() =>
+                        inputRef6.current.setNativeProps({
+                          style: {
+                            borderWidth: 1,
+                            borderColor: 'black',
+                          },
+                        })
+                      }
+                      onBlur={() => {
+                        handleBlur('password2');
+                        inputRef6.current.setNativeProps({
+                          style: {
+                            borderWidth: 0,
+                          },
+                        });
+                      }}
                     />
-                  )}
-                </View>
-                {errors.password1 && touched.password1 && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>password</Text>
-                    <Text style={styles.errorText}>{errors.password1}</Text>
+                    <Text style={{color: 'red', marginTop: 5}}>
+                      {errors.password2 ? errors.password2 : null}
+                    </Text>
                   </View>
-                )}
-                <View style={styles.inputWrapper}>
-                  <Text>Re-enter Password</Text>
-                  <TextInput
-                    name="password2"
-                    style={styles.inputField}
-                    secureTextEntry={true}
-                    onChangeText={handleChange('password2')}
-                    onBlur={handleBlur('password2')}
-                    value={values.password2}
-                    textContentType="none"
-                  />
-                  {errors.password2 && touched.password2 && (
-                    <Feather
-                      name="alert-circle"
-                      size={18}
-                      color="red"
-                      style={{marginLeft: 10}}
-                    />
-                  )}
                 </View>
-                {errors.password2 && touched.password2 && (
-                  <View style={styles.errorWrapper}>
-                    <Text style={{color: 'white'}}>Re-enter password</Text>
-                    <Text style={styles.errorText}>{errors.password2}</Text>
-                  </View>
-                )}
-                <Text style={styles.note}>
-                  Delitaste may use your phone number to call or send text
-                  messages with information regarding your account.
-                </Text>
-                <Text style={styles.note}>
-                  By clicking Sign Up, you are indicating that you have read and
-                  acknowledge the{' '}
-                  <Text style={{color: '#eab200', fontWeight: 'bold'}}>
-                    Terms of Service
-                  </Text>{' '}
-                  and{' '}
-                  <Text style={{color: '#eab200', fontWeight: 'bold'}}>
-                    Privacy Notice
-                  </Text>{' '}
-                  .
-                </Text>
-                <TouchableOpacity
-                  style={styles.signupButton}
-                  // onPress={() => navigation.navigate("Map")}
-                  onPress={handleSubmit}>
-                  <Text style={styles.signupText}>Sign up </Text>
-                </TouchableOpacity>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width,
+                    paddingHorizontal: 20,
+                  }}>
+                  <TouchableOpacity
+                    onPress={() => navigation.goBack()}
+                    style={{
+                      padding: 10,
+                      borderRadius: 60,
+                      backgroundColor: 'rgba(230, 230, 230, 0.5)',
+                    }}>
+                    <Feather name="arrow-left" size={20} color={'black'} />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    style={{
+                      borderRadius: 25,
+                      padding: 10,
+                      backgroundColor: colors.yellow,
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                    }}>
+                    <Text
+                      style={{
+                        color: 'black',
+                        fontSize: 18,
+                        marginRight: 5,
+                        fontWeight: '500',
+                      }}>
+                      Next
+                    </Text>
+                    <Feather name="arrow-right" size={20} color={'black'} />
+                  </TouchableOpacity>
+                </View>
               </View>
             );
           }}
         </Formik>
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -249,63 +286,34 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
   },
-  signupTitleWrapper: {},
-  signupTitle: {
-    fontWeight: 'bold',
-    fontSize: 24,
+  content: {
+    // paddingHorizontal: 20,
+    marginTop: 20,
   },
-  signupForm1Wrapper: {},
-  form1Wrapper: {
-    padding: 20,
+  formWrapper: {
+    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: height - 100,
   },
-  inputWrapper: {
+  inputWrapperCol2: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 20,
+    width,
     paddingHorizontal: 20,
   },
   inputField: {
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: '#e6e6e6',
-    borderRadius: 5,
-    marginLeft: 20,
-    width: '55%',
-  },
-  note: {
-    paddingHorizontal: 20,
-    paddingVertical: 5,
-    marginTop: 15,
-    textAlign: 'center',
-  },
-  signupButton: {
-    backgroundColor: '#eab200',
-    marginVertical: 40,
+    width: '100%',
+    backgroundColor: 'rgba(230, 230, 230, 0.5)',
     padding: 10,
-    width: '50%',
-    borderRadius: 20,
-    position: 'absolute',
-    top: '100%',
-    left: '30%',
+    marginTop: 5,
   },
-  signupText: {
-    fontSize: 19,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  errorWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    alignItems: 'center',
+  inputWrapper: {
     paddingHorizontal: 20,
-  },
-  errorText: {
-    marginTop: 2,
-    marginRight: 30,
-    color: 'red',
+    marginTop: 5,
+    width,
   },
 });

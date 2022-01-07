@@ -439,6 +439,7 @@
 			baseConfigurationReference = 7ECD345A6BCD0C27E25A6F61 /* Pods-Tastie-TastieTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -467,6 +468,7 @@
 			baseConfigurationReference = 70BD7E741E5254D640CC0083 /* Pods-Tastie-TastieTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				INFOPLIST_FILE = TastieTests/Info.plist;

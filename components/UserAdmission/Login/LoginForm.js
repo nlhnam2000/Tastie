@@ -28,7 +28,7 @@ export const LoginForm = ({navigation}) => {
         otp: values.password,
       })
       .then(async res => {
-        await AsyncStorage.setItem('userToken', res.data.token);
+        await AsyncStorage.setItem('user_token', res.data.token);
       })
       .catch(err => alert(err));
   };
@@ -73,7 +73,7 @@ export const LoginForm = ({navigation}) => {
           return (
             <View style={styles.formWrapper}>
               <View style={styles.inputWrapper}>
-                <Text style={styles.label}>Username:</Text>
+                <Text style={styles.label}>Phone number:</Text>
                 <TextInput
                   style={styles.inputField}
                   onChangeText={handleChange('phone')}
@@ -105,7 +105,8 @@ export const LoginForm = ({navigation}) => {
                 </TouchableOpacity>
               </View>
               <View style={styles.buttonWrapper}>
-                <TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('ForgotForm')}>
                   <Text style={styles.forgotPassword}>Forgot password</Text>
                 </TouchableOpacity>
               </View>
@@ -117,8 +118,7 @@ export const LoginForm = ({navigation}) => {
                   marginTop: 20,
                 }}>
                 <Text>Not a Delitaste member yet ? </Text>
-                <TouchableOpacity
-                  onPress={() => navigation.navigate('Signup Form')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
                   <Text style={{color: colors.primary, fontWeight: 'bold'}}>
                     Sign up
                   </Text>

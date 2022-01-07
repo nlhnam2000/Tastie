@@ -19,17 +19,23 @@ import {SideMenu} from '../components/Menu/SideMenu';
 import {NavigationBar} from '../components/Menu/NavigationBar';
 import {Home} from '../components/HomePage/Home';
 import {Account} from '../components/HomePage/Account';
+import {Cart} from '../components/HomePage/Cart';
+import {Browse} from '../components/HomePage/Browse';
 
 import {useSelector, useDispatch} from 'react-redux';
 
 const Stack = createNativeStackNavigator();
 
 export const HomeScreen = props => {
-  const currentTab = useSelector(state => state.NavigationReducer.currentTab);
+  const currentTab = useSelector(state => state.UserReducer.currentTab);
   if (currentTab === 'Home') {
-    return <Home tabname={currentTab} navigation={props.navigation} />;
+    return <Home tabname={currentTab} {...props} />;
   } else if (currentTab === 'Account') {
-    return <Account tabname={currentTab} />;
+    return <Account tabname={currentTab} {...props} />;
+  } else if (currentTab === 'Cart') {
+    return <Cart tabname={currentTab} {...props} />;
+  } else if (currentTab === 'Browse') {
+    return <Browse tabname={currentTab} {...props} />;
   }
 
   // return (
