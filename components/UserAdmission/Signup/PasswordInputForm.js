@@ -12,61 +12,53 @@ import {
 import {Formik} from 'formik';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
-import {CheckExistingEmail} from '../../../store/action/auth';
+import {SkipUpdate} from '../../../store/action/auth';
 
 const {width, height} = Dimensions.get('window');
 
-export const PhoneInputForm = props => {
+export const PasswordInputForm = props => {
+  const password1InputRef = useRef();
+  const password2InputRef = useRef();
   const dispatch = useDispatch();
-  const phoneInputRef = useRef();
-  const emailInputRef = useRef();
 
-  const [phone, setPhone] = useState(null);
-  const [email, setEmail] = useState(null);
+  let {phone, email, firstname, lastname} = props.route.params.data; // phone, email, firstname, lastname
 
-  const handleSubmit = async (phone, email) => {
-    let body = {
-      phone: phone,
-      email: email,
-    };
-    if (phone !== null && email !== null) {
-      // dispatch(CheckExistingEmail(phone, email));
-      try {
-        let res = await axios.post(
-          'http://localhost:3007/v1/api/auth/check-exist-email-and-phone',
-          body,
-        );
-        if (
-          res.data.isPhoneDuplicated === true &&
-          res.data.isEmailDuplicated === true
-        ) {
-          props.navigation.navigate('Login', {data: body});
-        } else {
-          props.navigation.navigate('EmailVerification', {data: body});
-        }
-      } catch (error) {
-        console.error(error);
-      }
+  let [password1, setPassword1] = useState('');
+  let [password2, setPassword2] = useState('');
+
+  const handleSubmitPassword = (password1, password2) => {
+    if (password1 !== '' && password2 !== '' && password1 === password2) {
+      // Signup api
+      let body = {
+        phone,
+        email,
+        firstname,
+        lastname,
+        password: password1,
+      };
+      dispatch(SkipUpdate(body));
     } else {
-      alert('Please complete those input field');
+      alert('Please complete the form');
     }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="default" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Enter your email and phone number
+          Set up your password
         </Text>
         <TextInput
           style={styles.inputField}
-          placeholder="Your phone number"
+          placeholder="Password"
           clearButtonMode="always"
-          keyboardType="number-pad"
-          ref={phoneInputRef}
+          secureTextEntry
+          ref={password1InputRef}
           onFocus={() =>
-            phoneInputRef.current.setNativeProps({
+            password1InputRef.current.setNativeProps({
               style: {
                 borderWidth: 2,
                 borderColor: 'black',
@@ -74,23 +66,22 @@ export const PhoneInputForm = props => {
             })
           }
           onBlur={() => {
-            phoneInputRef.current.setNativeProps({
+            password1InputRef.current.setNativeProps({
               style: {
                 borderWidth: 0,
               },
             });
           }}
-          onChangeText={text => setPhone(text)}
+          onChangeText={text => setPassword1(text)}
         />
         <TextInput
           style={styles.inputField}
-          placeholder="Your email"
+          secureTextEntry
+          placeholder="Re-enter your password"
           clearButtonMode="always"
-          keyboardType="email-address"
-          autoCapitalize="none"
-          ref={emailInputRef}
+          ref={password2InputRef}
           onFocus={() =>
-            emailInputRef.current.setNativeProps({
+            password2InputRef.current.setNativeProps({
               style: {
                 borderWidth: 2,
                 borderColor: 'black',
@@ -98,16 +89,17 @@ export const PhoneInputForm = props => {
             })
           }
           onBlur={() => {
-            emailInputRef.current.setNativeProps({
+            password2InputRef.current.setNativeProps({
               style: {
                 borderWidth: 0,
               },
             });
           }}
-          onChangeText={text => setEmail(text)}
+          onChangeText={text => setPassword2(text)}
         />
         <Text style={{marginTop: 20}}>
-          By clicking Next, we will send OTP code to your email
+          The password must contains at least 8 characters, 1 capitalized
+          character and 1 number
         </Text>
       </View>
       <View style={styles.buttonWrapper}>
@@ -121,7 +113,7 @@ export const PhoneInputForm = props => {
           <Feather name="arrow-left" size={20} color={'black'} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleSubmit(phone, email)}
+          onPress={() => handleSubmitPassword(password1, password2)}
           style={{
             borderRadius: 25,
             padding: 10,

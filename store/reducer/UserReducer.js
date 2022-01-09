@@ -15,6 +15,9 @@ import {
   BROWSE_TAB,
   CART_TAB,
   NOTIFICATION_TAB,
+  EMAIL_PHONE_EXISTED,
+  EMAIL_PHONE_NOT_EXISTED,
+  CHECK_EXISTING_EMAIL_PHONE,
 } from '../action/types';
 
 const initialState = {
@@ -30,7 +33,7 @@ const initialState = {
   last_login_at: null,
   delete_at: null,
   signup_form: 1,
-  signup_screen: 'cover', // cover => email + phone => verification => name => password
+  signup_screen: 'email', // cover => email + phone => verification => name => password
   isLoading: true,
   user_token: null,
   verified_email_token: null,
@@ -131,6 +134,18 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case CART_TAB: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case EMAIL_PHONE_EXISTED: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case EMAIL_PHONE_NOT_EXISTED: {
       return {
         ...state,
         ...payload,

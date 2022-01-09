@@ -45,11 +45,19 @@ import {ForgotForm} from './components/UserAdmission/ForgotPassword/ForgotForm';
 import {ResetPasswordDone} from './components/UserAdmission/ForgotPassword/ResetPasswordDone';
 import {Cart} from './components/HomePage/Cart';
 import {Begin} from './screens/Begin';
+import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
+import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
+import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 // redux
 
 import {useSelector, useDispatch} from 'react-redux';
 
-import {retrieveToken, signout, TokenNotFound} from './store/action/auth';
+import {
+  EmailVerification,
+  retrieveToken,
+  signout,
+  TokenNotFound,
+} from './store/action/auth';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -139,15 +147,25 @@ export default function App(props) {
               options={{headerShown: false, animationTypeForReplace: 'pop'}}
             />
             <Stack.Screen
-              name="Signup"
-              component={SignupForm}
+              name="PhoneInputForm"
+              component={PhoneInputForm}
               options={{headerShown: false}}
             />
-            {/* <Stack.Screen
-              name="Home Page"
-              component={HomeScreen}
+            <Stack.Screen
+              name="EmailVerification"
+              component={SignupScreen2}
               options={{headerShown: false}}
-            /> */}
+            />
+            <Stack.Screen
+              name="NameInputForm"
+              component={NameInputForm}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="PasswordInputForm"
+              component={PasswordInputForm}
+              options={{headerShown: false}}
+            />
             <Stack.Screen
               name="ForgotForm"
               component={ForgotForm}

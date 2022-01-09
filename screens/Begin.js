@@ -33,7 +33,7 @@ export const Begin = props => {
         <View style={styles.buttonWrapper}>
           <TouchableOpacity
             style={styles.loginButton}
-            onPress={() => props.navigation.navigate('Login')}>
+            onPress={() => props.navigation.navigate('PhoneInputForm')}>
             <Text
               style={{
                 color: 'white',
@@ -44,7 +44,7 @@ export const Begin = props => {
               Login to Tastie
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.registerButton}
             onPress={() => props.navigation.navigate('Signup')}>
             <Text
@@ -56,7 +56,7 @@ export const Begin = props => {
               }}>
               Register
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </ImageBackground>
     </View>

@@ -19,8 +19,9 @@ import {useSelector, useDispatch} from 'react-redux';
 
 import {signin} from '../../../store/action/auth';
 
-export const LoginForm = ({navigation}) => {
+export const LoginForm = ({navigation, route}) => {
   const [checked, setChecked] = useState(false);
+  let {data} = route.params;
   const handleLogin = values => {
     axios
       .post('http://localhost:3007/v1/api/auth/login-with-otp', {
@@ -34,17 +35,17 @@ export const LoginForm = ({navigation}) => {
   };
 
   const initialValues = {
-    phone: '',
+    phone: data.phone,
     password: '',
   };
 
   // const token = useSelector(state => state.UserReducer.token);
   const dispatch = useDispatch();
 
-  const form = useSelector(state => state.UserReducer.signup_form);
-  useEffect(() => {
-    console.log(form);
-  }, []);
+  // const form = useSelector(state => state.UserReducer.signup_form);
+  // useEffect(() => {
+  //   console.log(form);
+  // }, []);
 
   return (
     <View style={styles.container}>
@@ -78,6 +79,7 @@ export const LoginForm = ({navigation}) => {
                   style={styles.inputField}
                   onChangeText={handleChange('phone')}
                   onBlur={handleBlur('phone')}
+                  value={data.phone}
                 />
               </View>
               <View style={styles.inputWrapper}>

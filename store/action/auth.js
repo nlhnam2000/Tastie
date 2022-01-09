@@ -10,6 +10,9 @@ import {
   EMAIL_VERIFICATION_DONE,
   UPDATE_PROFILE,
   SKIP_UPDATE_PROFILE,
+  CHECK_EXISTING_EMAIL_PHONE,
+  EMAIL_PHONE_EXISTED,
+  EMAIL_PHONE_NOT_EXISTED,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -152,6 +155,40 @@ export const TokenNotFound = () => dispatch => {
   });
 };
 
+export const CheckExistingEmail = (phone, email) => async dispatch => {
+  try {
+    let res = await axios.post(
+      'http://localhost:3007/v1/api/auth/check-exist-email-and-phone',
+      {
+        phone,
+        email,
+      },
+    );
+    if (
+      res.data.isPhoneDuplicated === true &&
+      res.data.isEmailDuplicated === true
+    ) {
+      dispatch({
+        type: EMAIL_PHONE_EXISTED,
+        payload: {
+          signup_screen: 'Login',
+        },
+      });
+    }
+    if (
+      res.data.isPhoneDuplicated === false ||
+      res.data.isEmailDuplicated === false
+    ) {
+      dispatch({
+        type: EMAIL_PHONE_NOT_EXISTED,
+        payload: {
+          signup_screen: 'EmailVerification',
+        },
+      });
+    }
+  } catch (error) {}
+};
+
 export const AccountRegistration = body => dispatch => {
   dispatch({
     type: ACCOUNT_REGISTRATION,
@@ -220,8 +257,8 @@ export const SkipUpdate = body => async dispatch => {
       email: body.email,
       password: body.password,
       phone: body.phone,
-      first_name: body.first_name,
-      last_name: body.last_name,
+      first_name: body.firstname,
+      last_name: body.lastname,
       role: 'C',
       registered_at: new Date().toISOString().substring(0, 10),
     });

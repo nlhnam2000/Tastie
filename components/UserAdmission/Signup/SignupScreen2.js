@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {Formik, Form, Field} from 'formik';
+import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
@@ -20,6 +21,10 @@ const {width, height} = Dimensions.get('window');
 export const SignupScreen2 = ({navigation, route}) => {
   const registerState = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
+
+  let [verifyToken, setVerifyToken] = useState(null);
+
+  const {data} = route.params; // phone, email
 
   const initialValues = {
     input1: '',
@@ -43,7 +48,47 @@ export const SignupScreen2 = ({navigation, route}) => {
   //   }, 500);
   // }, []);
 
-  const handleEmailVerification = values => {
+  // send verification code to email
+  useEffect(() => {
+    setTimeout(async () => {
+      try {
+        let res = await axios.post(
+          'http://localhost:3007/v1/api/auth/send-code-with-email',
+          {
+            email: data.email,
+          },
+        );
+        if (res.data.status === true) {
+          // await AsyncStorage.removeItem('verified_email_token');
+          console.log('Email token ', res.data.result.verifyEmailToken);
+          setVerifyToken(res.data.result.verifyEmailToken);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }, 500);
+  }, []);
+
+  const EmailVerification = async (emailToken, otp, email) => {
+    try {
+      let res = await axios.post(
+        'http://localhost:3007/v1/api/auth/verify-code-with-email',
+        {
+          verifyEmailToken: emailToken,
+          code: otp,
+          email: email,
+        },
+      );
+      // success
+      if (res.data.status === true) {
+        navigation.navigate('NameInputForm', {data: data});
+      }
+    } catch (error) {
+      alert('OTP Code is incorrect');
+    }
+  };
+
+  const handleEmailVerification = async values => {
     let otp =
       values.input1 +
       values.input2 +
@@ -52,13 +97,15 @@ export const SignupScreen2 = ({navigation, route}) => {
       values.input5 +
       values.input6;
 
-    dispatch(
-      EmailVerification(
-        registerState.verified_email_token,
-        otp,
-        registerState.email,
-      ),
-    );
+    await EmailVerification(verifyToken, otp, data.email);
+
+    // dispatch(
+    //   EmailVerification(
+    //     registerState.verified_email_token,
+    //     otp,
+    //     registerState.email,
+    //   ),
+    // );
     // console.log('Email token', registerState.verified_email_token);
     // console.log('Code', otp);
     // console.log('Email', registerState.email);
@@ -72,7 +119,7 @@ export const SignupScreen2 = ({navigation, route}) => {
         <Text>A verification code was sent to your gmail.</Text>
         <Text>
           Please enter the 6-digit code already sent to your email{' '}
-          <Text style={{fontWeight: 'bold'}}>{registerState.email}</Text>.
+          <Text style={{fontWeight: 'bold'}}>{data.email}</Text>.
         </Text>
       </View>
       <Formik
@@ -207,7 +254,6 @@ export const SignupScreen2 = ({navigation, route}) => {
                       }
                     }}
                   />
-                  <View style={{padding: 10}}></View>
                 </View>
                 <TouchableOpacity
                   style={styles.resendCodeWrapper}
