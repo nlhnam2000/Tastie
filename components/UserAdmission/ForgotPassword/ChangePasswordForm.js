@@ -24,40 +24,39 @@ import {signin} from '../../../store/action/auth';
 
 const {width, height} = Dimensions.get('window');
 
-export const LoginForm = ({navigation, route}) => {
-  let [checked, setChecked] = useState(false);
-  let [showPassword, setShowPassword] = useState(false);
+export const ChangePasswordForm = ({navigation, route}) => {
   let {data} = route.params; // phone, email
+  let [password, setPassword] = useState('');
+  let [showPassword, setShowPassword] = useState(false);
 
-  let [phone, setPhone] = useState(data.phone ? data.phone : null);
-  let [password, setPassword] = useState(null);
-
-  const phoneInputRef = useRef();
   const passwordInputRef = useRef();
+  const dispatch = useDispatch();
 
-  const handleShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
-
-  const handleSubmit = password => {
+  const handleSubmit = async password => {
     if (password !== '') {
-      dispatch(signin(data.phone, password));
-    } else {
-      alert('Please complete the form');
+      try {
+        let res = await axios.post(
+          'http://localhost:3007/v1/api/auth/change-password',
+          {
+            phone: data.phone,
+            password: password,
+          },
+        );
+        if (res.data.status === true) {
+          alert(res.data.message);
+          dispatch(signin(data.phone, password));
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
-  const initialValues = {
-    phone: data.phone,
-    password: '',
-  };
-
-  // const token = useSelector(state => state.UserReducer.token);
-  const dispatch = useDispatch();
-
-  // const form = useSelector(state => state.UserReducer.signup_form);
   // useEffect(() => {
-  //   console.log(form);
+  //   setTimeout(async () => {
+  //     // reset password
+  //     await getResetPassword();
+  //   }, 3000);
   // }, []);
 
   return (
@@ -65,8 +64,7 @@ export const LoginForm = ({navigation, route}) => {
       <StatusBar barStyle="default" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Welcome <Text style={{fontWeight: 'bold'}}>{data.first_name}</Text>,
-          please enter your password to signin
+          Password reset successfully, now please change your password
         </Text>
         <View
           ref={passwordInputRef}
@@ -80,7 +78,7 @@ export const LoginForm = ({navigation, route}) => {
           }}>
           <TextInput
             style={styles.inputPasswordField}
-            placeholder="Your password"
+            placeholder="Your new password"
             autoCapitalize="none"
             secureTextEntry={!showPassword}
             onFocus={() =>
@@ -104,28 +102,18 @@ export const LoginForm = ({navigation, route}) => {
             <Feather
               name="eye-off"
               size={20}
+              onPress={() => setShowPassword(!showPassword)}
               style={{paddingRight: 10}}
-              onPress={() => handleShowPassword()}
             />
           ) : (
             <Feather
               name="eye"
               size={20}
+              onPress={() => setShowPassword(!showPassword)}
               style={{paddingRight: 10}}
-              onPress={() => handleShowPassword()}
             />
           )}
         </View>
-        <TouchableOpacity
-          style={styles.forgotPassword}
-          onPress={() => navigation.navigate('ForgotForm', {data})} // pass email to forgot form
-        >
-          <Text style={{fontWeight: 'bold'}}>I forgot my password</Text>
-        </TouchableOpacity>
-
-        {/* <Text style={{marginTop: 20}}>
-          By clicking Next, we will send OTP code to your email
-        </Text> */}
       </View>
       <View style={styles.buttonWrapper}>
         <TouchableOpacity
@@ -154,7 +142,7 @@ export const LoginForm = ({navigation, route}) => {
               marginRight: 5,
               fontWeight: '500',
             }}>
-            Signin
+            Go
           </Text>
           <Feather name="arrow-right" size={20} color={'black'} />
         </TouchableOpacity>
@@ -189,6 +177,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(230,230,230,0.9)',
     flex: 1,
     paddingHorizontal: 20,
+    fontWeight: 'bold',
   },
   buttonWrapper: {
     flexDirection: 'row',
@@ -202,7 +191,7 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     backgroundColor: 'rgba(230,230,230,0.9)',
     marginTop: 20,
-    width: '55%',
+    maxWidth: '55%',
     alignItems: 'center',
   },
 });

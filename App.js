@@ -25,6 +25,7 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import fontAwesome from 'react-native-vector-icons/FontAwesome';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import components
@@ -48,6 +49,7 @@ import {Begin} from './screens/Begin';
 import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
 import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
+import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 // redux
 
 import {useSelector, useDispatch} from 'react-redux';
@@ -68,6 +70,7 @@ MapboxGL.setAccessToken(
 
 Feather.loadFont();
 fontAwesome.loadFont();
+IonIcon.loadFont();
 MaterialCommunity.loadFont();
 
 export default function App(props) {
@@ -78,8 +81,8 @@ export default function App(props) {
   useEffect(() => {
     setTimeout(async () => {
       let token = await AsyncStorage.getItem('user_token');
-      console.log(state);
-      if (token) {
+      console.log(token);
+      if (token !== null) {
         dispatch(retrieveToken(token));
       } else {
         dispatch(TokenNotFound());
@@ -169,6 +172,11 @@ export default function App(props) {
             <Stack.Screen
               name="ForgotForm"
               component={ForgotForm}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ChangePasswordForm"
+              component={ChangePasswordForm}
               options={{headerShown: false}}
             />
             <Stack.Screen

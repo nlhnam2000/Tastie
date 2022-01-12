@@ -41,7 +41,19 @@ export const PhoneInputForm = props => {
           res.data.isPhoneDuplicated === true &&
           res.data.isEmailDuplicated === true
         ) {
-          props.navigation.navigate('Login', {data: body});
+          props.navigation.navigate('Login', {
+            data: {...body, first_name: res.data.first_name},
+          });
+        } else if (
+          res.data.isPhoneDuplicated === true &&
+          res.data.isEmailDuplicated === false
+        ) {
+          alert('The phone number has been registered');
+        } else if (
+          res.data.isEmailDuplicated === true &&
+          res.data.isPhoneDuplicated === false
+        ) {
+          alert('The email address has been registered');
         } else {
           props.navigation.navigate('EmailVerification', {data: body});
         }

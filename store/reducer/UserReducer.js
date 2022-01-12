@@ -29,6 +29,7 @@ const initialState = {
   role: null,
   gender: null,
   birthday: null,
+  gender: null,
   registered_at: null,
   last_login_at: null,
   delete_at: null,

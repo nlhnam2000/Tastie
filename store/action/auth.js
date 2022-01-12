@@ -141,7 +141,14 @@ export const retrieveToken = token => async dispatch => {
       alert('retrieve token error');
     }
   } catch (error) {
-    console.log(error);
+    // console.log(error);
+    dispatch({
+      type: TOKEN_NOT_FOUND,
+      payload: {
+        isLoading: false,
+        user_token: null,
+      },
+    });
   }
 };
 
@@ -259,7 +266,8 @@ export const SkipUpdate = body => async dispatch => {
       phone: body.phone,
       first_name: body.firstname,
       last_name: body.lastname,
-      role: 'C',
+      role: 1,
+      gender: 1,
       registered_at: new Date().toISOString().substring(0, 10),
     });
     if (res.data.registerState === true) {

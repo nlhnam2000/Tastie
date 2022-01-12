@@ -42,14 +42,11 @@ export const SignupScreen2 = ({navigation, route}) => {
   const inputRef5 = useRef();
   const inputRef6 = useRef();
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     dispatch(SendOTP(registerState.email));
-  //   }, 500);
-  // }, []);
-
   // send verification code to email
   useEffect(() => {
+    // focus the first input field
+    inputRef1.current.focus();
+    // send email verification code
     setTimeout(async () => {
       try {
         let res = await axios.post(

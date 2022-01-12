@@ -16,6 +16,8 @@ import {
   ImageBackground,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import IonIcon from 'react-native-vector-icons/Ionicons';
 import {useDispatch} from 'react-redux';
 import {
   NavigateToAccount,
@@ -24,6 +26,8 @@ import {
   NavigateToCart,
   NavigateToNotification,
 } from '../../store/action/navigation';
+
+// FontAwesome5.loadFont();
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
@@ -76,8 +80,8 @@ export const NavigationBar = props => {
         style={styles.iconWrapper}
         onPress={() => dispatch(NavigateToCart())}>
         {(props.active === 'Cart' && (
-          <Feather name="shopping-cart" size={25} color={'red'} />
-        )) || <Feather name="shopping-cart" size={25} color="black" />}
+          <Feather name="shopping-bag" size={26} color={'red'} />
+        )) || <Feather name="shopping-bag" size={26} color="black" />}
         <Text
           style={
             props.active === 'Cart'

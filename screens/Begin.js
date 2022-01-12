@@ -12,6 +12,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import colors from '../colors/colors';
+import Feather from 'react-native-vector-icons/Feather';
 
 const {width, height} = Dimensions.get('window');
 export const Begin = props => {
@@ -39,10 +40,17 @@ export const Begin = props => {
                 color: 'white',
                 textAlign: 'center',
                 fontWeight: '600',
-                fontSize: 16,
+                fontSize: 18,
+                marginLeft: 'auto',
               }}>
-              Login to Tastie
+              Next
             </Text>
+            <Feather
+              name="arrow-right"
+              size={22}
+              color={'white'}
+              style={{marginLeft: 'auto', marginRight: 0, fontWeight: 'bold'}}
+            />
           </TouchableOpacity>
           {/* <TouchableOpacity
             style={styles.registerButton}
@@ -98,9 +106,13 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     width: '80%',
-    paddingHorizontal: 20,
+    paddingLeft: 20,
+    paddingRight: 5,
     paddingVertical: 10,
     backgroundColor: colors.red,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   registerButton: {
     width: '80%',

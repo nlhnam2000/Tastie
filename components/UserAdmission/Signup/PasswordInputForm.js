@@ -19,6 +19,8 @@ import {SkipUpdate} from '../../../store/action/auth';
 const {width, height} = Dimensions.get('window');
 
 export const PasswordInputForm = props => {
+  let [showPassword1, setShowPassword1] = useState(false);
+  let [showPassword2, setShowPassword2] = useState(false);
   const password1InputRef = useRef();
   const password2InputRef = useRef();
   const dispatch = useDispatch();
@@ -27,6 +29,14 @@ export const PasswordInputForm = props => {
 
   let [password1, setPassword1] = useState('');
   let [password2, setPassword2] = useState('');
+
+  const handleShowPassword1 = () => {
+    setShowPassword1(!showPassword1);
+  };
+
+  const handleShowPassword2 = () => {
+    setShowPassword2(!showPassword2);
+  };
 
   const handleSubmitPassword = (password1, password2) => {
     if (password1 !== '' && password2 !== '' && password1 === password2) {
@@ -51,52 +61,103 @@ export const PasswordInputForm = props => {
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Set up your password
         </Text>
-        <TextInput
-          style={styles.inputField}
-          placeholder="Password"
-          clearButtonMode="always"
-          secureTextEntry
+        <View
           ref={password1InputRef}
-          onFocus={() =>
-            password1InputRef.current.setNativeProps({
-              style: {
-                borderWidth: 2,
-                borderColor: 'black',
-              },
-            })
-          }
-          onBlur={() => {
-            password1InputRef.current.setNativeProps({
-              style: {
-                borderWidth: 0,
-              },
-            });
-          }}
-          onChangeText={text => setPassword1(text)}
-        />
-        <TextInput
-          style={styles.inputField}
-          secureTextEntry
-          placeholder="Re-enter your password"
-          clearButtonMode="always"
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(230,230,230,0.9)',
+            marginTop: 20,
+            paddingVertical: 10,
+          }}>
+          <TextInput
+            style={styles.inputField}
+            placeholder="Password"
+            clearButtonMode="always"
+            secureTextEntry={!showPassword1}
+            onFocus={() =>
+              password1InputRef.current.setNativeProps({
+                style: {
+                  borderWidth: 2,
+                  borderColor: 'black',
+                },
+              })
+            }
+            onBlur={() => {
+              password1InputRef.current.setNativeProps({
+                style: {
+                  borderWidth: 0,
+                },
+              });
+            }}
+            onChangeText={text => setPassword1(text)}
+          />
+          {showPassword1 ? (
+            <Feather
+              name="eye-off"
+              size={20}
+              style={{paddingRight: 10}}
+              onPress={() => handleShowPassword1()}
+            />
+          ) : (
+            <Feather
+              name="eye"
+              size={20}
+              style={{paddingRight: 10}}
+              onPress={() => handleShowPassword1()}
+            />
+          )}
+        </View>
+        <View
           ref={password2InputRef}
-          onFocus={() =>
-            password2InputRef.current.setNativeProps({
-              style: {
-                borderWidth: 2,
-                borderColor: 'black',
-              },
-            })
-          }
-          onBlur={() => {
-            password2InputRef.current.setNativeProps({
-              style: {
-                borderWidth: 0,
-              },
-            });
-          }}
-          onChangeText={text => setPassword2(text)}
-        />
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'rgba(230,230,230,0.9)',
+            marginTop: 20,
+            paddingVertical: 10,
+          }}>
+          <TextInput
+            style={styles.inputField}
+            secureTextEntry={!showPassword2}
+            placeholder="Re-enter your password"
+            clearButtonMode="always"
+            onFocus={() =>
+              password2InputRef.current.setNativeProps({
+                style: {
+                  borderWidth: 2,
+                  borderColor: 'black',
+                },
+              })
+            }
+            onBlur={() => {
+              password2InputRef.current.setNativeProps({
+                style: {
+                  borderWidth: 0,
+                },
+              });
+            }}
+            onChangeText={text => setPassword2(text)}
+          />
+          {showPassword2 ? (
+            <Feather
+              name="eye-off"
+              size={20}
+              style={{paddingRight: 10}}
+              onPress={() => handleShowPassword2()}
+            />
+          ) : (
+            <Feather
+              name="eye"
+              size={20}
+              style={{paddingRight: 10}}
+              onPress={() => handleShowPassword2()}
+            />
+          )}
+        </View>
+
         <Text style={{marginTop: 20}}>
           The password must contains at least 8 characters, 1 capitalized
           character and 1 number
@@ -154,9 +215,8 @@ const styles = StyleSheet.create({
   inputField: {
     width: '100%',
     backgroundColor: 'rgba(230,230,230,0.9)',
-    paddingVertical: 10,
+    flex: 1,
     paddingHorizontal: 20,
-    marginTop: 20,
   },
   buttonWrapper: {
     flexDirection: 'row',
