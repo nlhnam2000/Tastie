@@ -44,7 +44,9 @@ export const Account = props => {
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
-        <View style={styles.headerWrapper}>
+        <TouchableOpacity
+          style={styles.headerWrapper}
+          onPress={() => props.navigation.navigate('DetailAccount')}>
           {/* <Image
             source={require('../../assets/image/anonymous.png')}
             style={styles.avatar}
@@ -58,7 +60,7 @@ export const Account = props => {
           <Text style={{fontWeight: '500', fontSize: 17}}>
             {state.first_name} {state.last_name}
           </Text>
-        </View>
+        </TouchableOpacity>
         <ScrollView>
           <View style={{width, paddingHorizontal: 20, marginTop: 15}}>
             <TouchableOpacity style={styles.menuWrapper}>
@@ -73,18 +75,7 @@ export const Account = props => {
                 Orders
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="shield-half-full" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                COVID-19 Safety Center
-              </Text>
-            </TouchableOpacity>
+
             <TouchableOpacity style={styles.menuWrapper}>
               <MaterialCommunity name="heart" size={26} />
               <Text
@@ -98,7 +89,7 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="star-circle" size={26} />
+              <MaterialCommunity name="home-account" size={26} />
               <Text
                 style={{
                   fontWeight: '500',
@@ -106,57 +97,10 @@ export const Account = props => {
                   fontSize: 16,
                   textTransform: 'capitalize',
                 }}>
-                Restaurant Reward
+                Your address
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="wallet" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                wallet
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="gift" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                Send a gift
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="briefcase" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                Business Preferences
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="help-circle" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                Help
-              </Text>
-            </TouchableOpacity>
+
             <TouchableOpacity style={styles.menuWrapper}>
               <MaterialCommunity name="ticket-percent" size={26} />
               <Text
@@ -169,24 +113,6 @@ export const Account = props => {
                 Promotions
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="cog" size={26} />
-              <Text
-                style={{
-                  fontWeight: '500',
-                  marginLeft: 15,
-                  fontSize: 16,
-                  textTransform: 'capitalize',
-                }}>
-                Setting
-              </Text>
-            </TouchableOpacity>
-            <Button
-              title="logout"
-              onPress={() => {
-                dispatch(signout());
-              }}
-            />
           </View>
         </ScrollView>
       </SafeAreaView>

@@ -80,8 +80,8 @@ export const NavigationBar = props => {
         style={styles.iconWrapper}
         onPress={() => dispatch(NavigateToCart())}>
         {(props.active === 'Cart' && (
-          <Feather name="shopping-bag" size={26} color={'red'} />
-        )) || <Feather name="shopping-bag" size={26} color="black" />}
+          <Feather name="shopping-bag" size={25} color={'red'} />
+        )) || <Feather name="shopping-bag" size={25} color="black" />}
         <Text
           style={
             props.active === 'Cart'

@@ -17,6 +17,8 @@ import {
   useColorScheme,
   View,
   ActivityIndicator,
+  Image,
+  Button,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -50,6 +52,7 @@ import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
 import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
+import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
 // redux
 
 import {useSelector, useDispatch} from 'react-redux';
@@ -135,6 +138,15 @@ export default function App(props) {
               name="Account"
               component={Account}
               options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="DetailAccount"
+              component={DetailAccount}
+              options={{
+                // headerTitle: 'Profile',
+                // headerStyle: {backgroundColor: 'white'},
+                headerShown: false,
+              }}
             />
           </Stack.Navigator>
         ) : (
