@@ -1,5 +1,6 @@
 import {
   SIGN_IN,
+  SIGN_IN_ERROR,
   SIGN_OUT,
   RETRIEVE_TOKEN,
   TOKEN_NOT_FOUND,
@@ -18,6 +19,7 @@ import {
   EMAIL_PHONE_EXISTED,
   EMAIL_PHONE_NOT_EXISTED,
   CHECK_EXISTING_EMAIL_PHONE,
+  CLEAR_ALERT_MESSAGE,
 } from '../action/types';
 
 const initialState = {
@@ -54,6 +56,12 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case SIGN_IN: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case SIGN_IN_ERROR: {
       return {
         ...state,
         ...payload,
@@ -147,6 +155,12 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case EMAIL_PHONE_NOT_EXISTED: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case CLEAR_ALERT_MESSAGE: {
       return {
         ...state,
         ...payload,

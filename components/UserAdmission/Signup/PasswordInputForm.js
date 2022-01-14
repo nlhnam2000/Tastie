@@ -8,6 +8,7 @@ import {
   TextInput,
   Dimensions,
   StatusBar,
+  Modal,
 } from 'react-native';
 import {Formik} from 'formik';
 import axios from 'axios';
@@ -15,12 +16,15 @@ import Feather from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {SkipUpdate} from '../../../store/action/auth';
+import {AlertDialog} from '../../Error/AlertDialog';
 
 const {width, height} = Dimensions.get('window');
 
 export const PasswordInputForm = props => {
   let [showPassword1, setShowPassword1] = useState(false);
   let [showPassword2, setShowPassword2] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+
   const password1InputRef = useRef();
   const password2InputRef = useRef();
   const dispatch = useDispatch();

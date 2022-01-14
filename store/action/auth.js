@@ -13,10 +13,22 @@ import {
   CHECK_EXISTING_EMAIL_PHONE,
   EMAIL_PHONE_EXISTED,
   EMAIL_PHONE_NOT_EXISTED,
+  SIGN_IN_ERROR,
+  CLEAR_ALERT_MESSAGE,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const validateEmailOrPhone = () => {};
+
+export const clearAlertMessage = () => dispatch => {
+  dispatch({
+    type: CLEAR_ALERT_MESSAGE,
+    payload: {
+      isLoading: false,
+      alertMessage: null,
+    },
+  });
+};
 
 export const signinWithPhone = (phone, otp) => async dispatch => {
   try {
@@ -34,6 +46,7 @@ export const signinWithPhone = (phone, otp) => async dispatch => {
       payload: {
         phone: phone,
         token: token,
+        alertMessage: null,
       },
     });
   } catch (error) {
@@ -47,6 +60,7 @@ export const signin = (phone, password) => async dispatch => {
       phone: phone,
       password: password,
     });
+    console.log('sign in');
     if (res.data.loginState === true) {
       let token = res.data.refreshToken;
       let data = res.data.profile;
@@ -71,11 +85,14 @@ export const signin = (phone, password) => async dispatch => {
         },
       });
     } else {
-      if (Object.keys(res.data.err).length > 0) {
-        alert(res.data.err.message);
-      } else {
-        alert('The Username or Password is incorrect');
-      }
+      console.log('error');
+      dispatch({
+        type: SIGN_IN_ERROR,
+        payload: {
+          alertMessage: res.data.err.message,
+          isLoading: false,
+        },
+      });
     }
   } catch (error) {
     console.error(error);

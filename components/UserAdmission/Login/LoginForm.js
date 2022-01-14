@@ -11,6 +11,7 @@ import {
   Dimensions,
   SafeAreaView,
   StatusBar,
+  Modal,
 } from 'react-native';
 import {Formik, Form, Field} from 'formik';
 import Feather from 'react-native-vector-icons/Feather';
@@ -19,20 +20,22 @@ import {CheckBox} from 'react-native-elements';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux';
+import {AlertDialog} from '../../Error/AlertDialog';
 
-import {signin} from '../../../store/action/auth';
+import {signin, clearAlertMessage} from '../../../store/action/auth';
 
 const {width, height} = Dimensions.get('window');
 
 export const LoginForm = ({navigation, route}) => {
   let [checked, setChecked] = useState(false);
   let [showPassword, setShowPassword] = useState(false);
+
   let {data} = route.params; // phone, email
 
   let [phone, setPhone] = useState(data.phone ? data.phone : null);
   let [password, setPassword] = useState(null);
 
-  const phoneInputRef = useRef();
+  const textInputRef = useRef();
   const passwordInputRef = useRef();
 
   const handleShowPassword = () => {
@@ -40,11 +43,7 @@ export const LoginForm = ({navigation, route}) => {
   };
 
   const handleSubmit = password => {
-    if (password !== '') {
-      dispatch(signin(data.phone, password));
-    } else {
-      alert('Please complete the form');
-    }
+    dispatch(signin(data.phone, password));
   };
 
   const initialValues = {
@@ -52,13 +51,12 @@ export const LoginForm = ({navigation, route}) => {
     password: '',
   };
 
-  // const token = useSelector(state => state.UserReducer.token);
+  const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
 
-  // const form = useSelector(state => state.UserReducer.signup_form);
-  // useEffect(() => {
-  //   console.log(form);
-  // }, []);
+  useEffect(() => {
+    textInputRef.current.focus();
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -79,6 +77,7 @@ export const LoginForm = ({navigation, route}) => {
             paddingVertical: 10,
           }}>
           <TextInput
+            ref={textInputRef}
             style={styles.inputPasswordField}
             placeholder="Your password"
             autoCapitalize="none"
@@ -137,28 +136,88 @@ export const LoginForm = ({navigation, route}) => {
           }}>
           <Feather name="arrow-left" size={20} color={'black'} />
         </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => handleSubmit(password)}
-          style={{
-            borderRadius: 25,
-            padding: 10,
-            backgroundColor: colors.yellow,
-            flexDirection: 'row',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}>
-          <Text
+        {password !== '' ? (
+          <TouchableOpacity
+            onPress={() => handleSubmit(password)}
             style={{
-              color: 'black',
-              fontSize: 18,
-              marginRight: 5,
-              fontWeight: '500',
+              borderRadius: 25,
+              padding: 10,
+              backgroundColor: colors.yellow,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
             }}>
-            Signin
-          </Text>
-          <Feather name="arrow-right" size={20} color={'black'} />
-        </TouchableOpacity>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 18,
+                marginRight: 5,
+                fontWeight: '500',
+              }}>
+              Signin
+            </Text>
+            <Feather name="arrow-right" size={20} color={'black'} />
+          </TouchableOpacity>
+        ) : (
+          <View
+            style={{
+              borderRadius: 25,
+              padding: 10,
+              backgroundColor: colors.yellow,
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              opacity: 0.4,
+            }}>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 18,
+                marginRight: 5,
+                fontWeight: '500',
+              }}>
+              Signin
+            </Text>
+            <Feather name="arrow-right" size={20} color={'black'} />
+          </View>
+        )}
       </View>
+      {state.alertMessage !== null ? (
+        <Modal animationType="slide" transparent={true} visible={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <Text
+                style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>
+                {state.alertMessage}
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginTop: 20,
+                }}>
+                <TouchableOpacity
+                  style={styles.confirmModal}
+                  onPress={() => {
+                    // setOpenModal(false);
+                    dispatch(clearAlertMessage());
+                  }}>
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      color: 'black',
+                      fontWeight: 'bold',
+                    }}>
+                    OK
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      ) : null}
     </SafeAreaView>
   );
 };
@@ -204,5 +263,40 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '55%',
     alignItems: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+    padding: 35,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    width: '80%',
+  },
+  cancelModal: {
+    backgroundColor: colors.red,
+    borderRadius: 20,
+    padding: 10,
+    width: '30%',
+    marginRight: 20,
+  },
+  confirmModal: {
+    backgroundColor: colors.yellow,
+    borderRadius: 20,
+    padding: 10,
+    width: '30%',
   },
 });

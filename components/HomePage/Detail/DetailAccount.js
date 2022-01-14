@@ -133,7 +133,7 @@ export const DetailAccount = props => {
                 <Text
                   style={{
                     textAlign: 'center',
-                    color: 'black',
+                    color: 'white',
                     fontWeight: 'bold',
                   }}>
                   No
@@ -148,7 +148,7 @@ export const DetailAccount = props => {
                     color: 'black',
                     fontWeight: 'bold',
                   }}>
-                  Yes``
+                  Yes
                 </Text>
               </TouchableOpacity>
             </View>
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: 'transparent',
   },
   modalView: {
     margin: 20,

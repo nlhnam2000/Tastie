@@ -24,3 +24,6 @@ export const CART_TAB = 'CART_TAB';
 
 // Password reset & change
 export const RESET_PASSWORD = 'RESET_PASSWORD';
+
+// clear alert message
+export const CLEAR_ALERT_MESSAGE = 'CLEAR_ALERT_MESSAGE';
