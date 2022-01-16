@@ -1,0 +1,8 @@
+Android: 
+
+1. Install và setup Android Studio (xem guide hướng dẫn cho react-native chứ không phải expo)
+2. vào file global.js, sửa IP_ADDRESS = <IP của wifi đang sử dụng>
+3. Open file Tastie/android/ bằng Android Studio, đợi cho nó load xong
+4. Tools -> AVD Manager -> create virtual device -> chọn 1 máy android -> show advance setting -> chỉnh RAM tầm 12GB -> finish 
+5. Khi làm xong thì có list simulator, chọn nút play cho cái simulator muốn dùng 
+6. Terminal, cd Tastie/, gõ react-native run-android 

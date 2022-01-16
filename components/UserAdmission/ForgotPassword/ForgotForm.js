@@ -19,6 +19,7 @@ import {CheckBox} from 'react-native-elements';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux';
+import {IP_ADDRESS} from '../../../global';
 
 import {signin} from '../../../store/action/auth';
 
@@ -55,7 +56,7 @@ export const ForgotForm = ({navigation, route}) => {
   const getResetPassword = async () => {
     try {
       let res = await axios.post(
-        'http://localhost:3007/v1/auth/resest-password',
+        `http://${IP_ADDRESS}:3007/v1/auth/resest-password`,
         {
           phone: data.phone,
           email: data.email,
@@ -70,7 +71,7 @@ export const ForgotForm = ({navigation, route}) => {
     if (password !== '') {
       try {
         let res = await axios.post(
-          'http://localhost:3007/v1/api/auth/sign-in',
+          `http://${IP_ADDRESS}:3007/v1/api/auth/sign-in`,
           {
             phone: data.phone,
             password: password,

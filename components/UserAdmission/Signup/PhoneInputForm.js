@@ -14,6 +14,7 @@ import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch} from 'react-redux';
 import {CheckExistingEmail} from '../../../store/action/auth';
+import {IP_ADDRESS} from '../../../global';
 
 const {width, height} = Dimensions.get('window');
 
@@ -34,7 +35,7 @@ export const PhoneInputForm = props => {
       // dispatch(CheckExistingEmail(phone, email));
       try {
         let res = await axios.post(
-          'http://localhost:3007/v1/api/auth/check-exist-email-and-phone',
+          `http://${IP_ADDRESS}:3007/v1/api/auth/check-exist-email-and-phone`,
           body,
         );
         if (

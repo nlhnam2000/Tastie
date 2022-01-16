@@ -23,7 +23,6 @@ import {
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
-import MapboxGL from '@react-native-mapbox-gl/maps';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import fontAwesome from 'react-native-vector-icons/FontAwesome';
@@ -34,7 +33,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {SignupScreen} from './components/UserAdmission/Signup/SignupScreen';
 import {SignupScreen2} from './components/UserAdmission/Signup/SignupScreen2';
 import {SignupScreen3} from './components/UserAdmission/Signup/SignupScreen3';
-import {UserMap} from './components/UserLocation/UserMap';
 import {LoginForm} from './components/UserAdmission/Login/LoginForm';
 import {Authentication} from './page/Authentication';
 import {SignupForm} from './screens/SignupForm';
@@ -53,6 +51,7 @@ import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
+// import {USERNAME} from '@env';
 // redux
 
 import {useSelector, useDispatch} from 'react-redux';
@@ -67,9 +66,9 @@ import {
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
-MapboxGL.setAccessToken(
-  'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g',
-);
+// MapboxGL.setAccessToken(
+//   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g',
+// );
 
 Feather.loadFont();
 fontAwesome.loadFont();
@@ -91,6 +90,7 @@ export default function App(props) {
         dispatch(TokenNotFound());
       }
     }, 1000);
+    // alert(`Hello ${USERNAME}`);
   }, []);
 
   // useEffect(() => {
@@ -195,7 +195,6 @@ export default function App(props) {
               name="ResetPasswordDone"
               component={ResetPasswordDone}
             />
-            <Stack.Screen name="Location" component={UserMap} />
           </Stack.Navigator>
         )}
       </NavigationContainer>

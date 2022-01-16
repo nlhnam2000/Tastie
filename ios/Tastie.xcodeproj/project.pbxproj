@@ -8,12 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* TastieTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* TastieTests.m */; };
+		0912E4DAAC4C4B5F94376166 /* libPods-Tastie-TastieTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E93BCED9DDE13A85C7A088BF /* libPods-Tastie-TastieTests.a */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		1E1DDB19807FF01EF3CFC3BC /* libPods-Tastie-TastieTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 89BF1B474655D581AFEAEE16 /* libPods-Tastie-TastieTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		EDCB270C43E777B8FBCF8828 /* libPods-Tastie.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 40EA94DB84A997A2384012D0 /* libPods-Tastie.a */; };
+		97C8686B3BE53E7163DBFA3B /* libPods-Tastie.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 71607B8128F0231E962C5A6E /* libPods-Tastie.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,13 +36,13 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Tastie/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tastie/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Tastie/main.m; sourceTree = "<group>"; };
-		14FEB7B79F1C377E66714FB2 /* Pods-Tastie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.debug.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.debug.xcconfig"; sourceTree = "<group>"; };
-		40EA94DB84A997A2384012D0 /* libPods-Tastie.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		70BD7E741E5254D640CC0083 /* Pods-Tastie-TastieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.release.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.release.xcconfig"; sourceTree = "<group>"; };
-		7ECD345A6BCD0C27E25A6F61 /* Pods-Tastie-TastieTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.debug.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.debug.xcconfig"; sourceTree = "<group>"; };
+		291B5E6844D83F6F4C25DF83 /* Pods-Tastie-TastieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.release.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.release.xcconfig"; sourceTree = "<group>"; };
+		41106801C48181B132EA41BB /* Pods-Tastie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.debug.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.debug.xcconfig"; sourceTree = "<group>"; };
+		621971A72D673EF86407F520 /* Pods-Tastie-TastieTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.debug.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.debug.xcconfig"; sourceTree = "<group>"; };
+		71607B8128F0231E962C5A6E /* libPods-Tastie.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7907E79D6B49F8B1EED63BC5 /* Pods-Tastie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.release.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.release.xcconfig"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Tastie/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		89BF1B474655D581AFEAEE16 /* libPods-Tastie-TastieTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie-TastieTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		89D9F3F90172EA1A71D37CB0 /* Pods-Tastie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.release.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.release.xcconfig"; sourceTree = "<group>"; };
+		E93BCED9DDE13A85C7A088BF /* libPods-Tastie-TastieTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie-TastieTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -51,7 +51,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1E1DDB19807FF01EF3CFC3BC /* libPods-Tastie-TastieTests.a in Frameworks */,
+				0912E4DAAC4C4B5F94376166 /* libPods-Tastie-TastieTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,7 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDCB270C43E777B8FBCF8828 /* libPods-Tastie.a in Frameworks */,
+				97C8686B3BE53E7163DBFA3B /* libPods-Tastie.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,8 +107,8 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				40EA94DB84A997A2384012D0 /* libPods-Tastie.a */,
-				89BF1B474655D581AFEAEE16 /* libPods-Tastie-TastieTests.a */,
+				71607B8128F0231E962C5A6E /* libPods-Tastie.a */,
+				E93BCED9DDE13A85C7A088BF /* libPods-Tastie-TastieTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -116,10 +116,10 @@
 		3922939AAC8E53082A3AEB1A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				14FEB7B79F1C377E66714FB2 /* Pods-Tastie.debug.xcconfig */,
-				89D9F3F90172EA1A71D37CB0 /* Pods-Tastie.release.xcconfig */,
-				7ECD345A6BCD0C27E25A6F61 /* Pods-Tastie-TastieTests.debug.xcconfig */,
-				70BD7E741E5254D640CC0083 /* Pods-Tastie-TastieTests.release.xcconfig */,
+				41106801C48181B132EA41BB /* Pods-Tastie.debug.xcconfig */,
+				7907E79D6B49F8B1EED63BC5 /* Pods-Tastie.release.xcconfig */,
+				621971A72D673EF86407F520 /* Pods-Tastie-TastieTests.debug.xcconfig */,
+				291B5E6844D83F6F4C25DF83 /* Pods-Tastie-TastieTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -163,12 +163,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "TastieTests" */;
 			buildPhases = (
-				E9EC3891D0EF353A49C0D265 /* [CP] Check Pods Manifest.lock */,
+				9E7ADB7519F29B9D108AB087 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				3DE35F318D322317250367A6 /* [CP] Embed Pods Frameworks */,
-				8AC0C930D2B4CA485548ACA8 /* [CP] Copy Pods Resources */,
+				E66CC79A06598F15D548CEB5 /* [CP] Copy Pods Resources */,
+				8E8F04B93ABA25C09F850D48 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -184,14 +184,14 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Tastie" */;
 			buildPhases = (
-				E162DD4CD124747CEEB88D77 /* [CP] Check Pods Manifest.lock */,
+				AAD306C95D4EAB582C51F708 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				1A5B6E55725AE2634346958F /* [CP] Embed Pods Frameworks */,
-				A740F97CCE80F9E0862138A9 /* [CP] Copy Pods Resources */,
+				0796BF6EA727E4CE0D7C6A0D /* [CP] Copy Pods Resources */,
+				14C3E87CBFB9305CCFB17E2D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -272,58 +272,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		1A5B6E55725AE2634346958F /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		3DE35F318D322317250367A6 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8AC0C930D2B4CA485548ACA8 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		A740F97CCE80F9E0862138A9 /* [CP] Copy Pods Resources */ = {
+		0796BF6EA727E4CE0D7C6A0D /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -340,7 +289,63 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E162DD4CD124747CEEB88D77 /* [CP] Check Pods Manifest.lock */ = {
+		14C3E87CBFB9305CCFB17E2D /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		8E8F04B93ABA25C09F850D48 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9E7ADB7519F29B9D108AB087 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Tastie-TastieTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AAD306C95D4EAB582C51F708 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -362,26 +367,21 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		E9EC3891D0EF353A49C0D265 /* [CP] Check Pods Manifest.lock */ = {
+		E66CC79A06598F15D548CEB5 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
+			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Tastie-TastieTests-checkManifestLockResult.txt",
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -436,7 +436,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7ECD345A6BCD0C27E25A6F61 /* Pods-Tastie-TastieTests.debug.xcconfig */;
+			baseConfigurationReference = 621971A72D673EF86407F520 /* Pods-Tastie-TastieTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -465,7 +465,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 70BD7E741E5254D640CC0083 /* Pods-Tastie-TastieTests.release.xcconfig */;
+			baseConfigurationReference = 291B5E6844D83F6F4C25DF83 /* Pods-Tastie-TastieTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -491,7 +491,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 14FEB7B79F1C377E66714FB2 /* Pods-Tastie.debug.xcconfig */;
+			baseConfigurationReference = 41106801C48181B132EA41BB /* Pods-Tastie.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -499,6 +499,7 @@
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Tastie/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -518,13 +519,14 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 89D9F3F90172EA1A71D37CB0 /* Pods-Tastie.release.xcconfig */;
+			baseConfigurationReference = 7907E79D6B49F8B1EED63BC5 /* Pods-Tastie.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				INFOPLIST_FILE = Tastie/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -572,6 +574,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
@@ -638,6 +641,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64 ";
@@ -676,7 +680,7 @@
 				00E356F71AD99517003FC87E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Tastie" */ = {
 			isa = XCConfigurationList;
@@ -685,7 +689,7 @@
 				13B07F951A680F5B00A75B9A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Tastie" */ = {
 			isa = XCConfigurationList;
@@ -694,7 +698,7 @@
 				83CBBA211A601CBA00E9B192 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
 	};

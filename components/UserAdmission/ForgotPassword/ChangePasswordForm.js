@@ -19,6 +19,7 @@ import {CheckBox} from 'react-native-elements';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux';
+import {IP_ADDRESS} from '../../../global';
 
 import {signin} from '../../../store/action/auth';
 
@@ -36,7 +37,7 @@ export const ChangePasswordForm = ({navigation, route}) => {
     if (password !== '') {
       try {
         let res = await axios.post(
-          'http://localhost:3007/v1/api/auth/change-password',
+          `http://${IP_ADDRESS}:3007/v1/api/auth/change-password`,
           {
             phone: data.phone,
             password: password,

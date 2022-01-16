@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
 import {SendOTP, EmailVerification} from '../../../store/action/auth';
+import {IP_ADDRESS} from '../../../global';
 
 const {width, height} = Dimensions.get('window');
 
@@ -50,7 +51,7 @@ export const SignupScreen2 = ({navigation, route}) => {
     setTimeout(async () => {
       try {
         let res = await axios.post(
-          'http://localhost:3007/v1/api/auth/send-code-with-email',
+          `http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`,
           {
             email: data.email,
           },
@@ -69,7 +70,7 @@ export const SignupScreen2 = ({navigation, route}) => {
   const EmailVerification = async (emailToken, otp, email) => {
     try {
       let res = await axios.post(
-        'http://localhost:3007/v1/api/auth/verify-code-with-email',
+        `http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`,
         {
           verifyEmailToken: emailToken,
           code: otp,
