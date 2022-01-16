@@ -17,6 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {SkipUpdate} from '../../../store/action/auth';
 import {AlertDialog} from '../../Error/AlertDialog';
+import {useEffect} from 'react';
 
 const {width, height} = Dimensions.get('window');
 
@@ -33,6 +34,10 @@ export const PasswordInputForm = props => {
 
   let [password1, setPassword1] = useState('');
   let [password2, setPassword2] = useState('');
+
+  useEffect(() => {
+    password1InputRef.current.focus();
+  }, []);
 
   const handleShowPassword1 = () => {
     setShowPassword1(!showPassword1);

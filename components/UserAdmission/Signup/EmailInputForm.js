@@ -13,39 +13,38 @@ import {Formik} from 'formik';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import {useDispatch} from 'react-redux';
-import {CheckExistingEmail} from '../../../store/action/auth';
 import {IP_ADDRESS} from '../../../global';
 
 const {width, height} = Dimensions.get('window');
 
-export const PhoneInputForm = props => {
+export const EmailInputForm = props => {
   const dispatch = useDispatch();
-  const phoneInputRef = useRef();
+  const emailInputRef = useRef();
 
-  const [phone, setPhone] = useState(null);
-  const [email, setEmail] = useState(null);
+  const [email, setEmail] = useState('');
+
+  const {data} = props.route.params; // phone
 
   useEffect(() => {
-    phoneInputRef.current.focus();
+    emailInputRef.current.focus();
   }, []);
 
-  const handleSubmit = async (phone, email) => {
+  const handleSubmit = async email => {
     let body = {
-      phone: phone,
+      phone: data.phone,
+      email: email,
     };
-    if (phone !== null && email !== null) {
+    if (email !== '') {
       // dispatch(CheckExistingEmail(phone, email));
       try {
         let res = await axios.post(
           `http://${IP_ADDRESS}:3007/v1/api/auth/check-exist-email-and-phone`,
           body,
         );
-        if (res.data.isPhoneDuplicated === true) {
-          props.navigation.navigate('Login', {
-            data: {...body, first_name: res.data.first_name},
-          });
-        } else if (res.data.isPhoneDuplicated === false) {
-          props.navigation.navigate('EmailInputForm', {data: body});
+        if (res.data.isEmailDuplicated === true) {
+          alert('This email is already taken');
+        } else if (res.data.isEmailDuplicated === false) {
+          props.navigation.navigate('EmailVerification', {data: body});
         }
       } catch (error) {
         console.error(error);
@@ -59,16 +58,17 @@ export const PhoneInputForm = props => {
       <StatusBar barStyle="default" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Enter your email and phone number
+          Welcome, please enter your email for registration {data.phone}
         </Text>
         <TextInput
           style={styles.inputField}
-          placeholder="Your phone number"
+          placeholder="Your email"
           clearButtonMode="always"
-          keyboardType="number-pad"
-          ref={phoneInputRef}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          ref={emailInputRef}
           onFocus={() =>
-            phoneInputRef.current.setNativeProps({
+            emailInputRef.current.setNativeProps({
               style: {
                 borderWidth: 2,
                 borderColor: 'black',
@@ -76,14 +76,17 @@ export const PhoneInputForm = props => {
             })
           }
           onBlur={() => {
-            phoneInputRef.current.setNativeProps({
+            emailInputRef.current.setNativeProps({
               style: {
                 borderWidth: 0,
               },
             });
           }}
-          onChangeText={text => setPhone(text)}
+          onChangeText={text => setEmail(text)}
         />
+        <Text style={{marginTop: 20}}>
+          By clicking Next, we will send OTP code to your email
+        </Text>
       </View>
       <View style={styles.buttonWrapper}>
         <TouchableOpacity
@@ -96,7 +99,7 @@ export const PhoneInputForm = props => {
           <Feather name="arrow-left" size={20} color={'black'} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleSubmit(phone)}
+          onPress={() => handleSubmit(email)}
           style={{
             borderRadius: 25,
             padding: 10,

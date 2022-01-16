@@ -126,5 +126,6 @@ const styles = StyleSheet.create({
   },
   label: {
     marginTop: 5,
+    color: 'black',
   },
 });

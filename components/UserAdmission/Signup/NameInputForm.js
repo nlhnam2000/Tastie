@@ -12,17 +12,22 @@ import {
 import {Formik} from 'formik';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
+import {useEffect} from 'react';
 
 const {width, height} = Dimensions.get('window');
 
 export const NameInputForm = props => {
-  const fistnameInputRef = useRef();
+  const firstnameInputRef = useRef();
   const lastnameInputRef = useRef();
 
   let {data} = props.route.params; // email, phone
 
   let [firstname, setFirstname] = useState('');
   let [lastname, setLastname] = useState('');
+
+  useEffect(() => {
+    firstnameInputRef.current.focus();
+  }, []);
 
   const handleSubmitName = (firstname, lastname) => {
     if (firstname !== '' && lastname !== '') {
@@ -48,9 +53,9 @@ export const NameInputForm = props => {
           style={styles.inputField}
           placeholder="First Name"
           clearButtonMode="always"
-          ref={fistnameInputRef}
+          ref={firstnameInputRef}
           onFocus={() =>
-            fistnameInputRef.current.setNativeProps({
+            firstnameInputRef.current.setNativeProps({
               style: {
                 borderWidth: 2,
                 borderColor: 'black',
@@ -58,7 +63,7 @@ export const NameInputForm = props => {
             })
           }
           onBlur={() => {
-            fistnameInputRef.current.setNativeProps({
+            firstnameInputRef.current.setNativeProps({
               style: {
                 borderWidth: 0,
               },

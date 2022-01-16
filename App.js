@@ -47,6 +47,7 @@ import {ResetPasswordDone} from './components/UserAdmission/ForgotPassword/Reset
 import {Cart} from './components/HomePage/Cart';
 import {Begin} from './screens/Begin';
 import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
+import {EmailInputForm} from './components/UserAdmission/Signup/EmailInputForm';
 import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
@@ -169,6 +170,11 @@ export default function App(props) {
             <Stack.Screen
               name="EmailVerification"
               component={SignupScreen2}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="EmailInputForm"
+              component={EmailInputForm}
               options={{headerShown: false}}
             />
             <Stack.Screen

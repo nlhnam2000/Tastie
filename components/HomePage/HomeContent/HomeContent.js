@@ -135,11 +135,13 @@ export const HomeContent = props => {
                     />
                     <View style={styles.popularDetail}>
                       <View style={styles.popularInfo}>
-                        <Text style={{fontWeight: 'bold'}}>{item.title}</Text>
+                        <Text style={{fontWeight: 'bold', color: 'black'}}>
+                          {item.title}
+                        </Text>
                         <Text>{item.deliveryTime}</Text>
                       </View>
                       <View style={styles.popularRating}>
-                        <Text>{item.rating}</Text>
+                        <Text style={{color: 'black'}}>{item.rating}</Text>
                       </View>
                     </View>
                   </View>
@@ -196,7 +198,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   labelTabButton: {
-    // color: 'white',
+    color: 'black',
     fontWeight: 'bold',
     fontSize: 18,
   },

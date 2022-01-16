@@ -64,7 +64,7 @@ export const Account = props => {
         <ScrollView>
           <View style={{width, paddingHorizontal: 20, marginTop: 15}}>
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="bookmark" size={26} />
+              <MaterialCommunity name="bookmark" size={26} color={'black'} />
               <Text
                 style={{
                   fontWeight: '500',
@@ -77,7 +77,7 @@ export const Account = props => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="heart" size={26} />
+              <MaterialCommunity color={'black'} name="heart" size={26} />
               <Text
                 style={{
                   fontWeight: '500',
@@ -89,7 +89,11 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="home-account" size={26} />
+              <MaterialCommunity
+                color={'black'}
+                name="home-account"
+                size={26}
+              />
               <Text
                 style={{
                   fontWeight: '500',
@@ -102,7 +106,11 @@ export const Account = props => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity name="ticket-percent" size={26} />
+              <MaterialCommunity
+                color={'black'}
+                name="ticket-percent"
+                size={26}
+              />
               <Text
                 style={{
                   fontWeight: '500',
