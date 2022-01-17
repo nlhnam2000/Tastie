@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
     width: Dimensions.get('screen').width,
     paddingHorizontal: 30,
     paddingVertical: 20,
+    backgroundColor: 'white',
   },
   iconWrapper: {
     flexDirection: 'column',

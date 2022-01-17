@@ -15,6 +15,8 @@ import {
   Image,
   ImageBackground,
   Animated,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
 import {onScroll} from 'react-native-redash';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
@@ -25,8 +27,13 @@ const NAVBAR_VERTICAL_PADDING = 10;
 export const HEADER_IMAGE_HEIGHT = 150;
 
 export const DetailProvider = props => {
+  const [loading, setLoading] = useState(true);
   const {data} = props.route.params;
   const scrollY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    setLoading(false);
+  }, []);
 
   let modes = ['Delivery', 'Pickup'];
   const [selectedMode, setSelectedMode] = useState(modes[0]);
@@ -36,10 +43,6 @@ export const DetailProvider = props => {
     tabs.push(item.categoryTitle);
   });
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
-
-  // useEffect(() => {
-  //   console.log(tabs);
-  // }, []);
 
   const height = scrollY.interpolate({
     inputRange: [-100, 0, 100],
@@ -65,7 +68,7 @@ export const DetailProvider = props => {
 
   const navbarHeight = scrollY.interpolate({
     inputRange: [0, 500],
-    outputRange: [0, 60 + NAVBAR_VERTICAL_PADDING],
+    outputRange: [0, 70 + NAVBAR_VERTICAL_PADDING],
     extrapolate: 'clamp',
   });
 
@@ -116,247 +119,255 @@ export const DetailProvider = props => {
       </TouchableOpacity>
     );
   };
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <Animated.View
-        style={[
-          {
-            justifyContent: 'center',
-            alignItems: 'center',
-            width: FULL_WIDTH,
-          },
-          {opacity: navbarOpacity, height: navbarHeight},
-        ]}>
-        <Animated.View style={[styles.navbar, {opacity: navbarOpacity}]}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
-            <Feather name="arrow-left" size={22} color={'#000'} />
-          </TouchableOpacity>
-          <Text style={{fontWeight: 'bold', fontSize: 20}}>{data.title}</Text>
-          <TouchableOpacity>
-            <Feather name="info" size={22} color={'#000'} />
-          </TouchableOpacity>
-        </Animated.View>
+  ``;
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <ActivityIndicator size={'large'} />
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container}>
         <Animated.View
-          style={{
-            width: '100%',
-            paddingHorizontal: 20,
-            paddingVertical: 15,
-          }}>
-          <FlatList
-            data={data.categories}
-            keyExtractor={item => item.categoryId}
-            horizontal={true}
-            renderItem={renderCategoryTitle}
-            showsHorizontalScrollIndicator={false}
-          />
-        </Animated.View>
-      </Animated.View>
-
-      <Animated.ScrollView
-        ref={ref}
-        onScroll={Animated.event(
-          [{nativeEvent: {contentOffset: {y: scrollY}}}],
-          {useNativeDriver: false},
-        )}
-        scrollEventThrottle={16}
-        //pagingEnabled={true}
-        style={styles.wrapper}>
-        <Animated.Image
-          source={data.image}
-          resizeMode="cover"
-          style={[styles.providerCover, {opacity}]}
-        />
-        <Animated.View style={[styles.navbarButtonWrapper, {opacity}]}>
-          <TouchableOpacity
-            onPress={() => props.navigation.goBack()}
-            style={{
-              borderRadius: 40,
-              padding: 5,
-              backgroundColor: 'white',
-            }}>
-            <Feather name="arrow-left" size={22} color={'#000'} />
-          </TouchableOpacity>
-
-          <View style={{flexDirection: 'row'}}>
-            <TouchableOpacity
-              style={{
-                borderRadius: 40,
-                padding: 5,
-                backgroundColor: 'white',
-              }}>
-              <Feather name="heart" size={22} color={'#000'} />
+          style={[
+            {
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: FULL_WIDTH,
+            },
+            {opacity: navbarOpacity, height: navbarHeight},
+          ]}>
+          <Animated.View style={[styles.navbar, {opacity: navbarOpacity}]}>
+            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+              <Feather name="arrow-left" size={22} color={'#000'} />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={{
-                borderRadius: 40,
-                padding: 5,
-                backgroundColor: 'white',
-                marginLeft: 10,
-              }}>
+            <Text style={{fontWeight: 'bold', fontSize: 20}}>{data.title}</Text>
+            <TouchableOpacity>
               <Feather name="info" size={22} color={'#000'} />
             </TouchableOpacity>
-          </View>
-        </Animated.View>
-        <View style={styles.content}>
-          <View
+          </Animated.View>
+          <Animated.View
             style={{
-              height: 5,
-              width: '20%',
-              backgroundColor: '#e6e6e6',
-              borderRadius: 20,
-            }}></View>
-        </View>
-        <View style={styles.mainContent}>
-          <Text style={{fontSize: 22, fontWeight: 'bold'}}>{data.title}</Text>
-          <View style={styles.infoWrapper}>
-            <View style={styles.info}>
-              <Text style={{fontWeight: '600'}}>
-                {' '}
-                <Feather name="star" size={17} color={'#000'} /> {data.rating} (
-                {data.numberRating} ratings) • {data.mainCategory}
-              </Text>
-              <Text style={{color: 'gray'}}>Open until {data.openHour}</Text>
-              <Text style={{color: 'gray'}}>
-                Tap for hours, address and more
-              </Text>
-            </View>
-            <TouchableOpacity>
-              <Feather name="chevron-right" size={24} color={'#000'} />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              backgroundColor: '#e6e6e6',
-              borderRadius: 30,
-              padding: 5,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              width: '88%',
-              marginTop: 20,
+              width: '100%',
+              paddingHorizontal: 20,
+              paddingVertical: 15,
             }}>
-            {modes.map((mode, index) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => setSelectedMode(mode)}
-                  key={index}
-                  style={
-                    mode === selectedMode
-                      ? {
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: 'white',
-                          padding: 10,
-                          paddingHorizontal: 15,
-                          borderRadius: 30,
-                        }
-                      : {
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          backgroundColor: 'transparent',
-                          padding: 10,
-                          paddingHorizontal: 15,
-                          borderRadius: 30,
-                        }
-                  }>
-                  <Text style={{fontWeight: 'bold'}}>{mode}</Text>
-                  <Text style={{color: 'gray'}}>20-30 mins • $0.49</Text>
-                </TouchableOpacity>
-              );
-            })}
+            <FlatList
+              data={data.categories}
+              keyExtractor={item => item.categoryId}
+              horizontal={true}
+              renderItem={renderCategoryTitle}
+              showsHorizontalScrollIndicator={false}
+            />
+          </Animated.View>
+        </Animated.View>
+
+        <Animated.ScrollView
+          ref={ref}
+          onScroll={Animated.event(
+            [{nativeEvent: {contentOffset: {y: scrollY}}}],
+            {useNativeDriver: false},
+          )}
+          scrollEventThrottle={16}
+          //pagingEnabled={true}
+          style={styles.wrapper}>
+          <Animated.Image
+            source={data.image}
+            resizeMode="cover"
+            style={[styles.providerCover, {opacity}]}
+          />
+          <Animated.View style={[styles.navbarButtonWrapper, {opacity}]}>
+            <TouchableOpacity
+              onPress={() => props.navigation.goBack()}
+              style={{
+                borderRadius: 40,
+                padding: 5,
+                backgroundColor: 'white',
+              }}>
+              <Feather name="arrow-left" size={22} color={'#000'} />
+            </TouchableOpacity>
+
+            <View style={{flexDirection: 'row'}}>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 40,
+                  padding: 5,
+                  backgroundColor: 'white',
+                }}>
+                <Feather name="heart" size={22} color={'#000'} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{
+                  borderRadius: 40,
+                  padding: 5,
+                  backgroundColor: 'white',
+                  marginLeft: 10,
+                }}>
+                <Feather name="info" size={22} color={'#000'} />
+              </TouchableOpacity>
+            </View>
+          </Animated.View>
+          <View style={styles.content}>
+            <View
+              style={{
+                height: 5,
+                width: '20%',
+                backgroundColor: '#e6e6e6',
+                borderRadius: 20,
+              }}></View>
           </View>
-          <View style={styles.promotionWrapper}>
-            <View style={styles.promotion}>
+          <View style={styles.mainContent}>
+            <Text style={{fontSize: 22, fontWeight: 'bold'}}>{data.title}</Text>
+            <View style={styles.infoWrapper}>
+              <View style={styles.info}>
+                <Text style={{fontWeight: '600'}}>
+                  {' '}
+                  <Feather name="star" size={17} color={'#000'} /> {data.rating}{' '}
+                  ({data.numberRating} ratings) • {data.mainCategory}
+                </Text>
+                <Text style={{color: 'gray'}}>Open until {data.openHour}</Text>
+                <Text style={{color: 'gray'}}>
+                  Tap for hours, address and more
+                </Text>
+              </View>
+              <TouchableOpacity>
+                <Feather name="chevron-right" size={24} color={'#000'} />
+              </TouchableOpacity>
+            </View>
+            <View
+              style={{
+                backgroundColor: '#e6e6e6',
+                borderRadius: 30,
+                padding: 5,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '88%',
+                marginTop: 20,
+              }}>
+              {modes.map((mode, index) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => setSelectedMode(mode)}
+                    key={index}
+                    style={
+                      mode === selectedMode
+                        ? {
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'white',
+                            padding: 10,
+                            paddingHorizontal: 15,
+                            borderRadius: 30,
+                          }
+                        : {
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            backgroundColor: 'transparent',
+                            padding: 10,
+                            paddingHorizontal: 15,
+                            borderRadius: 30,
+                          }
+                    }>
+                    <Text style={{fontWeight: 'bold'}}>{mode}</Text>
+                    <Text style={{color: 'gray'}}>20-30 mins • $0.49</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <View style={styles.promotionWrapper}>
+              <View style={styles.promotion}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                  }}>
+                  <View
+                    style={{
+                      backgroundColor: 'green',
+                      borderRadius: 40,
+                      marginRight: 10,
+                      padding: 2,
+                    }}>
+                    <Feather name="star" size={20} color={'#fff'} />
+                  </View>
+
+                  <Text style={{fontWeight: 'bold', fontSize: 18}}>
+                    $25 until $100
+                  </Text>
+                </View>
+                <Feather name="chevron-right" size={20} color={'#000'} />
+              </View>
+            </View>
+            <View style={styles.contentWrapper}>
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
                   alignItems: 'center',
+                  padding: 20,
                 }}>
-                <View
-                  style={{
-                    backgroundColor: 'green',
-                    borderRadius: 40,
-                    marginRight: 10,
-                    padding: 2,
-                  }}>
-                  <Feather name="star" size={20} color={'#fff'} />
-                </View>
-
-                <Text style={{fontWeight: 'bold', fontSize: 18}}>
-                  $25 until $100
-                </Text>
+                <Text style={{fontSize: 19}}>Menus</Text>
+                <Feather name="search" size={20} color={'#000'} />
               </View>
-              <Feather name="chevron-right" size={20} color={'#000'} />
-            </View>
-          </View>
-          <View style={styles.contentWrapper}>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 20,
-              }}>
-              <Text style={{fontSize: 19}}>Menus</Text>
-              <Feather name="search" size={20} color={'#000'} />
-            </View>
-            {data.categories.map((category, index) => {
-              return (
-                <View
-                  onLayout={event => {
-                    const layout = event.nativeEvent.layout;
-                    tabPosition[index] = layout.y;
-                    setTabPosition(tabPosition);
-                    // console.log(tabPosition);
-                    // console.log('height:', layout.height);
-                    // console.log('width:', layout.width);
-                    // console.log('x:', layout.x);
-                    // console.log('y:', layout.y);
-                  }}
-                  style={styles.menuContentWrapper}
-                  key={category.categoryId}>
-                  <Text
-                    style={{
-                      textAlign: 'left',
-                      fontWeight: 'bold',
-                      fontSize: 25,
-                    }}>
-                    {category.categoryTitle}
-                  </Text>
-                  <View style={styles.menuContent}>
-                    {category.items.map((item, id) => {
-                      return (
-                        <TouchableOpacity
-                          onPress={() =>
-                            props.navigation.navigate('DetailOrder', {item})
-                          }
-                          style={styles.foodWrapper}
-                          key={item.itemId}>
-                          <View style={styles.foodInfo}>
-                            <Text style={{fontWeight: '600', fontSize: 18}}>
-                              {item.itemTitle}
-                            </Text>
-                            <Text>{item.price}</Text>
-                            <Text style={{color: 'gray'}}>{item.note}</Text>
-                          </View>
-                          <ImageBackground
-                            style={styles.foodImage}
-                            source={item.image}
-                          />
-                        </TouchableOpacity>
-                      );
-                    })}
+              {data.categories.map((category, index) => {
+                return (
+                  <View
+                    onLayout={event => {
+                      const layout = event.nativeEvent.layout;
+                      tabPosition[index] = layout.y;
+                      setTabPosition(tabPosition);
+                      // console.log(tabPosition);
+                      // console.log('height:', layout.height);
+                      // console.log('width:', layout.width);
+                      // console.log('x:', layout.x);
+                      // console.log('y:', layout.y);
+                    }}
+                    style={styles.menuContentWrapper}
+                    key={category.categoryId}>
+                    <Text
+                      style={{
+                        textAlign: 'left',
+                        fontWeight: 'bold',
+                        fontSize: 25,
+                      }}>
+                      {category.categoryTitle}
+                    </Text>
+                    <View style={styles.menuContent}>
+                      {category.items.map((item, id) => {
+                        return (
+                          <TouchableOpacity
+                            onPress={() =>
+                              props.navigation.navigate('DetailOrder', {item})
+                            }
+                            style={styles.foodWrapper}
+                            key={item.itemId}>
+                            <View style={styles.foodInfo}>
+                              <Text style={{fontWeight: '600', fontSize: 18}}>
+                                {item.itemTitle}
+                              </Text>
+                              <Text>{item.price}</Text>
+                              <Text style={{color: 'gray'}}>{item.note}</Text>
+                            </View>
+                            <ImageBackground
+                              style={styles.foodImage}
+                              source={item.image}
+                            />
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </View>
                   </View>
-                </View>
-              );
-            })}
+                );
+              })}
+            </View>
           </View>
-        </View>
-      </Animated.ScrollView>
-    </SafeAreaView>
-  );
+        </Animated.ScrollView>
+      </SafeAreaView>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -383,7 +394,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     paddingHorizontal: 20,
-    marginTop: 10,
+    marginTop: Platform.OS === 'ios' ? 10 : 20,
   },
   categoryTitle: {
     marginRight: 20,

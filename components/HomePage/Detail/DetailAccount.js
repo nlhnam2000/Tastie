@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -9,154 +9,182 @@ import {
   Dimensions,
   TextInput,
   Modal,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector, useDispatch} from 'react-redux';
 import {signout} from '../../../store/action/auth';
 import colors from '../../../colors/colors';
+import {SimpleAlertDialog, DuoAlertDialog} from '../../Error/AlertDialog';
 
 const {width, height} = Dimensions.get('window');
 
 export const DetailAccount = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
+  const [loading, setLoading] = useState(true);
+  const [edit, setEdit] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [phone, setPhone] = useState(state.phone ? state.phone : '');
+  const [email, setEmail] = useState(state.email ? state.email : '');
+  const [openUpdate, setOpenUpdate] = useState(false);
+
   const fullname = state.first_name + ' ' + state.last_name;
 
-  const [openModal, setOpenModal] = useState(false);
+  let phoneInputRef = useRef();
+  let nameInputRef = useRef();
+  let emailInputRef = useRef();
 
-  return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.content}>
-        <View style={styles.headerWrapper}>
-          <TouchableOpacity onPress={() => props.navigation.goBack()}>
-            <Feather name="arrow-left" size={20} color={'black'} />
-          </TouchableOpacity>
-          <Text
-            style={{
-              fontWeight: 'bold',
-              fontSize: 18,
-              textAlign: 'center',
-              // backgroundColor: 'red',
-              marginLeft: 30,
-            }}>
-            Profile
-          </Text>
-          <TouchableOpacity>
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView
+          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+          <ActivityIndicator size={'large'} color={colors.red} />
+        </SafeAreaView>
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <SafeAreaView style={styles.content}>
+          <View style={styles.headerWrapper}>
+            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+              <Feather name="arrow-left" size={20} color={'black'} />
+            </TouchableOpacity>
             <Text
-              style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>
-              Update
+              style={{
+                fontWeight: 'bold',
+                fontSize: 18,
+                textAlign: 'center',
+                marginLeft: 30,
+              }}>
+              Profile
             </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.accountContent}>
-          <View style={styles.inputWrapper}>
-            <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-              Mobile Number
-            </Text>
+            <TouchableOpacity disabled={!edit}>
+              <Text
+                style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>
+                Update
+              </Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.accountContent}>
+            <View style={styles.inputWrapper}>
+              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
+                Mobile Number
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <TextInput
+                  editable={edit}
+                  style={styles.inputField}
+                  value={phone}
+                  onChangeText={phone => setPhone(phone)}
+                  ref={phoneInputRef}
+                />
+                <Button
+                  title="EDIT"
+                  color={colors.yellow}
+                  onPress={() => {
+                    setEdit(true);
+                    setTimeout(() => {
+                      phoneInputRef.current.focus();
+                    }, 200);
+                  }}
+                />
+              </View>
+            </View>
+            <View style={{backgroundColor: '#f2f2f2', height: 5, width}}></View>
+            <View style={styles.inputWrapper}>
+              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
+                Name
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <TextInput
+                  editable={false}
+                  style={styles.inputField}
+                  value={fullname}
+                />
+              </View>
+            </View>
+            <View style={styles.inputWrapper}>
+              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
+                Email
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  width: '100%',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <TextInput
+                  editable={edit}
+                  style={styles.inputField}
+                  value={email}
+                  onChangeText={email => setEmail(email)}
+                  ref={emailInputRef}
+                  onFocus={() =>
+                    emailInputRef.current.setNativeProps({
+                      style: {
+                        borderBottomWidth: 2,
+                        borderBottomColor: 'rgba(230,230,230, 1.0)',
+                      },
+                    })
+                  }
+                />
+              </View>
+            </View>
             <View
               style={{
-                flexDirection: 'row',
-                width: '100%',
+                marginTop: 60,
+                justifyContent: 'center',
                 alignItems: 'center',
-                justifyContent: 'space-between',
               }}>
-              <TextInput
-                editable={false}
-                style={styles.inputField}
-                value={state.phone}
-              />
-              <Button title="EDIT" color={colors.yellow} />
+              {Platform.OS === 'ios' ? (
+                <Button
+                  color={colors.yellow}
+                  title="Logout"
+                  onPress={() => setOpenModal(true)}
+                />
+              ) : (
+                <View style={{width: '30%'}}>
+                  <Button
+                    color={colors.yellow}
+                    title="Logout"
+                    onPress={() => setOpenModal(true)}
+                  />
+                </View>
+              )}
             </View>
           </View>
-          <View style={{backgroundColor: '#f2f2f2', height: 5, width}}></View>
-          <View style={styles.inputWrapper}>
-            <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-              Name
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <TextInput
-                editable={false}
-                style={styles.inputField}
-                value={fullname}
-              />
-            </View>
-          </View>
-          <View style={styles.inputWrapper}>
-            <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-              Email
-            </Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}>
-              <TextInput
-                editable={false}
-                style={styles.inputField}
-                value={state.email}
-              />
-            </View>
-          </View>
-          <View style={{marginTop: 60}}>
-            <Button
-              color={colors.yellow}
-              title="Logout"
-              onPress={() => setOpenModal(true)}
-            />
-          </View>
-        </View>
-      </SafeAreaView>
-      {/* <Text>Hello</Text> */}
-      <Modal animationType="slide" transparent={true} visible={openModal}>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalView}>
-            <Text>Are you sure to logout ?</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                marginTop: 20,
-              }}>
-              <TouchableOpacity
-                style={styles.cancelModal}
-                onPress={() => setOpenModal(false)}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: 'white',
-                    fontWeight: 'bold',
-                  }}>
-                  No
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.confirmModal}
-                onPress={() => dispatch(signout())}>
-                <Text
-                  style={{
-                    textAlign: 'center',
-                    color: 'black',
-                    fontWeight: 'bold',
-                  }}>
-                  Yes
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </Modal>
-    </View>
-  );
+        </SafeAreaView>
+        {/* Alert Dialog */}
+        <DuoAlertDialog
+          message="Are you sure to logout ?"
+          visible={openModal}
+          onCancel={() => setOpenModal(false)}
+          onConfirm={() => dispatch(signout())}
+        />
+      </View>
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -170,7 +198,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    // backgroundColor: '#f2f2f2',
     width: '100%',
   },
   headerWrapper: {
@@ -180,6 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     backgroundColor: 'white',
+    marginTop: Platform.OS === 'android' ? 10 : 0,
   },
   accountContent: {
     width,
@@ -195,9 +223,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 5,
     fontSize: 17,
-    // borderBottomColor: 'rgba(230,230,230,0.7)',
-    // borderBottomWidth: 1,
     paddingVertical: 10,
+    color: 'black',
   },
   modalContainer: {
     flex: 1,

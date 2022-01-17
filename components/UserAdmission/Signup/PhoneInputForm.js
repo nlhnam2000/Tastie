@@ -22,18 +22,17 @@ export const PhoneInputForm = props => {
   const dispatch = useDispatch();
   const phoneInputRef = useRef();
 
-  const [phone, setPhone] = useState(null);
-  const [email, setEmail] = useState(null);
+  const [phone, setPhone] = useState('');
 
   useEffect(() => {
     phoneInputRef.current.focus();
   }, []);
 
-  const handleSubmit = async (phone, email) => {
+  const handleSubmit = async phone => {
     let body = {
       phone: phone,
     };
-    if (phone !== null && email !== null) {
+    if (phone !== '') {
       // dispatch(CheckExistingEmail(phone, email));
       try {
         let res = await axios.post(
@@ -42,7 +41,11 @@ export const PhoneInputForm = props => {
         );
         if (res.data.isPhoneDuplicated === true) {
           props.navigation.navigate('Login', {
-            data: {...body, first_name: res.data.first_name},
+            data: {
+              ...body,
+              first_name: res.data.first_name,
+              email: res.data.email_of_param_phone,
+            },
           });
         } else if (res.data.isPhoneDuplicated === false) {
           props.navigation.navigate('EmailInputForm', {data: body});
@@ -59,7 +62,7 @@ export const PhoneInputForm = props => {
       <StatusBar barStyle="default" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Enter your email and phone number
+          Enter your phone number
         </Text>
         <TextInput
           style={styles.inputField}
@@ -96,7 +99,7 @@ export const PhoneInputForm = props => {
           <Feather name="arrow-left" size={20} color={'black'} />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => handleSubmit(phone)}
+          onPress={async () => await handleSubmit(phone)}
           style={{
             borderRadius: 25,
             padding: 10,

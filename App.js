@@ -91,15 +91,7 @@ export default function App(props) {
         dispatch(TokenNotFound());
       }
     }, 1000);
-    // alert(`Hello ${USERNAME}`);
   }, []);
-
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     // await AsyncStorage.removeItem('token');
-  //     dispatch(signout());
-  //   }, 1000);
-  // }, []);
 
   if (state.isLoading) {
     return (

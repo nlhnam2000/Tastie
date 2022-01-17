@@ -15,6 +15,7 @@ import {
   EMAIL_PHONE_NOT_EXISTED,
   SIGN_IN_ERROR,
   CLEAR_ALERT_MESSAGE,
+  EMAIL_VERIFICATION_FAILED,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS} from '../../global';
@@ -270,6 +271,14 @@ export const EmailVerification = (emailToken, otp, email) => async dispatch => {
         type: EMAIL_VERIFICATION_DONE,
         payload: {
           signup_form: 3,
+        },
+      });
+    } else {
+      dispatch({
+        type: EMAIL_VERIFICATION_FAILED,
+        payload: {
+          isLoading: false,
+          alertMessage: 'OTP code is incorrect',
         },
       });
     }

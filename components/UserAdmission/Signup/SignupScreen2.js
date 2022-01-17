@@ -14,8 +14,13 @@ import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
-import {SendOTP, EmailVerification} from '../../../store/action/auth';
+import {
+  SendOTP,
+  EmailVerification,
+  clearAlertMessage,
+} from '../../../store/action/auth';
 import {IP_ADDRESS} from '../../../global';
+import {SimpleAlertDialog} from '../../Error/AlertDialog';
 
 const {width, height} = Dimensions.get('window');
 
@@ -24,6 +29,8 @@ export const SignupScreen2 = ({navigation, route}) => {
   const dispatch = useDispatch();
 
   let [verifyToken, setVerifyToken] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openModal, setOpenModal] = useState(false);
 
   const {data} = route.params; // phone, email
 
@@ -80,9 +87,13 @@ export const SignupScreen2 = ({navigation, route}) => {
       // success
       if (res.data.status === true) {
         navigation.navigate('NameInputForm', {data: data});
+      } else {
+        setErrorMessage('OTP Code is incorrect');
+        setOpenModal(true);
       }
     } catch (error) {
-      alert('OTP Code is incorrect');
+      setErrorMessage('OTP Code is incorrect');
+      setOpenModal(true);
     }
   };
 
@@ -96,18 +107,6 @@ export const SignupScreen2 = ({navigation, route}) => {
       values.input6;
 
     await EmailVerification(verifyToken, otp, data.email);
-
-    // dispatch(
-    //   EmailVerification(
-    //     registerState.verified_email_token,
-    //     otp,
-    //     registerState.email,
-    //   ),
-    // );
-    // console.log('Email token', registerState.verified_email_token);
-    // console.log('Code', otp);
-    // console.log('Email', registerState.email);
-    // alert(otp);
   };
 
   return (
@@ -305,6 +304,12 @@ export const SignupScreen2 = ({navigation, route}) => {
           );
         }}
       </Formik>
+      {/* Alert dialog here */}
+      <SimpleAlertDialog
+        message={errorMessage}
+        visible={openModal}
+        onCancel={() => setOpenModal(false)}
+      />
     </SafeAreaView>
   );
 };

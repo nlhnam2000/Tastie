@@ -58,7 +58,7 @@ export const EmailInputForm = props => {
       <StatusBar barStyle="default" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Welcome, please enter your email for registration {data.phone}
+          Welcome, please enter your email for registration
         </Text>
         <TextInput
           style={styles.inputField}

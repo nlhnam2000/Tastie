@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -15,6 +15,8 @@ import {
   Image,
   ImageBackground,
   Animated,
+  Platform,
+  ActivityIndicator,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
@@ -26,8 +28,8 @@ import {signout} from '../../../store/action/auth';
 
 export const HomeContent = props => {
   const headerTab = ['Delivery', 'Pickup'];
-
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
 
@@ -48,111 +50,124 @@ export const HomeContent = props => {
     console.log(event.nativeEvent.contentOffset);
   };
 
-  return (
-    <View style={styles.container}>
+  useEffect(() => {
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
       <View style={styles.content}>
-        <View style={styles.headerWrapper}>
-          <View style={styles.tabWrapper}>
-            {headerTab.map((tab, index) => {
-              return (
-                <TouchableOpacity
-                  onPress={() => setSelectedTab(tab)}
-                  // onPress={() => dispatch(signout())}
-                  style={
-                    tab === selectedTab
-                      ? styles.tabButtonClicked
-                      : styles.tabButton
-                  }
-                  key={index}>
-                  <Text
+        <ActivityIndicator size={'large'} />
+      </View>
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <View style={styles.headerWrapper}>
+            <View style={styles.tabWrapper}>
+              {headerTab.map((tab, index) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => setSelectedTab(tab)}
+                    // onPress={() => dispatch(signout())}
                     style={
                       tab === selectedTab
-                        ? styles.labelTabButtonClicked
-                        : styles.labelTabButton
-                    }>
-                    {tab}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </View>
-
-        <ScrollView>
-          <View
-            style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-            <View style={styles.searchWrapper}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Feather name="map-pin" size={22} />
-                <TextInput
-                  placeholder="Search"
-                  style={{marginLeft: 5}}
-                  maxLength={25}
-                />
-              </View>
-              <TouchableOpacity style={styles.searchButton}>
-                <Feather name="clock" size={20} style={{marginRight: 5}} />
-                <Text>Search</Text>
-              </TouchableOpacity>
+                        ? styles.tabButtonClicked
+                        : styles.tabButton
+                    }
+                    key={index}>
+                    <Text
+                      style={
+                        tab === selectedTab
+                          ? styles.labelTabButtonClicked
+                          : styles.labelTabButton
+                      }>
+                      {tab}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
 
-          <View style={styles.categoryWrapper}>
-            <FlatList
-              data={categoryData}
-              renderItem={renderCategoryList}
-              keyExtractor={item => item.id}
-              horizontal={true}
-              showsHorizontalScrollIndicator={false}
-            />
-          </View>
-          <View
-            style={styles.contentWrapper}
-            // onScroll={handleScroll}
-            // scrollEventThrottle={16}
-          >
-            {popularData.map((item, index) => {
-              return (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() =>
-                    props.navigation.navigate('DetailProvider', {data: item})
-                  }>
-                  <View style={styles.popularDataWrapper}>
-                    <ImageBackground
-                      style={styles.popularImage}
-                      resizeMode="cover"
-                      source={item.image}
-                    />
-                    <View style={styles.popularDetail}>
-                      <View style={styles.popularInfo}>
-                        <Text style={{fontWeight: 'bold', color: 'black'}}>
-                          {item.title}
-                        </Text>
-                        <Text>{item.deliveryTime}</Text>
-                      </View>
-                      <View style={styles.popularRating}>
-                        <Text style={{color: 'black'}}>{item.rating}</Text>
+          <ScrollView>
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                flexDirection: 'row',
+              }}>
+              <View style={styles.searchWrapper}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}>
+                  <Feather name="search" size={20} color={'black'} />
+                  <TextInput
+                    placeholder="Search"
+                    style={{marginLeft: 10}}
+                    maxLength={25}
+                    clearButtonMode="always"
+                  />
+                </View>
+                {/* <TouchableOpacity style={styles.searchButton}>
+            <Feather name="clock" size={20} style={{marginRight: 5}} />
+            <Text>Search</Text>
+          </TouchableOpacity> */}
+              </View>
+            </View>
+
+            <View style={styles.categoryWrapper}>
+              <FlatList
+                data={categoryData}
+                renderItem={renderCategoryList}
+                keyExtractor={item => item.id}
+                horizontal={true}
+                showsHorizontalScrollIndicator={false}
+              />
+            </View>
+            <View
+              style={styles.contentWrapper}
+              // onScroll={handleScroll}
+              // scrollEventThrottle={16}
+            >
+              {popularData.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() =>
+                      props.navigation.navigate('DetailProvider', {data: item})
+                    }>
+                    <View style={styles.popularDataWrapper}>
+                      <ImageBackground
+                        style={styles.popularImage}
+                        resizeMode="cover"
+                        source={item.image}
+                      />
+                      <View style={styles.popularDetail}>
+                        <View style={styles.popularInfo}>
+                          <Text style={{fontWeight: 'bold', color: 'black'}}>
+                            {item.title}
+                          </Text>
+                          <Text>{item.deliveryTime}</Text>
+                        </View>
+                        <View style={styles.popularRating}>
+                          <Text style={{color: 'black'}}>{item.rating}</Text>
+                        </View>
                       </View>
                     </View>
-                  </View>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        </ScrollView>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          </ScrollView>
+        </View>
       </View>
-    </View>
-  );
+    );
+  }
 };
 
 const styles = StyleSheet.create({
@@ -170,7 +185,7 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     backgroundColor: '#fff',
-    marginTop: 40,
+    marginTop: Platform.OS === 'ios' ? 40 : 0,
     paddingHorizontal: 20,
     // justifyContent: 'center',
     // alignItems: 'center',
@@ -213,7 +228,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     backgroundColor: '#e6e6e6',
     width: '90%',
-    paddingVertical: 15,
+    paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     paddingHorizontal: 8,
     borderRadius: 25,
   },

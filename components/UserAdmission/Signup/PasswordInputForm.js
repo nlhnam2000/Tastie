@@ -9,6 +9,7 @@ import {
   Dimensions,
   StatusBar,
   Modal,
+  Platform,
 } from 'react-native';
 import {Formik} from 'formik';
 import axios from 'axios';
@@ -16,7 +17,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useDispatch} from 'react-redux';
 import {SkipUpdate} from '../../../store/action/auth';
-import {AlertDialog} from '../../Error/AlertDialog';
+import {SimpleAlertDialog} from '../../Error/AlertDialog';
 import {useEffect} from 'react';
 
 const {width, height} = Dimensions.get('window');
@@ -24,7 +25,6 @@ const {width, height} = Dimensions.get('window');
 export const PasswordInputForm = props => {
   let [showPassword1, setShowPassword1] = useState(false);
   let [showPassword2, setShowPassword2] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
 
   const password1InputRef = useRef();
   const password2InputRef = useRef();
@@ -34,6 +34,8 @@ export const PasswordInputForm = props => {
 
   let [password1, setPassword1] = useState('');
   let [password2, setPassword2] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     password1InputRef.current.focus();
@@ -58,8 +60,10 @@ export const PasswordInputForm = props => {
         password: password1,
       };
       dispatch(SkipUpdate(body));
-    } else {
-      alert('Please complete the form');
+    }
+    if (password1 !== password2) {
+      setErrorMessage('The password does not match');
+      setOpenModal(true);
     }
   };
 
@@ -78,7 +82,7 @@ export const PasswordInputForm = props => {
             justifyContent: 'center',
             backgroundColor: 'rgba(230,230,230,0.9)',
             marginTop: 20,
-            paddingVertical: 10,
+            paddingVertical: Platform.OS === 'ios' ? 10 : 0,
           }}>
           <TextInput
             style={styles.inputField}
@@ -126,7 +130,7 @@ export const PasswordInputForm = props => {
             justifyContent: 'center',
             backgroundColor: 'rgba(230,230,230,0.9)',
             marginTop: 20,
-            paddingVertical: 10,
+            paddingVertical: Platform.OS === 'ios' ? 10 : 0,
           }}>
           <TextInput
             style={styles.inputField}
@@ -204,6 +208,12 @@ export const PasswordInputForm = props => {
           <Feather name="arrow-right" size={20} color={'black'} />
         </TouchableOpacity>
       </View>
+      {/* Alert Dialog here */}
+      <SimpleAlertDialog
+        message={errorMessage}
+        visible={openModal}
+        onCancel={() => setOpenModal(false)}
+      />
     </SafeAreaView>
   );
 };

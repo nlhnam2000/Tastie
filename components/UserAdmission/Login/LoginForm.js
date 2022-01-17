@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   StatusBar,
   Modal,
+  Platform,
 } from 'react-native';
 import {Formik, Form, Field} from 'formik';
 import Feather from 'react-native-vector-icons/Feather';
@@ -20,7 +21,7 @@ import {CheckBox} from 'react-native-elements';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useSelector, useDispatch} from 'react-redux';
-import {AlertDialog} from '../../Error/AlertDialog';
+import {ActionAlertDialog, SimpleAlertDialog} from '../../Error/AlertDialog';
 
 import {signin, clearAlertMessage} from '../../../store/action/auth';
 
@@ -74,7 +75,7 @@ export const LoginForm = ({navigation, route}) => {
             justifyContent: 'center',
             backgroundColor: 'rgba(230,230,230,0.9)',
             marginTop: 20,
-            paddingVertical: 10,
+            paddingVertical: Platform.OS === 'ios' ? 10 : 0,
           }}>
           <TextInput
             ref={textInputRef}
@@ -182,42 +183,11 @@ export const LoginForm = ({navigation, route}) => {
           </View>
         )}
       </View>
-      {state.alertMessage !== null ? (
-        <Modal animationType="slide" transparent={true} visible={true}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <Text
-                style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>
-                {state.alertMessage}
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  marginTop: 20,
-                }}>
-                <TouchableOpacity
-                  style={styles.confirmModal}
-                  onPress={() => {
-                    // setOpenModal(false);
-                    dispatch(clearAlertMessage());
-                  }}>
-                  <Text
-                    style={{
-                      textAlign: 'center',
-                      color: 'black',
-                      fontWeight: 'bold',
-                    }}>
-                    OK
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      ) : null}
+      <ActionAlertDialog
+        message={state.alertMessage}
+        visible={state.alertMessage ? true : false}
+        onCancel={() => dispatch(clearAlertMessage())}
+      />
     </SafeAreaView>
   );
 };

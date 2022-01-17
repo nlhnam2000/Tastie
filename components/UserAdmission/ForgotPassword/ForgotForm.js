@@ -32,13 +32,7 @@ export const ForgotForm = ({navigation, route}) => {
 
   const passwordInputRef = useRef();
 
-  // const token = useSelector(state => state.UserReducer.token);
   const dispatch = useDispatch();
-
-  // const form = useSelector(state => state.UserReducer.signup_form);
-  // useEffect(() => {
-  //   console.log(form);
-  // }, []);
 
   const hideEmail = target => {
     var email = target; // hoangnam12c12@gmail.com
