@@ -50,29 +50,46 @@ export const SignupScreen2 = ({navigation, route}) => {
   const inputRef5 = useRef();
   const inputRef6 = useRef();
 
+  const [timer, setTimer] = useState(7);
+
   // send verification code to email
   useEffect(() => {
     // focus the first input field
     inputRef1.current.focus();
     // send email verification code
-    setTimeout(async () => {
-      try {
-        let res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`,
-          {
-            email: data.email,
-          },
-        );
-        if (res.data.status === true) {
-          // await AsyncStorage.removeItem('verified_email_token');
-          console.log('Email token ', res.data.result.verifyEmailToken);
-          setVerifyToken(res.data.result.verifyEmailToken);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    }, 500);
   }, []);
+
+  useEffect(() => {
+    const countdown = timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
+
+    return () => {
+      clearInterval(countdown);
+    };
+  }, [timer]);
+
+  useEffect(() => {
+    if (timer === 0) {
+      SendCodeToEmail(data.email);
+    }
+  }, [timer]);
+
+  const SendCodeToEmail = async email => {
+    try {
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`,
+        {
+          email: email,
+        },
+      );
+      if (res.data.status === true) {
+        // await AsyncStorage.removeItem('verified_email_token');
+        console.log('Email token ', res.data.result.verifyEmailToken);
+        setVerifyToken(res.data.result.verifyEmailToken);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const EmailVerification = async (emailToken, otp, email) => {
     try {
@@ -112,11 +129,21 @@ export const SignupScreen2 = ({navigation, route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.titleHeader}>Email Verification</Text>
-      <View style={{marginTop: 15, alignItems: 'flex-start'}}>
-        <Text>A verification code was sent to your gmail.</Text>
-        <Text>
-          Please enter the 6-digit code already sent to your email{' '}
-          <Text style={{fontWeight: 'bold'}}>{data.email}</Text>.
+      <View
+        style={{
+          marginTop: 15,
+          alignItems: 'flex-start',
+          justifyContent: 'flex-start',
+          width: '100%',
+          paddingHorizontal: 20,
+        }}>
+        <Text style={{fontSize: 17}}>
+          A verification code will be sent to{' '}
+          <Text style={{fontWeight: 'bold', fontSize: 17}}>{data.email}</Text>
+          {` in ${timer} seconds`}.
+        </Text>
+        <Text style={{marginTop: 10}}>
+          Please enter the 6-digit code below.
         </Text>
       </View>
       <Formik
@@ -325,7 +352,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 24,
     alignSelf: 'flex-start',
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   verifyCodeWrapper: {
     justifyContent: 'space-between',

@@ -57,7 +57,7 @@ export const HomeContent = props => {
   if (loading) {
     return (
       <View style={styles.content}>
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
   } else {

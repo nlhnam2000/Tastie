@@ -28,6 +28,7 @@ export const PasswordInputForm = props => {
 
   const password1InputRef = useRef();
   const password2InputRef = useRef();
+  const password1Ref = useRef();
   const dispatch = useDispatch();
 
   let {phone, email, firstname, lastname} = props.route.params.data; // phone, email, firstname, lastname
@@ -38,7 +39,7 @@ export const PasswordInputForm = props => {
   const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
-    password1InputRef.current.focus();
+    password1Ref.current.focus();
   }, []);
 
   const handleShowPassword1 = () => {
@@ -105,6 +106,7 @@ export const PasswordInputForm = props => {
               });
             }}
             onChangeText={text => setPassword1(text)}
+            ref={password1Ref}
           />
           {showPassword1 ? (
             <Feather

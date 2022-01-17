@@ -63,6 +63,7 @@ import {
   signout,
   TokenNotFound,
 } from './store/action/auth';
+import colors from './colors/colors';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -96,7 +97,7 @@ export default function App(props) {
   if (state.isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={colors.red} />
       </View>
     );
   } else {

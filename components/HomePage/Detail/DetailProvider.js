@@ -21,6 +21,7 @@ import {
 import {onScroll} from 'react-native-redash';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
+import colors from '../../../colors/colors';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -123,7 +124,7 @@ export const DetailProvider = props => {
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator size={'large'} color={colors.red} />
       </SafeAreaView>
     );
   } else {

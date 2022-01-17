@@ -15,6 +15,7 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 
 import {ShortcutImage} from '../../assets/dummy/ShortcutImage';
+import colors from '../../colors/colors';
 import {NavigationBar} from '../Menu/NavigationBar';
 
 const {width, height} = Dimensions.get('window');
@@ -29,7 +30,7 @@ export const Browse = props => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} />
+        <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
   } else {

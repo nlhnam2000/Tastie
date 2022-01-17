@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -15,26 +15,29 @@ import Feather from 'react-native-vector-icons/Feather';
 export const Cart = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
-  const initialValues = {
-    input1: '',
-    input2: '',
-    input3: '',
-    input4: '',
-    input5: '',
-    input6: '',
-  };
+  const [timer, setTimer] = useState(7);
 
-  const inputRef1 = useRef();
-  const inputRef2 = useRef();
-  const inputRef3 = useRef();
-  const inputRef4 = useRef();
-  const inputRef5 = useRef();
-  const inputRef6 = useRef();
+  useEffect(() => {
+    const countdown = timer > 0 && setInterval(() => setTimer(timer - 1), 1000);
+
+    return () => {
+      clearInterval(countdown);
+      // setTimeout(() => {
+      //   alert('Done');
+      // }, 6000);
+    };
+  }, [timer]);
+
+  useEffect(() => {
+    if (timer === 0) {
+      alert('Done');
+    }
+  }, [timer]);
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text>Cart</Text>
+        <Text>{timer}</Text>
       </View>
 
       <NavigationBar active={props.tabname} />
