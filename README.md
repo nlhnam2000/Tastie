@@ -11,7 +11,7 @@ Visit here: https://reactnative.dev/docs/environment-setup
 - Open directory Tastie/android/app in Android Studio, wait for the building progress finish (see the loading bar at the bottom right corner)
 - Tools -> AVD Manager -> create virtual device -> configure a device you want -> show advance setting -> set RAM to about 12GB -> Finish
 - You will see the list of avaible simulator, choose a device by clicking the Play button
-- Go to Tastie/global.js -> change the `IP_ADRESS` as your Wifi IP Adress
+- Go to Tastie/global.js -> change the `IP_ADDRESS` as your Wifi IP Address
 - Open Terminal, cd Tastie/, run `react-native run-android` command to run the android simulator
 ### **IOS:**
 - Open Terminal, cd Tastie/, run `react-native run-ios` command to run the ios simulator
