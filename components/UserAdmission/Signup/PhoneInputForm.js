@@ -59,7 +59,7 @@ export const PhoneInputForm = props => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Enter your phone number
@@ -68,7 +68,8 @@ export const PhoneInputForm = props => {
           style={styles.inputField}
           placeholder="Your phone number"
           clearButtonMode="always"
-          keyboardType="number-pad"
+          keyboardType="numeric"
+          returnKeyType="done"
           ref={phoneInputRef}
           onFocus={() =>
             phoneInputRef.current.setNativeProps({

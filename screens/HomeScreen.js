@@ -21,6 +21,7 @@ import {Home} from '../components/HomePage/Home';
 import {Account} from '../components/HomePage/Account';
 import {Cart} from '../components/HomePage/Cart';
 import {Browse} from '../components/HomePage/Browse';
+import {Notification} from '../components/HomePage/Notification';
 
 import {useSelector, useDispatch} from 'react-redux';
 
@@ -36,6 +37,8 @@ export const HomeScreen = props => {
     return <Cart tabname={currentTab} {...props} />;
   } else if (currentTab === 'Browse') {
     return <Browse tabname={currentTab} {...props} />;
+  } else if (currentTab === 'Notification') {
+    return <Notification tabname={currentTab} {...props} />;
   }
 
   // return (

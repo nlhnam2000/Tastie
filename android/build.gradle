@@ -7,6 +7,11 @@ buildscript {
         compileSdkVersion = 30
         targetSdkVersion = 30
         ndkVersion = "21.4.7075529"
+
+        // Any of the following will work
+        googlePlayServicesVersion      = "17.0.0"
+        // playServicesVersion         = "17.0.0"
+        // playServicesLocationVersion = "17.0.0"
     }
     repositories {
         google()

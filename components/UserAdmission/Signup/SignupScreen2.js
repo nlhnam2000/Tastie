@@ -171,6 +171,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                 <View style={styles.verifyCodeWrapper}>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={text => {
@@ -186,6 +187,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   <View style={{padding: 10}}></View>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={text => {
@@ -206,6 +208,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   <View style={{padding: 10}}></View>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={text => {
@@ -226,6 +229,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   <View style={{padding: 10}}></View>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={text => {
@@ -246,6 +250,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   <View style={{padding: 10}}></View>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={text => {
@@ -266,6 +271,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   <View style={{padding: 10}}></View>
                   <TextInput
                     keyboardType="numeric"
+                    returnKeyType="done"
                     style={styles.verifyCodeInput}
                     maxLength={1}
                     onChangeText={handleChange('input6')}

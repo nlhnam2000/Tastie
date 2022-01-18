@@ -95,7 +95,7 @@ export const ForgotForm = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           We have sent the reset password to{' '}

@@ -62,7 +62,7 @@ export const ChangePasswordForm = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Password reset successfully, now please change your password

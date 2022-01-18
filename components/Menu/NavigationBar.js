@@ -63,7 +63,9 @@ export const NavigationBar = props => {
           Browse
         </Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.iconWrapper}>
+      <TouchableOpacity
+        style={styles.iconWrapper}
+        onPress={() => dispatch(NavigateToNotification())}>
         {(props.active === 'Notification' && (
           <Feather name="mail" size={25} color={'red'} />
         )) || <Feather name="mail" size={25} color="black" />}

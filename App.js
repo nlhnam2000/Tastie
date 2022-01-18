@@ -52,6 +52,7 @@ import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
+import {Notification} from './components/HomePage/Notification';
 // import {USERNAME} from '@env';
 // redux
 

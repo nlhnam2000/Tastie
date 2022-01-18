@@ -70,7 +70,7 @@ export const PasswordInputForm = props => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Set up your password

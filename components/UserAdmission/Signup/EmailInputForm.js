@@ -55,7 +55,7 @@ export const EmailInputForm = props => {
   };
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Welcome, please enter your email for registration

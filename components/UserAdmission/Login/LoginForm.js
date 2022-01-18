@@ -61,7 +61,7 @@ export const LoginForm = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="default" />
+      <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
           Welcome <Text style={{fontWeight: 'bold'}}>{data.first_name}</Text>,
