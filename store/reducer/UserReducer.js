@@ -40,6 +40,7 @@ const initialState = {
   isLoading: true,
   user_token: null,
   verified_email_token: null,
+  triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
 };
@@ -117,6 +118,12 @@ export const UserReducer = (state = initialState, action) => {
         ...payload,
       };
     }
+    case UPDATE_PROFILE: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
     // Navigation only
     case HOME_TAB: {
       return {
@@ -171,19 +178,3 @@ export const UserReducer = (state = initialState, action) => {
     }
   }
 };
-
-// export const UserRegistration = (state = initialState, action) => {
-//   const {type, payload} = action;
-//   switch (type) {
-//     case EMAIL_VERIFICATION: {
-//       return {
-//         ...state,
-//         ...payload,
-//         signup_form: 3,
-//       };
-//     }
-//     default: {
-//       return state;
-//     }
-//   }
-// };

@@ -11,6 +11,7 @@ import {
   TextInput,
   Platform,
   ActivityIndicator,
+  StatusBar,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 
@@ -30,12 +31,14 @@ export const Browse = props => {
   if (loading) {
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="dark-content" />
         <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
   } else {
     return (
       <View style={styles.container}>
+        <StatusBar barStyle="dark-content" />
         <View style={styles.searchWrapper}>
           <View
             style={{

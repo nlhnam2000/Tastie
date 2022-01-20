@@ -57,6 +57,7 @@ export const HomeContent = props => {
   if (loading) {
     return (
       <View style={styles.content}>
+        <StatusBar barStyle="dark-content" />
         <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
@@ -64,6 +65,7 @@ export const HomeContent = props => {
     return (
       <View style={styles.container}>
         <View style={styles.content}>
+          <StatusBar barStyle="dark-content" />
           <View style={styles.headerWrapper}>
             <View style={styles.tabWrapper}>
               {headerTab.map((tab, index) => {

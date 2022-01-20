@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -14,6 +14,7 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  ActivityIndicator,
 } from 'react-native';
 import {NavigationBar} from '../Menu/NavigationBar';
 import {useDispatch, useSelector} from 'react-redux';
@@ -23,27 +24,40 @@ import {AccountMenu} from '../../assets/dummy/AccountMenu';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
+import {IP_ADDRESS, getAccessToken} from '../../global';
 
 const {width, height} = Dimensions.get('window');
 
 export const Account = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   setTimeout(async () => {
-  //     let user_token = await AsyncStorage.getItem('user_token');
-  //     if (user_token !== null) {
-  //       dispatch(retrieveToken(user_token));
-  //     } else {
-  //       dispatch(TokenNotFound());
-  //     }
-  //   }, 1000);
-  // }, []);
+  useEffect(() => {
+    setTimeout(async () => {
+      let refreshToken = await AsyncStorage.getItem('user_token');
+      let accessToken = await getAccessToken(refreshToken);
+      dispatch(retrieveToken(accessToken));
+      console.log(state);
+      setLoading(false);
+    }, 200);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <ActivityIndicator size={'large'} color={'red'} />
+        </View>
+        <NavigationBar active={props.tabname} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <SafeAreaView style={styles.content}>
+        <StatusBar barStyle="dark-content" />
         <TouchableOpacity
           style={styles.headerWrapper}
           onPress={() => props.navigation.navigate('DetailAccount')}>

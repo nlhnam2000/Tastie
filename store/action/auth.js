@@ -27,6 +27,7 @@ export const clearAlertMessage = () => dispatch => {
     type: CLEAR_ALERT_MESSAGE,
     payload: {
       isLoading: false,
+      triggerAlertMessage: false,
       alertMessage: null,
     },
   });
@@ -65,11 +66,12 @@ export const signin = (phone, password) => async dispatch => {
         password: password,
       },
     );
-    console.log('sign in');
+    // console.log('sign in');
     if (res.data.loginState === true) {
       let token = res.data.refreshToken;
       let data = res.data.profile;
       console.log(data);
+      console.log('refresh token', res.data.refreshToken);
       await AsyncStorage.setItem('user_token', token);
       dispatch({
         type: SIGN_IN,
@@ -94,6 +96,7 @@ export const signin = (phone, password) => async dispatch => {
       dispatch({
         type: SIGN_IN_ERROR,
         payload: {
+          triggerAlertMessage: true,
           alertMessage: res.data.err.message,
           isLoading: false,
         },
@@ -141,6 +144,7 @@ export const retrieveToken = token => async dispatch => {
       },
     );
     if (res.data.status === true) {
+      await AsyncStorage.setItem('user_token', res.data.profile.user_token);
       dispatch({
         type: RETRIEVE_TOKEN,
         payload: {
@@ -164,6 +168,7 @@ export const retrieveToken = token => async dispatch => {
     }
   } catch (error) {
     // console.log(error);
+    await AsyncStorage.removeItem('user_token');
     dispatch({
       type: TOKEN_NOT_FOUND,
       payload: {
@@ -278,6 +283,7 @@ export const EmailVerification = (emailToken, otp, email) => async dispatch => {
         type: EMAIL_VERIFICATION_FAILED,
         payload: {
           isLoading: false,
+          triggerAlertMessage: true,
           alertMessage: 'OTP code is incorrect',
         },
       });
@@ -325,6 +331,43 @@ export const SkipUpdate = body => async dispatch => {
           isLoading: false,
         },
       });
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const UpdateProfile = (user_id, phone, email) => async dispatch => {
+  try {
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/update`, {
+      account_id: user_id,
+      phone: phone,
+      email: email,
+    });
+    if (res.data.message === 'Update successfully') {
+      if (res.data.refreshToken !== null) {
+        await AsyncStorage.setItem('user_token', res.data.refreshToken); // set new refresh token when update email or phone
+        dispatch({
+          type: UPDATE_PROFILE,
+          payload: {
+            triggerAlertMessage: true,
+            alertMessage: res.data.message,
+            isLoading: false,
+            user_token: res.data.refreshToken,
+          },
+        });
+      } else {
+        dispatch({
+          type: UPDATE_PROFILE,
+          payload: {
+            triggerAlertMessage: true,
+            alertMessage: res.data.message,
+            isLoading: false,
+          },
+        });
+      }
+    } else {
+      alert(res.data.message);
     }
   } catch (error) {
     console.error(error);

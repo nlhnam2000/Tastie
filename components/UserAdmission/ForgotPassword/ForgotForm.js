@@ -37,7 +37,7 @@ export const ForgotForm = ({navigation, route}) => {
   const hideEmail = target => {
     var email = target; // hoangnam12c12@gmail.com
     var hiddenEmail = '';
-    for (i = 0; i < email.length; i++) {
+    for (let i = 0; i < email.length; i++) {
       if (i > 2 && i < email.indexOf('@')) {
         hiddenEmail += '*';
       } else {
@@ -151,7 +151,7 @@ export const ForgotForm = ({navigation, route}) => {
         </View>
         <TouchableOpacity
           style={styles.forgotPassword}
-          onPress={() => navigation.navigate('ChangePasswordForm', {data})}>
+          onPress={async () => await getResetPassword()}>
           <Text style={{fontWeight: 'bold'}}>I can't get code</Text>
         </TouchableOpacity>
 

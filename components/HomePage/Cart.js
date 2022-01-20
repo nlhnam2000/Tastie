@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   TextInput,
+  StatusBar,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {signout} from '../../store/action/auth';
@@ -37,6 +38,7 @@ export const Cart = props => {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
+        <StatusBar barStyle="dark-content" />
         <Text>{timer}</Text>
       </View>
 

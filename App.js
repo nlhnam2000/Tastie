@@ -19,6 +19,7 @@ import {
   ActivityIndicator,
   Image,
   Button,
+  Platform,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -52,10 +53,8 @@ import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
-import {Notification} from './components/HomePage/Notification';
-// import {USERNAME} from '@env';
-// redux
 
+// redux
 import {useSelector, useDispatch} from 'react-redux';
 
 import {
@@ -65,13 +64,11 @@ import {
   TokenNotFound,
 } from './store/action/auth';
 import colors from './colors/colors';
+import axios from 'axios';
+import {IP_ADDRESS, getAccessToken} from './global';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-
-// MapboxGL.setAccessToken(
-//   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g',
-// );
 
 Feather.loadFont();
 fontAwesome.loadFont();
@@ -85,13 +82,16 @@ export default function App(props) {
   // Get user profile for each time the app is rendered
   useEffect(() => {
     setTimeout(async () => {
-      let token = await AsyncStorage.getItem('user_token');
-      console.log(token);
-      if (token !== null) {
-        dispatch(retrieveToken(token));
+      let refreshToken = await AsyncStorage.getItem('user_token');
+
+      // console.log('refresh token', refreshToken);
+      if (refreshToken !== null) {
+        let accessToken = await getAccessToken(refreshToken);
+        dispatch(retrieveToken(accessToken));
       } else {
         dispatch(TokenNotFound());
       }
+      console.log(state);
     }, 1000);
   }, []);
 

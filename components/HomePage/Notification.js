@@ -6,9 +6,11 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
   Platform,
+  StatusBar,
 } from 'react-native';
 import {NavigationBar} from '../Menu/NavigationBar';
 import Geolocation from 'react-native-geolocation-service';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 
 export const Notification = props => {
   const [lat, setLat] = useState(0);
@@ -59,9 +61,13 @@ export const Notification = props => {
           console.warn(err);
         }
       }
+      console.log('Lat and long: ' + lat + ' ' + long);
+      // setLoading(false);
     }, 200);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
 
-    setLoading(false);
     // return () => {
     //   Geolocation.clearWatch(watchID);
     // };
@@ -70,20 +76,34 @@ export const Notification = props => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={styles.container}>
+          <StatusBar barStyle="dark-content" />
           <ActivityIndicator size={'large'} color={'red'} />
         </View>
         <NavigationBar active={props.tabname} />
       </View>
     );
   }
-
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        <Text>latitude: {lat}</Text>
-        <Text>Longitude: {long}</Text>
-        <Text>Hello</Text>
+      <StatusBar barStyle="dark-content" />
+      <View style={styles.container}>
+        <MapView
+          provider={PROVIDER_GOOGLE} // remove if not using Google Maps
+          style={styles.map}
+          minZoomLevel={17}
+          region={{
+            latitude: lat,
+            longitude: long,
+            latitudeDelta: 0.015,
+            longitudeDelta: 0.0121,
+          }}>
+          <Marker
+            coordinate={{latitude: lat, longitude: long}}
+            title="You are here"
+            description="This is your location"
+          />
+        </MapView>
       </View>
       <NavigationBar active={props.tabname} />
     </View>
@@ -93,14 +113,15 @@ export const Notification = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignContent: 'center',
     justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
   },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'white',
+
+  map: {
+    width: '100%',
+    height: '100%',
   },
 });
+
+//12.203214000000004, 109.19345021534353
+// 10.766593900159473 106.69504882698446

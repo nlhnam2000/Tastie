@@ -6,3 +6,73 @@ Android:
 4. Tools -> AVD Manager -> create virtual device -> chọn 1 máy android -> show advance setting -> chỉnh RAM tầm 12GB -> finish 
 5. Khi làm xong thì có list simulator, chọn nút play cho cái simulator muốn dùng 
 6. Terminal, cd Tastie/, gõ react-native run-android 
+
+
+// http://localhost:3008/v1/api/provider/dashboard/menu-overview/add-item:	POST
+// Add product info
+INPUT: 
+{
+  "provider_id": 100000,
+  "product_name": "Tra Dau",
+  "product_status": 1,
+  "description": "This is a drink",
+  "price": 3,
+  "quantity": 100,
+  "create_at": "2022-01-18",
+  "update_at": "2022-01-18 12:12:20"
+}
+
+OUTPUT: 
+{
+    // output here
+}
+-------------------------------------------
+// Update main food category
+INPUT: 
+{
+  "provider_id": 100000,
+  "product_id": 1000001,
+  "main_food_category_id": 1
+}
+OUTPUT: 
+{
+    // output here
+}
+-------------------------------------------
+// Update food category
+INPUT: 
+{
+  "provider_id": 100000,
+  "product_id": 1000001,
+  "food_category_id": 1
+}
+OUTPUT: 
+{
+    // output 
+}
+-------------------------------------------
+// Update menu category 
+INPUT:
+{
+  "provider_id": 100000,
+  "product_id": 1000001,
+  "menu_category_id": 1
+}
+OUTPUT: 
+{
+    // output
+}
+-------------------------------------------
+// Add product option
+INPUT:
+{
+   "provider_id": 100000,
+	 "product_id": 100000, 
+   "label": "Size",
+   "value": "S",
+	 "price": 0.1
+}
+OUTPUT: 
+{
+    // output
+}

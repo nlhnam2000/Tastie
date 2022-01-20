@@ -16,8 +16,19 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useSelector, useDispatch} from 'react-redux';
 import {signout} from '../../../store/action/auth';
 import colors from '../../../colors/colors';
-import {SimpleAlertDialog, DuoAlertDialog} from '../../Error/AlertDialog';
-
+import {
+  SimpleAlertDialog,
+  DuoAlertDialog,
+  ActionAlertDialog,
+} from '../../Error/AlertDialog';
+import {IP_ADDRESS, getAccessToken} from '../../../global';
+import {
+  clearAlertMessage,
+  UpdateProfile,
+  retrieveToken,
+} from '../../../store/action/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 const {width, height} = Dimensions.get('window');
 
 export const DetailAccount = props => {
@@ -26,8 +37,8 @@ export const DetailAccount = props => {
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [phone, setPhone] = useState(state.phone ? state.phone : '');
-  const [email, setEmail] = useState(state.email ? state.email : '');
+  const [phone, setPhone] = useState(state.phone || '');
+  const [email, setEmail] = useState(state.email || '');
   const [openUpdate, setOpenUpdate] = useState(false);
 
   const fullname = state.first_name + ' ' + state.last_name;
@@ -37,8 +48,27 @@ export const DetailAccount = props => {
   let emailInputRef = useRef();
 
   useEffect(() => {
-    setLoading(false);
+    setTimeout(async () => {
+      let refreshToken = await AsyncStorage.getItem('user_token');
+      let accessToken = await getAccessToken(refreshToken);
+      dispatch(retrieveToken(accessToken));
+      console.log(state);
+      setLoading(false);
+    }, 200);
   }, []);
+
+  // useEffect(() => {
+  //   setLoading(false);
+  // });
+
+  const handleUpdateProfile = (phone, email) => {
+    console.log('phone and email: ' + phone + ' ' + email);
+    let user_id = state.user_id;
+    dispatch(UpdateProfile(user_id, phone, email));
+    setTimeout(() => {
+      props.navigation.goBack();
+    }, 2500);
+  };
 
   if (loading) {
     return (
@@ -66,7 +96,9 @@ export const DetailAccount = props => {
               }}>
               Profile
             </Text>
-            <TouchableOpacity disabled={!edit}>
+            <TouchableOpacity
+              disabled={!edit}
+              onPress={() => handleUpdateProfile(phone, email)}>
               <Text
                 style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>
                 Update
@@ -136,6 +168,7 @@ export const DetailAccount = props => {
                 }}>
                 <TextInput
                   editable={edit}
+                  autoCapitalize="none"
                   style={styles.inputField}
                   value={email}
                   onChangeText={email => setEmail(email)}
@@ -180,7 +213,18 @@ export const DetailAccount = props => {
           message="Are you sure to logout ?"
           visible={openModal}
           onCancel={() => setOpenModal(false)}
-          onConfirm={() => dispatch(signout())}
+          onConfirm={() => {
+            dispatch(signout());
+            setOpenModal(false);
+          }}
+        />
+        <ActionAlertDialog
+          message={state.alertMessage}
+          visible={state.triggerAlertMessage}
+          onCancel={() => {
+            dispatch(clearAlertMessage());
+            // setOpenUpdate(false);
+          }}
         />
       </View>
     );
