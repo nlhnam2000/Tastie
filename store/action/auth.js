@@ -174,6 +174,8 @@ export const retrieveToken = token => async dispatch => {
       payload: {
         isLoading: false,
         user_token: null,
+        triggerAlertMessage: true,
+        alertMessage: 'Ooops look like you are logging on another device',
       },
     });
   }
@@ -337,13 +339,12 @@ export const SkipUpdate = body => async dispatch => {
   }
 };
 
-export const UpdateProfile = (user_id, phone, email) => async dispatch => {
+export const UpdateProfile = body => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/update`, {
-      account_id: user_id,
-      phone: phone,
-      email: email,
-    });
+    let res = await axios.post(
+      `http://${IP_ADDRESS}:3007/v1/api/auth/update`,
+      body,
+    );
     if (res.data.message === 'Update successfully') {
       if (res.data.refreshToken !== null) {
         await AsyncStorage.setItem('user_token', res.data.refreshToken); // set new refresh token when update email or phone

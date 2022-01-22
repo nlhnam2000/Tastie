@@ -13,9 +13,14 @@ import {
 } from 'react-native';
 import colors from '../colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
+import {ActionAlertDialog} from '../components/Error/AlertDialog';
+import {useSelector, useDispatch} from 'react-redux';
+import {clearAlertMessage} from '../store/action/auth';
 
 const {width, height} = Dimensions.get('window');
 export const Begin = props => {
+  let state = useSelector(state => state.UserReducer);
+  const dispatch = useDispatch();
   return (
     <View style={styles.container}>
       <StatusBar barStyle="light-content" />
@@ -67,6 +72,11 @@ export const Begin = props => {
           </TouchableOpacity> */}
         </View>
       </ImageBackground>
+      <ActionAlertDialog
+        message={state.alertMessage}
+        visible={state.triggerAlertMessage}
+        onCancel={() => dispatch(clearAlertMessage())}
+      />
     </View>
   );
 };

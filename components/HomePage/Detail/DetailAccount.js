@@ -37,14 +37,26 @@ export const DetailAccount = props => {
   const [loading, setLoading] = useState(true);
   const [edit, setEdit] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [phone, setPhone] = useState(state.phone || '');
-  const [email, setEmail] = useState(state.email || '');
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [updateForm, setUpdateForm] = useState({
+    account_id: state.user_id,
+    phone: state.phone || '',
+    email: state.email || '',
+    first_name: state.first_name || '',
+    last_name: state.last_name || '',
+  });
 
-  const fullname = state.first_name + ' ' + state.last_name;
+  const submitForm = form => {
+    console.log(form);
+    dispatch(UpdateProfile(form));
+    setTimeout(() => {
+      props.navigation.goBack();
+    }, 2500);
+  };
 
   let phoneInputRef = useRef();
-  let nameInputRef = useRef();
+  let firstnameInputRef = useRef();
+  let lastnameInputRef = useRef();
   let emailInputRef = useRef();
 
   useEffect(() => {
@@ -56,19 +68,6 @@ export const DetailAccount = props => {
       setLoading(false);
     }, 200);
   }, []);
-
-  // useEffect(() => {
-  //   setLoading(false);
-  // });
-
-  const handleUpdateProfile = (phone, email) => {
-    console.log('phone and email: ' + phone + ' ' + email);
-    let user_id = state.user_id;
-    dispatch(UpdateProfile(user_id, phone, email));
-    setTimeout(() => {
-      props.navigation.goBack();
-    }, 2500);
-  };
 
   if (loading) {
     return (
@@ -98,7 +97,7 @@ export const DetailAccount = props => {
             </Text>
             <TouchableOpacity
               disabled={!edit}
-              onPress={() => handleUpdateProfile(phone, email)}>
+              onPress={() => submitForm(updateForm)}>
               <Text
                 style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>
                 Update
@@ -120,8 +119,10 @@ export const DetailAccount = props => {
                 <TextInput
                   editable={edit}
                   style={styles.inputField}
-                  value={phone}
-                  onChangeText={phone => setPhone(phone)}
+                  value={updateForm.phone}
+                  onChangeText={phone =>
+                    setUpdateForm({...updateForm, phone: phone})
+                  }
                   ref={phoneInputRef}
                 />
                 <Button
@@ -137,21 +138,49 @@ export const DetailAccount = props => {
               </View>
             </View>
             <View style={{backgroundColor: '#f2f2f2', height: 5, width}}></View>
-            <View style={styles.inputWrapper}>
-              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-                Name
-              </Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
+            <View style={styles.nameInputWrapper}>
+              <View>
+                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
+                  First Name
+                </Text>
                 <TextInput
-                  editable={false}
+                  editable={edit}
                   style={styles.inputField}
-                  value={fullname}
+                  value={updateForm.first_name}
+                  onChangeText={text =>
+                    setUpdateForm({...updateForm, first_name: text})
+                  }
+                  ref={firstnameInputRef}
+                  onFocus={() =>
+                    firstnameInputRef.current.setNativeProps({
+                      style: {
+                        borderBottomWidth: 2,
+                        borderBottomColor: 'rgba(230,230,230, 1.0)',
+                      },
+                    })
+                  }
+                />
+              </View>
+              <View>
+                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
+                  Last Name
+                </Text>
+                <TextInput
+                  editable={edit}
+                  style={styles.inputField}
+                  value={updateForm.last_name}
+                  onChangeText={text =>
+                    setUpdateForm({...updateForm, last_name: text})
+                  }
+                  ref={lastnameInputRef}
+                  onFocus={() =>
+                    lastnameInputRef.current.setNativeProps({
+                      style: {
+                        borderBottomWidth: 2,
+                        borderBottomColor: 'rgba(230,230,230, 1.0)',
+                      },
+                    })
+                  }
                 />
               </View>
             </View>
@@ -170,8 +199,10 @@ export const DetailAccount = props => {
                   editable={edit}
                   autoCapitalize="none"
                   style={styles.inputField}
-                  value={email}
-                  onChangeText={email => setEmail(email)}
+                  value={updateForm.email}
+                  onChangeText={email =>
+                    setUpdateForm({...updateForm, email: email})
+                  }
                   ref={emailInputRef}
                   onFocus={() =>
                     emailInputRef.current.setNativeProps({
@@ -261,6 +292,14 @@ const styles = StyleSheet.create({
   inputWrapper: {
     paddingHorizontal: 20,
     marginTop: 20,
+  },
+  nameInputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginTop: 20,
+    width: '80%',
   },
   inputField: {
     width: '85%',

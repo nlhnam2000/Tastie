@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const IP_ADDRESS = '192.168.55.10';
+export const IP_ADDRESS = '192.168.38.188';
 
 export const getAccessToken = async refreshToken => {
   try {
