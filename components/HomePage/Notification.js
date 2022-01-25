@@ -42,7 +42,10 @@ export const Notification = props => {
 
   const getAddressString = async event => {
     console.log('New location', event.nativeEvent.coordinate);
-
+    setLocation({
+      latitude: event.nativeEvent.coordinate.latitude,
+      longitude: event.nativeEvent.coordinate.longitude,
+    });
     let res = await axios.get(
       `https://api.opencagedata.com/geocode/v1/json?q=${event.nativeEvent.coordinate.latitude}+${event.nativeEvent.coordinate.longitude}&key=${GEOCODING_API}`,
     );
@@ -137,14 +140,14 @@ export const Notification = props => {
           }}
           // onRegionChange={event => onRegionChange(event)}
         >
-          {/* <Marker
+          <Marker
             coordinate={{
               latitude: location.latitude,
               longitude: location.longitude,
             }}
             title="You are here"
             description="This is your location"
-          /> */}
+          />
         </MapView>
         <TouchableOpacity
           style={styles.currentPositionButton}

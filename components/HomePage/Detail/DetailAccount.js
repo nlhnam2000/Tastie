@@ -27,6 +27,7 @@ import {
   UpdateProfile,
   retrieveToken,
 } from '../../../store/action/auth';
+import {NavigateToAccount} from '../../../store/action/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 const {width, height} = Dimensions.get('window');
@@ -51,6 +52,7 @@ export const DetailAccount = props => {
     dispatch(UpdateProfile(form));
     setTimeout(() => {
       props.navigation.goBack();
+      // dispatch(NavigateToAccount());
     }, 2500);
   };
 

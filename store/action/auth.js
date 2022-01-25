@@ -355,6 +355,7 @@ export const UpdateProfile = body => async dispatch => {
             alertMessage: res.data.message,
             isLoading: false,
             user_token: res.data.refreshToken,
+            // currentTab: 'Account',
           },
         });
       } else {
@@ -364,6 +365,7 @@ export const UpdateProfile = body => async dispatch => {
             triggerAlertMessage: true,
             alertMessage: res.data.message,
             isLoading: false,
+            // currentTab: 'Account',
           },
         });
       }

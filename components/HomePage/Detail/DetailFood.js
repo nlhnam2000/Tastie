@@ -1,11 +1,10 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   Button,
   TouchableOpacity,
@@ -15,170 +14,161 @@ import {
   Image,
   ImageBackground,
   Animated,
+  ActivityIndicator,
+  Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import colors from '../../../colors/colors';
 
 const {width, height} = Dimensions.get('screen');
 
 export const DetailOrder = props => {
   const {item} = props.route.params;
-  const renderToppingItem = ({item}) => {
+  const [loading, setLoading] = useState(true);
+  const [toggle, setToggle] = useState(true);
+
+  let optionTabs = [];
+  let toggledList = [];
+  item.additionalOptions.forEach(o => {
+    optionTabs.push(o.optionName);
+    toggledList.push('1'); // to expand all options
+  });
+  const [optionToggled, setOptionToggled] = useState({
+    target: optionTabs[0],
+    toggled: toggledList,
+  });
+
+  useEffect(() => {
+    console.log(toggledList);
+    setLoading(false);
+  }, []);
+
+  if (loading) {
     return (
-      <TouchableOpacity style={styles.toppingItem}>
-        <Text style={styles.toppingTitle}>{item.toppingTitle}</Text>
-        <View style={styles.toppingInfo}>
-          <Text style={{fontWeight: 'bold'}}>+{item.price}</Text>
-          <Image
-            source={item.image}
-            resizeMode="contain"
-            style={styles.toppingImage}
-          />
-        </View>
-      </TouchableOpacity>
+      <View style={styles.container}>
+        <ActivityIndicator size={'large'} color={colors.red} />
+      </View>
     );
-  };
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.headerWrapper}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => props.navigation.goBack()}>
-          <Feather name="chevron-left" size={18} color={'gray'} />
-        </TouchableOpacity>
-        <View
-          style={{
-            padding: 5,
-            borderRadius: 40,
-            borderColor: 'white',
-            borderWidth: 1,
-            backgroundColor: 'white',
-          }}>
-          <Image
-            source={require('../../../assets/image/avatar.jpeg')}
-            resizeMode="contain"
-            style={styles.avatar}
-          />
-        </View>
-      </View>
-      <View style={styles.foodImageWrapper}>
-        <Image
-          source={item.image}
-          resizeMode="cover"
-          style={styles.foodImage}
-        />
-      </View>
-
-      <View style={{width: width, paddingHorizontal: 20}}>
-        <Text style={styles.foodName}>{item.itemTitle}</Text>
-      </View>
-      {/* Content */}
-      <View style={styles.contentWrapper}>
-        {/* <Image
-          source={item.image}
-          resizeMode="contain"
-          style={styles.foodImage}
-        /> */}
-        {/* <View>
-          <Text style={styles.foodName}>{item.itemTitle}</Text>
-        </View> */}
-
-        <View style={styles.foodContainerWrapper}>
-          <View style={styles.foodContainer}>
-            <View style={styles.foodContainerLeft}>
-              <View style={{marginLeft: -40}}>
-                <Text
-                  style={{
-                    color: '#999999',
-                    fontSize: 20,
-                    marginBottom: 10,
-                    fontWeight: '600',
-                  }}>
-                  {item.itemTitle}
-                </Text>
-                <Text style={{fontSize: 25, fontWeight: 'bold'}}>
-                  {item.price}
-                </Text>
-              </View>
-              <View>
-                <View style={{flexDirection: 'row', paddingHorizontal: 10}}>
-                  <Image
-                    source={require('../../../assets/image/avatar.jpeg')}
-                    resizeMode="contain"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 40,
-                      marginLeft: -10,
-                    }}
-                  />
-                  <Image
-                    source={require('../../../assets/image/avatar.jpeg')}
-                    resizeMode="contain"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 40,
-                      marginLeft: -10,
-                    }}
-                  />
-                  <Image
-                    source={require('../../../assets/image/avatar.jpeg')}
-                    resizeMode="contain"
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 40,
-                      marginLeft: -10,
-                    }}
-                  />
-                </View>
-                <Text style={{fontWeight: 'bold', marginTop: 5}}>
-                  Rick, Stan, Agatha
-                </Text>
-                <Text style={{color: '#999999', fontWeight: '600'}}>
-                  and 7 recommendations
-                </Text>
-              </View>
-            </View>
-            <View style={styles.foodContainerRight}>
-              {/* <Image
-                source={item.image}
-                resizeMode="cover"
-                style={styles.foodImage}
-              /> */}
-            </View>
+      <ScrollView>
+        <View style={{paddingBottom: 20}}>
+          {/* Header */}
+          <View style={styles.headerWrapper}>
+            <TouchableOpacity
+              style={styles.backButton}
+              onPress={() => props.navigation.goBack()}>
+              <Feather name="arrow-left" size={20} color={'black'} />
+            </TouchableOpacity>
+            <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 15}}>
+              {item.itemTitle}
+            </Text>
           </View>
+          {/* Image */}
+          <View style={styles.foodImageWrapper}>
+            <Image
+              source={item.image}
+              resizeMode="cover"
+              style={{width, height: 200}}
+            />
+          </View>
+          <View style={{padding: 20}}>
+            <Text style={{fontSize: 25, fontWeight: '500'}}>
+              {item.itemTitle}
+            </Text>
+          </View>
+          {/* Additional option here */}
+          {item.additionalOptions.map((option, index) => {
+            return (
+              <View key={index} style={{marginBottom: 5}}>
+                <View style={styles.additionalOptionWrapper}>
+                  <TouchableOpacity
+                    style={styles.additionalTitle}
+                    onPress={() => {
+                      if (optionToggled.toggled[index] === '0') {
+                        optionToggled.toggled[index] = '1';
+                      } else {
+                        optionToggled.toggled[index] = '0';
+                      }
+                      setOptionToggled({
+                        target: option.optionName,
+                        toggled: optionToggled.toggled,
+                      });
+                    }}>
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: '500',
+                          marginBottom: 10,
+                        }}>
+                        {option.optionName}
+                      </Text>
+                      <Text style={{fontSize: 14, color: 'gray'}}>
+                        {option.required ? 'Required' : 'Optional'}
+                      </Text>
+                    </View>
+                    <View>
+                      <View style={styles.dropdownButton}>
+                        <Feather
+                          name={
+                            optionToggled.toggled[index] === '1'
+                              ? 'chevron-up'
+                              : 'chevron-down'
+                          }
+                          size={18}
+                          color={'black'}
+                        />
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+                {optionToggled.toggled[index] === '1' ? (
+                  <View style={styles.dropdownContent}>
+                    {option.optionList.map((item, id) => {
+                      return (
+                        <View style={styles.dropdownItem} key={id}>
+                          <View
+                            style={{
+                              flexDirection: 'row',
+                              justifyContent: 'flex-start',
+                              alignItems: 'center',
+                            }}>
+                            <TouchableOpacity
+                              style={[
+                                styles.dropdownButton,
+                                {
+                                  borderWidth: 1,
+                                  borderColor: 'rgba(230,230,230,0.7)',
+                                },
+                              ]}>
+                              <Feather name="plus" size={15} color={'black'} />
+                            </TouchableOpacity>
+                            <Text style={{fontWeight: '500', marginLeft: 20}}>
+                              {item.optionItemName}
+                            </Text>
+                          </View>
+                          <Text>{item.price}</Text>
+                        </View>
+                      );
+                    })}
+                  </View>
+                ) : null}
+              </View>
+            );
+          })}
         </View>
-        <View style={styles.toppingList}>
-          <FlatList
-            data={item.toppings}
-            keyExtractor={item => item.toppingId}
-            renderItem={renderToppingItem}
-            horizontal={true}
-            showsHorizontalScrollIndicator={false}
-            bounces={false}
-          />
-        </View>
-      </View>
-      {/* Footer */}
-      <View style={styles.footerWrapper}>
-        <Feather name="share-2" size={25} color={'gray'} />
-        <Feather name="heart" size={25} color={'gray'} />
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#00e600',
-            padding: 10,
-            width: 150,
-            borderRadius: 20,
-          }}>
+      </ScrollView>
+      <View style={styles.orderButtonWrapper}>
+        <TouchableOpacity style={styles.orderButton}>
           <Text
             style={{
               textAlign: 'center',
-              fontSize: 19,
-              fontWeight: '400',
+              fontWeight: '500',
               color: 'white',
+              fontSize: 18,
             }}>
             Place Order
           </Text>
@@ -191,137 +181,63 @@ export const DetailOrder = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    overflow: 'hidden',
-    zIndex: 0,
-    backgroundColor: 'rgba(255,255,255,0.8)',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    backgroundColor: 'white',
   },
   headerWrapper: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     width: width,
     paddingHorizontal: 20,
-  },
-  backButton: {
-    padding: 15,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#e6e6e6',
-    backgroundColor: 'white',
-  },
-  avatar: {
-    borderRadius: 50,
-    width: 50,
-    height: 50,
-  },
-  contentWrapper: {
-    paddingHorizontal: 20,
-    // paddingLeft: 20,
-    width: width,
-  },
-  foodName: {
-    fontWeight: 'bold',
-    fontSize: 40,
-  },
-  foodContainerWrapper: {
-    marginTop: 30,
-    padding: 3,
-    backgroundColor: '#f2f2f2',
-    borderRadius: 20,
-    overflow: 'hidden',
-    // width: width,
-  },
-  foodContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    paddingHorizontal: 0,
-    paddingLeft: 15,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    overflow: 'hidden',
-    height: 300,
-  },
-  foodContainerLeft: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: '100%',
-  },
-  foodContainerRight: {
-    borderRadius: 200,
-    overflow: 'hidden',
+    marginTop: Platform.OS === 'android' ? 20 : 5,
   },
   foodImageWrapper: {
-    position: 'absolute',
-    top: height / 2 - 190,
-    right: -180,
-    zIndex: 10,
-    marginLeft: 20,
-    shadowColor: 'black',
-    shadowOffset: {
-      width: 0,
-      height: 0,
-    },
-    shadowOpacity: 0.8,
-    shadowRadius: 5,
-    padding: 5,
-    borderWidth: 1,
-    borderRadius: 350,
-    borderColor: 'rgba(242,242,242,0.1)',
-    overflow: 'hidden',
+    width,
+    marginTop: 20,
   },
-  foodImage: {
-    // width: 175,
-    // height: 175,
-    // borderRadius: 200,
-
-    width: 350,
-    height: 350,
-    borderRadius: 350,
-
-    // overflow: 'visible',
+  additionalOptionWrapper: {
+    padding: 20,
+    backgroundColor: 'rgba(230,230,230, 0.4)',
+    width,
   },
-  toppingList: {
-    marginTop: 40,
-    zIndex: 100,
-    shadowColor: 'rgba(0,0,0,0.5)',
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    shadowOpacity: 0.5,
-    shadowRadius: 5,
-  },
-  toppingItem: {
-    padding: 10,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    marginLeft: 15,
-    overflow: 'visible',
-  },
-  toppingTitle: {
-    fontSize: 19,
-    fontWeight: 'bold',
-  },
-  toppingInfo: {
+  additionalTitle: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  toppingImage: {
-    width: 70,
-    height: 70,
-    // borderRadius: 60,
-    // marginLeft: 20,
-  },
-  footerWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
     alignItems: 'center',
-    width: width,
+  },
+  dropdownButton: {
+    padding: 5,
+    borderRadius: 20,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'rgb(220,220,220)',
+  },
+  dropdownContent: {
     paddingHorizontal: 20,
+    width,
+  },
+  dropdownItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(230,230,230,0.7)',
+  },
+  orderButtonWrapper: {
+    paddingHorizontal: 20,
+    paddingVertical: Platform.OS === 'android' ? 20 : 5,
+    width,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  orderButton: {
+    width: '100%',
+    padding: 15,
+    backgroundColor: 'black',
+    // borderRadius: 10,
+    marginTop: 10,
   },
 });

@@ -80,7 +80,6 @@ export const DetailProvider = props => {
   });
 
   const [tabPosition, setTabPosition] = useState([]);
-  // const [ref, setRef] = useState(null);
   const ref = useRef(null);
 
   const scrollToIndex = index => {
