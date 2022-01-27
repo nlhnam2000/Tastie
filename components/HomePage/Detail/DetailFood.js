@@ -25,21 +25,57 @@ const {width, height} = Dimensions.get('screen');
 export const DetailOrder = props => {
   const {item} = props.route.params;
   const [loading, setLoading] = useState(true);
-  const [toggle, setToggle] = useState(true);
+  const [totalPrice, setTotalPrice] = useState(parseFloat(item.price));
+  const [orderData, setOrderData] = useState(null);
 
+  /* 
+    This is pre-processing section
+    TODO: intial the default value for the additional option form
+  */
   let optionTabs = [];
   let toggledList = [];
+  let form = [];
+  let radioOptions = [];
+  let checkOptions = [];
   item.additionalOptions.forEach(o => {
     optionTabs.push(o.optionName);
     toggledList.push('1'); // to expand all options
+
+    // inital the default submit form
+    form.push({
+      optionName: o.optionName,
+      options: o.required
+        ? [
+            {
+              optionItemName: o.optionList[0].optionItemName,
+              price: o.optionList[0].price,
+            },
+          ]
+        : [],
+    });
+    // this is an array of the option list whose type is radio input (only choose one)
+    radioOptions.push(o.radio ? o.optionList[0] : {});
+    // this is an array of the option list whose type is checkbox (can choose multiple options)
+    checkOptions.push([]);
   });
   const [optionToggled, setOptionToggled] = useState({
     target: optionTabs[0],
     toggled: toggledList,
   });
 
+  const [radioSelected, setRadioSelected] = useState(radioOptions);
+  const [checkSelected, setCheckSelected] = useState(checkOptions);
+
+  const handleSubmit = () => {};
+
   useEffect(() => {
-    console.log(toggledList);
+    // console.log(toggledList);
+    // console.log(form[0]);
+    // console.log(form[1]);
+    // console.log(form[2]);
+    // console.log(form[3]);
+    // console.log(radioSelected[0].optionItemName);
+    console.log(checkOptions);
     setLoading(false);
   }, []);
 
@@ -53,19 +89,19 @@ export const DetailOrder = props => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {/* Header */}
+      <View style={styles.headerWrapper}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={() => props.navigation.goBack()}>
+          <Feather name="arrow-left" size={20} color={'black'} />
+        </TouchableOpacity>
+        <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 15}}>
+          {item.itemTitle}
+        </Text>
+      </View>
       <ScrollView>
         <View style={{paddingBottom: 20}}>
-          {/* Header */}
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity
-              style={styles.backButton}
-              onPress={() => props.navigation.goBack()}>
-              <Feather name="arrow-left" size={20} color={'black'} />
-            </TouchableOpacity>
-            <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 15}}>
-              {item.itemTitle}
-            </Text>
-          </View>
           {/* Image */}
           <View style={styles.foodImageWrapper}>
             <Image
@@ -80,6 +116,7 @@ export const DetailOrder = props => {
             </Text>
           </View>
           {/* Additional option here */}
+          {/* Radio option first */}
           {item.additionalOptions.map((option, index) => {
             return (
               <View key={index} style={{marginBottom: 5}}>
@@ -136,21 +173,108 @@ export const DetailOrder = props => {
                               justifyContent: 'flex-start',
                               alignItems: 'center',
                             }}>
-                            <TouchableOpacity
-                              style={[
-                                styles.dropdownButton,
-                                {
-                                  borderWidth: 1,
-                                  borderColor: 'rgba(230,230,230,0.7)',
-                                },
-                              ]}>
-                              <Feather name="plus" size={15} color={'black'} />
-                            </TouchableOpacity>
+                            {option.radio ? (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  let copy = radioSelected.map((r, i) => {
+                                    let oldArray = {...r};
+                                    if (i === index) {
+                                      oldArray = item;
+                                    }
+                                    return oldArray;
+                                  });
+                                  console.log('copy', copy);
+                                  setRadioSelected(copy);
+                                  // setTotalPrice(
+                                  //   (
+                                  //     parseFloat(totalPrice) +
+                                  //     parseFloat(item.price)
+                                  //   ).toFixed(2),
+                                  // );
+                                }}
+                                style={[
+                                  styles.dropdownButton,
+                                  {
+                                    borderWidth: 1,
+                                    borderColor: 'rgba(230,230,230,0.7)',
+                                  },
+                                ]}>
+                                <View
+                                  style={{
+                                    borderRadius: 10,
+                                    backgroundColor:
+                                      item.optionItemName ===
+                                      radioSelected[index].optionItemName
+                                        ? 'black'
+                                        : 'white',
+                                    width: 10,
+                                    height: 10,
+                                  }}></View>
+                              </TouchableOpacity>
+                            ) : (
+                              <TouchableOpacity
+                                onPress={() => {
+                                  /* 
+                                    Procedure step: 
+                                    1. Clone the current state, which is the matrix (an array of an array)
+                                    2. use 'some' to check if the array at this index contains the target (which is 'item')
+                                    NOTE: use JSON.stringify to compare the objecs
+                                    3. if contans => find the index of the value to remove, then use splice(removedPosition, 1)
+                                    4. if not contains => push to the current array
+                                    
+                                    To show whether option is checked, just check if that array contains the target or not (use 'some' to filter)
+                                  */
+                                  let copy = [...checkSelected];
+                                  if (
+                                    copy[index].some(
+                                      obj =>
+                                        JSON.stringify(obj) ===
+                                        JSON.stringify(item),
+                                    ) === false
+                                  ) {
+                                    copy[index].push(item);
+                                  } else {
+                                    let removedPosition =
+                                      copy[index].indexOf(item);
+                                    copy[index].splice(removedPosition, 1);
+                                  }
+                                  setCheckSelected(copy);
+                                  // setTotalPrice(
+                                  //   (
+                                  //     parseFloat(totalPrice) +
+                                  //     parseFloat(item.price)
+                                  //   ).toFixed(2),
+                                  // );
+                                  console.log(copy);
+                                }}
+                                style={[
+                                  styles.dropdownButton,
+                                  {
+                                    borderWidth: 1,
+                                    // borderColor: 'rgba(230,230,230,0.7)',
+                                    borderRadius: 5,
+                                    backgroundColor: checkSelected[index].some(
+                                      obj =>
+                                        JSON.stringify(obj) ===
+                                        JSON.stringify(item),
+                                    )
+                                      ? 'black'
+                                      : 'white',
+                                  },
+                                ]}>
+                                <Feather
+                                  name="check"
+                                  size={10}
+                                  color={'white'}
+                                />
+                              </TouchableOpacity>
+                            )}
+
                             <Text style={{fontWeight: '500', marginLeft: 20}}>
                               {item.optionItemName}
                             </Text>
                           </View>
-                          <Text>{item.price}</Text>
+                          <Text>${item.price}</Text>
                         </View>
                       );
                     })}
@@ -170,7 +294,16 @@ export const DetailOrder = props => {
               color: 'white',
               fontSize: 18,
             }}>
-            Place Order
+            Add to cart{' • '}
+            <Text
+              style={{
+                textAlign: 'center',
+                fontWeight: '500',
+                color: 'white',
+                fontSize: 18,
+              }}>
+              ${totalPrice}
+            </Text>
           </Text>
         </TouchableOpacity>
       </View>
@@ -191,11 +324,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: width,
     paddingHorizontal: 20,
+    paddingBottom: 10,
     marginTop: Platform.OS === 'android' ? 20 : 5,
   },
   foodImageWrapper: {
     width,
-    marginTop: 20,
+    marginTop: 5,
   },
   additionalOptionWrapper: {
     padding: 20,
