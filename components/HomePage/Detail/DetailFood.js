@@ -66,7 +66,22 @@ export const DetailOrder = props => {
   const [radioSelected, setRadioSelected] = useState(radioOptions);
   const [checkSelected, setCheckSelected] = useState(checkOptions);
 
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    console.log('radio', radioSelected);
+    console.log('check', checkSelected);
+
+    for (let i = 0; i < form.length; i++) {
+      if (checkSelected[i].length > 0) {
+        form[i].options = [...checkSelected[i]];
+      }
+      if (Object.entries(radioSelected[i]).length > 0) {
+        form[i].options[0] = {...radioSelected[i]};
+      }
+      console.log(`form${i}`, form[i]);
+    }
+
+    // console.log('form', form);
+  };
 
   useEffect(() => {
     // console.log(toggledList);
@@ -251,7 +266,6 @@ export const DetailOrder = props => {
                                   styles.dropdownButton,
                                   {
                                     borderWidth: 1,
-                                    // borderColor: 'rgba(230,230,230,0.7)',
                                     borderRadius: 5,
                                     backgroundColor: checkSelected[index].some(
                                       obj =>
@@ -286,7 +300,9 @@ export const DetailOrder = props => {
         </View>
       </ScrollView>
       <View style={styles.orderButtonWrapper}>
-        <TouchableOpacity style={styles.orderButton}>
+        <TouchableOpacity
+          style={styles.orderButton}
+          onPress={() => handleSubmit()}>
           <Text
             style={{
               textAlign: 'center',
@@ -371,7 +387,6 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
     backgroundColor: 'black',
-    // borderRadius: 10,
     marginTop: 10,
   },
 });
