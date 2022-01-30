@@ -26,7 +26,6 @@ export const DetailOrder = props => {
   const {item} = props.route.params;
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(parseFloat(item.price));
-  const [orderData, setOrderData] = useState(null);
 
   /* 
     This is pre-processing section
@@ -65,6 +64,22 @@ export const DetailOrder = props => {
 
   const [radioSelected, setRadioSelected] = useState(radioOptions);
   const [checkSelected, setCheckSelected] = useState(checkOptions);
+  const [additionalOptionForm, setAdditionalOptionForm] = useState(form);
+
+  const countTotalPrice = form => {
+    let totalPrice = 0.0;
+    for (let i = 0; i < form.length; i++) {
+      for (let j = 0; j < form[i].options.length; j++) {
+        if (form[i].options.length > 0) {
+          totalPrice += parseFloat(form[i].options[j].price);
+        } else {
+          continue;
+        }
+      }
+    }
+
+    return totalPrice;
+  };
 
   const handleSubmit = () => {
     console.log('radio', radioSelected);
@@ -79,8 +94,24 @@ export const DetailOrder = props => {
       }
       console.log(`form${i}`, form[i]);
     }
+    console.log('total price', (countTotalPrice(form) + item.price).toFixed(2));
+    setTotalPrice((countTotalPrice(form) + item.price).toFixed(2));
+  };
 
-    // console.log('form', form);
+  const handleChangeOptions = () => {
+    console.log('--------------------------------------------------');
+    console.log('radio', radioSelected);
+    console.log('check', checkSelected);
+    for (let i = 0; i < form.length; i++) {
+      if (checkSelected[i].length > 0) {
+        form[i].options = [...checkSelected[i]];
+      }
+      if (Object.entries(radioSelected[i]).length > 0) {
+        form[i].options[0] = {...radioSelected[i]};
+      }
+      console.log(`form${i}`, form[i]);
+    }
+    setTotalPrice((countTotalPrice(form) + item.price).toFixed(2));
   };
 
   useEffect(() => {
@@ -90,13 +121,17 @@ export const DetailOrder = props => {
     // console.log(form[2]);
     // console.log(form[3]);
     // console.log(radioSelected[0].optionItemName);
-    console.log(checkOptions);
+    // console.log(checkOptions);
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    handleChangeOptions();
+  }, [radioSelected, checkSelected]);
+
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, {backgroundColor: 'transparent'}]}>
         <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
@@ -106,29 +141,19 @@ export const DetailOrder = props => {
     <SafeAreaView style={styles.container}>
       {/* Header */}
       <View style={styles.headerWrapper}>
-        <TouchableOpacity
-          style={styles.backButton}
-          onPress={() => props.navigation.goBack()}>
+        <TouchableOpacity style={styles.backButton} onPress={() => props.navigation.goBack()}>
           <Feather name="arrow-left" size={20} color={'black'} />
         </TouchableOpacity>
-        <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 15}}>
-          {item.itemTitle}
-        </Text>
+        <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 15}}>{item.itemTitle}</Text>
       </View>
       <ScrollView>
         <View style={{paddingBottom: 20}}>
           {/* Image */}
           <View style={styles.foodImageWrapper}>
-            <Image
-              source={item.image}
-              resizeMode="cover"
-              style={{width, height: 200}}
-            />
+            <Image source={item.image} resizeMode="cover" style={{width, height: 200}} />
           </View>
           <View style={{padding: 20}}>
-            <Text style={{fontSize: 25, fontWeight: '500'}}>
-              {item.itemTitle}
-            </Text>
+            <Text style={{fontSize: 25, fontWeight: '500'}}>{item.itemTitle}</Text>
           </View>
           {/* Additional option here */}
           {/* Radio option first */}
@@ -166,9 +191,7 @@ export const DetailOrder = props => {
                       <View style={styles.dropdownButton}>
                         <Feather
                           name={
-                            optionToggled.toggled[index] === '1'
-                              ? 'chevron-up'
-                              : 'chevron-down'
+                            optionToggled.toggled[index] === '1' ? 'chevron-up' : 'chevron-down'
                           }
                           size={18}
                           color={'black'}
@@ -198,14 +221,10 @@ export const DetailOrder = props => {
                                     }
                                     return oldArray;
                                   });
-                                  console.log('copy', copy);
+                                  // console.log('copy', copy);
                                   setRadioSelected(copy);
-                                  // setTotalPrice(
-                                  //   (
-                                  //     parseFloat(totalPrice) +
-                                  //     parseFloat(item.price)
-                                  //   ).toFixed(2),
-                                  // );
+                                  // console.log('radioSelected', radioSelected[1]);
+                                  // handleChangeOptions();
                                 }}
                                 style={[
                                   styles.dropdownButton,
@@ -218,8 +237,7 @@ export const DetailOrder = props => {
                                   style={{
                                     borderRadius: 10,
                                     backgroundColor:
-                                      item.optionItemName ===
-                                      radioSelected[index].optionItemName
+                                      item.optionItemName === radioSelected[index].optionItemName
                                         ? 'black'
                                         : 'white',
                                     width: 10,
@@ -242,25 +260,17 @@ export const DetailOrder = props => {
                                   let copy = [...checkSelected];
                                   if (
                                     copy[index].some(
-                                      obj =>
-                                        JSON.stringify(obj) ===
-                                        JSON.stringify(item),
+                                      obj => JSON.stringify(obj) === JSON.stringify(item),
                                     ) === false
                                   ) {
                                     copy[index].push(item);
                                   } else {
-                                    let removedPosition =
-                                      copy[index].indexOf(item);
+                                    let removedPosition = copy[index].indexOf(item);
                                     copy[index].splice(removedPosition, 1);
                                   }
                                   setCheckSelected(copy);
-                                  // setTotalPrice(
-                                  //   (
-                                  //     parseFloat(totalPrice) +
-                                  //     parseFloat(item.price)
-                                  //   ).toFixed(2),
-                                  // );
-                                  console.log(copy);
+                                  console.log('checkSelected', checkSelected);
+                                  // handleChangeOptions();
                                 }}
                                 style={[
                                   styles.dropdownButton,
@@ -268,19 +278,13 @@ export const DetailOrder = props => {
                                     borderWidth: 1,
                                     borderRadius: 5,
                                     backgroundColor: checkSelected[index].some(
-                                      obj =>
-                                        JSON.stringify(obj) ===
-                                        JSON.stringify(item),
+                                      obj => JSON.stringify(obj) === JSON.stringify(item),
                                     )
                                       ? 'black'
                                       : 'white',
                                   },
                                 ]}>
-                                <Feather
-                                  name="check"
-                                  size={10}
-                                  color={'white'}
-                                />
+                                <Feather name="check" size={10} color={'white'} />
                               </TouchableOpacity>
                             )}
 
@@ -300,9 +304,7 @@ export const DetailOrder = props => {
         </View>
       </ScrollView>
       <View style={styles.orderButtonWrapper}>
-        <TouchableOpacity
-          style={styles.orderButton}
-          onPress={() => handleSubmit()}>
+        <TouchableOpacity style={styles.orderButton} onPress={() => handleSubmit()}>
           <Text
             style={{
               textAlign: 'center',

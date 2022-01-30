@@ -17,11 +17,16 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'; // remove PR
 import Geocoder from 'react-native-geocoding';
 import axios from 'axios';
 import {GEOCODING_API} from '../../global';
+import {getDistance} from 'geolib';
 
 Geocoder.init('AIzaSyDRXvYbjscujWed7pBPKRGCIsmx922HTJI');
 
 export const Notification = props => {
   const [location, setLocation] = useState({latitude: 0, longitude: 0});
+  const [markerLocation, setMarkerLocation] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState('Road');
 
@@ -60,10 +65,18 @@ export const Notification = props => {
   };
 
   const onRegionChange = event => {
-    setLocation({
+    setMarkerLocation({
       latitude: event.latitude,
       longitude: event.longitude,
     });
+  };
+
+  const setMarker = event => {
+    setMarkerLocation({
+      latitude: event.nativeEvent.coordinate.latitude,
+      longitude: event.nativeEvent.coordinate.longitude,
+    });
+    console.log('markerLocation', markerLocation);
   };
 
   useEffect(() => {
@@ -124,7 +137,8 @@ export const Notification = props => {
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
           minZoomLevel={17}
-          onPress={event => getAddressString(event)}
+          // onPress={event => getAddressString(event)}
+          onPress={event => setMarker(event)}
           showsUserLocation
           initialRegion={{
             latitude: 12.203214000000004,
@@ -142,8 +156,8 @@ export const Notification = props => {
         >
           <Marker
             coordinate={{
-              latitude: location.latitude,
-              longitude: location.longitude,
+              latitude: markerLocation.latitude,
+              longitude: markerLocation.longitude,
             }}
             title="You are here"
             description="This is your location"
@@ -153,6 +167,11 @@ export const Notification = props => {
           style={styles.currentPositionButton}
           onPress={() => focusToLocation()}>
           <Feather name="navigation" size={20} color={'black'} />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.currentPositionButton, {top: '70%'}]}
+          onPress={() => getDistanceLocation(location, markerLocation)}>
+          <Feather name="navigation-2" size={20} color={'black'} />
         </TouchableOpacity>
         <View style={styles.inputWrapper}>
           <TextInput style={styles.inputField} value={address} editable />

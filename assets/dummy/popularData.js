@@ -17,7 +17,7 @@ export const popularData = [
           {
             itemId: 1,
             itemTitle: 'Garlic Knots',
-            price: '4.99',
+            price: 4.99,
             note: '*Limit 2 Pizza Pies per Order*',
             image: require('../image/SlideShowImg/Picture1.jpg'),
             additionalOptions: [
@@ -32,25 +32,25 @@ export const popularData = [
                   {
                     optionItemId: 1,
                     optionItemName: 'Cheese',
-                    price: '0.99',
+                    price: 0.99,
                     image: require('../image/Topping/cheese.png'),
                   },
                   {
                     optionItemId: 2,
                     optionItemName: 'Garlic',
-                    price: '0.99',
+                    price: 0.99,
                     image: require('../image/Topping/garlic.png'),
                   },
                   {
                     optionItemId: 3,
                     optionItemName: 'Ham',
-                    price: '0.99',
+                    price: 0.99,
                     image: require('../image/Topping/ham.png'),
                   },
                   {
                     optionItemId: 4,
                     optionItemName: 'Tomato',
-                    price: '0.99',
+                    price: 0.99,
                     image: require('../image/Topping/tomato.png'),
                   },
                 ],
@@ -66,17 +66,17 @@ export const popularData = [
                   {
                     optionItemId: 1,
                     optionItemName: 'Small',
-                    price: '0',
+                    price: 0,
                   },
                   {
                     optionItemId: 2,
                     optionItemName: 'Medium',
-                    price: '5.0',
+                    price: 5.0,
                   },
                   {
                     optionItemId: 3,
                     optionItemName: 'Large',
-                    price: '10',
+                    price: 10,
                   },
                 ],
               },
@@ -91,12 +91,12 @@ export const popularData = [
                   {
                     optionItemId: 1,
                     optionItemName: 'Salad',
-                    price: '0',
+                    price: 0,
                   },
                   {
                     optionItemId: 2,
                     optionItemName: 'Fries',
-                    price: '5.0',
+                    price: 5.0,
                   },
                 ],
               },
@@ -111,12 +111,12 @@ export const popularData = [
                   {
                     optionItemId: 1,
                     optionItemName: 'Spicy',
-                    price: '0',
+                    price: 0,
                   },
                   {
                     optionItemId: 2,
                     optionItemName: 'No spicy',
-                    price: '0',
+                    price: 0,
                   },
                 ],
               },
