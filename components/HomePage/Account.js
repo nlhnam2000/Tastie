@@ -38,7 +38,13 @@ export const Account = props => {
       let refreshToken = await AsyncStorage.getItem('user_token');
       let accessToken = await getAccessToken(refreshToken);
       dispatch(retrieveToken(accessToken));
-      console.log(state);
+      console.log('user cart');
+      // if (state.userCart.cart.length > 0) {
+      //   state.userCart.cart.additionalOptions.forEach(c => {
+      //     console.log(c);
+      //   });
+      // }
+      // console.log(state.userCart.cart[0].additionalOptions);
       setLoading(false);
     }, 200);
   }, []);
@@ -103,11 +109,7 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity
-                color={'black'}
-                name="home-account"
-                size={26}
-              />
+              <MaterialCommunity color={'black'} name="home-account" size={26} />
               <Text
                 style={{
                   fontWeight: '500',
@@ -120,11 +122,7 @@ export const Account = props => {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.menuWrapper}>
-              <MaterialCommunity
-                color={'black'}
-                name="ticket-percent"
-                size={26}
-              />
+              <MaterialCommunity color={'black'} name="ticket-percent" size={26} />
               <Text
                 style={{
                   fontWeight: '500',

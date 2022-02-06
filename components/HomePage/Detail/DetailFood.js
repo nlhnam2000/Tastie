@@ -19,13 +19,18 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
+import {useDispatch} from 'react-redux';
+import {AddToCart} from '../../../store/action/cart';
+import moment from 'moment';
 
 const {width, height} = Dimensions.get('screen');
 
 export const DetailOrder = props => {
-  const {item} = props.route.params;
+  const {item, provider} = props.route.params;
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(parseFloat(item.price));
+  const [quantity, setQuantity] = useState(1);
 
   /* 
     This is pre-processing section
@@ -51,6 +56,7 @@ export const DetailOrder = props => {
             },
           ]
         : [],
+      quantity: quantity,
     });
     // this is an array of the option list whose type is radio input (only choose one)
     radioOptions.push(o.radio ? o.optionList[0] : {});
@@ -81,21 +87,24 @@ export const DetailOrder = props => {
     return totalPrice;
   };
 
-  const handleSubmit = () => {
-    console.log('radio', radioSelected);
-    console.log('check', checkSelected);
+  const handleAddToCart = () => {
+    let cartForm = {
+      provider_id: provider.provider_id,
+      provider_name: provider.provider_name,
+      date: moment().format('MMMM Do YYYY, h:mm a'),
+      cartItem: {
+        product_id: item.itemId,
+        productName: item.itemTitle,
+        productPrice: item.price,
+        productImage: item.image,
+        additionalOptions: [...additionalOptionForm],
+        totalProductPrice: totalPrice,
+        quantity: quantity,
+      },
+    };
 
-    for (let i = 0; i < form.length; i++) {
-      if (checkSelected[i].length > 0) {
-        form[i].options = [...checkSelected[i]];
-      }
-      if (Object.entries(radioSelected[i]).length > 0) {
-        form[i].options[0] = {...radioSelected[i]};
-      }
-      console.log(`form${i}`, form[i]);
-    }
-    console.log('total price', (countTotalPrice(form) + item.price).toFixed(2));
-    setTotalPrice((countTotalPrice(form) + item.price).toFixed(2));
+    dispatch(AddToCart(cartForm));
+    props.navigation.goBack();
   };
 
   const handleChangeOptions = () => {
@@ -111,23 +120,32 @@ export const DetailOrder = props => {
       }
       console.log(`form${i}`, form[i]);
     }
-    setTotalPrice((countTotalPrice(form) + item.price).toFixed(2));
+    setAdditionalOptionForm(form);
+    // setTotalPrice((countTotalPrice(form) + item.price).toFixed(2));
   };
 
   useEffect(() => {
-    // console.log(toggledList);
-    // console.log(form[0]);
-    // console.log(form[1]);
-    // console.log(form[2]);
-    // console.log(form[3]);
-    // console.log(radioSelected[0].optionItemName);
-    // console.log(checkOptions);
     setLoading(false);
   }, []);
 
+  // update additional options
   useEffect(() => {
     handleChangeOptions();
   }, [radioSelected, checkSelected]);
+
+  useEffect(() => {
+    handleChangeOptions();
+    setTotalPrice(countTotalPrice(form));
+  }, [quantity]);
+
+  // set the new price for each time the additional option form has been updated
+  useEffect(() => {
+    // additionalOptionForm.forEach(a => {
+    //   console.log(a);
+    // });
+    let additionalOptionPrice = countTotalPrice(additionalOptionForm);
+    setTotalPrice((additionalOptionPrice + item.price).toFixed(2) * quantity);
+  }, [additionalOptionForm]);
 
   if (loading) {
     return (
@@ -301,10 +319,25 @@ export const DetailOrder = props => {
               </View>
             );
           })}
+          <View style={styles.quantityWrapper}>
+            <TouchableOpacity
+              style={{marginRight: 20, opacity: quantity < 2 ? 0.4 : 1}}
+              disabled={quantity < 2 ? true : false}
+              onPress={() => setQuantity(prevState => prevState - 1)}>
+              <Feather name="minus-circle" size={30} color={'black'} />
+            </TouchableOpacity>
+            <Text style={{marginRight: 20, fontSize: 21}}>{quantity}</Text>
+            <TouchableOpacity
+              style={{opacity: quantity > 9 ? 0.4 : 1}}
+              disabled={quantity > 9 ? true : false}
+              onPress={() => setQuantity(prevState => prevState + 1)}>
+              <Feather name="plus-circle" size={30} color={'black'} />
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
       <View style={styles.orderButtonWrapper}>
-        <TouchableOpacity style={styles.orderButton} onPress={() => handleSubmit()}>
+        <TouchableOpacity style={styles.orderButton} onPress={() => handleAddToCart()}>
           <Text
             style={{
               textAlign: 'center',
@@ -390,5 +423,12 @@ const styles = StyleSheet.create({
     padding: 15,
     backgroundColor: 'black',
     marginTop: 10,
+  },
+  quantityWrapper: {
+    flexDirection: 'row',
+    width,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 15,
   },
 });

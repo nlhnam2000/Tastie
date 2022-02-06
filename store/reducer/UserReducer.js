@@ -20,7 +20,10 @@ import {
   EMAIL_PHONE_NOT_EXISTED,
   CHECK_EXISTING_EMAIL_PHONE,
   CLEAR_ALERT_MESSAGE,
+  ADD_TO_CART,
+  REMOVE_CART,
 } from '../action/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user_id: null,
@@ -43,6 +46,45 @@ const initialState = {
   triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
+  userCart: {
+    provider_id: null,
+    provider_name: null,
+    date: null,
+    cart: [],
+    // totalPrice: 0.0,
+  },
+  /* 
+    userCart: {
+      provider_id: 100000, 
+      provider_name: pizza hut
+      cart: [
+        {
+          product_id: 1,
+          productName: itemTitle, 
+          productPrice: price, 
+          productImage: image, 
+          additionalOptions: [
+
+          ], 
+          totalProductPrice: 1,
+          quantity: 1,
+        }, 
+        {
+          product_id: 2,
+          productName: itemTitle, 
+          productPrice: price, 
+          productImage: image, 
+          additionalOptions: [
+
+          ], 
+          totalProductPrice: 1,
+          quantity: 1,
+        }
+      ], 
+      totalPrice: 0,
+    }
+      
+  */
 };
 
 export const UserReducer = (state = initialState, action) => {
@@ -168,6 +210,23 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case CLEAR_ALERT_MESSAGE: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case ADD_TO_CART: {
+      return {
+        ...state,
+        userCart: {
+          provider_id: payload.userCart.provider_id,
+          provider_name: payload.userCart.provider_name,
+          date: payload.userCart.date,
+          cart: [...state.userCart.cart, payload.userCart.cartItem],
+        },
+      };
+    }
+    case REMOVE_CART: {
       return {
         ...state,
         ...payload,

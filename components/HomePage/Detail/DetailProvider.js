@@ -18,10 +18,10 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import {onScroll} from 'react-native-redash';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
+import {useSelector, useDispatch} from 'react-redux';
+import {NavigateToCart} from '../../../store/action/navigation';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -31,8 +31,11 @@ export const DetailProvider = props => {
   const [loading, setLoading] = useState(true);
   const {data} = props.route.params;
   const scrollY = useRef(new Animated.Value(0)).current;
+  const state = useSelector(state => state.UserReducer);
+  const dispatch = useDispatch();
 
   useEffect(() => {
+    console.log(tabPosition);
     setLoading(false);
   }, []);
 
@@ -47,11 +50,7 @@ export const DetailProvider = props => {
 
   const height = scrollY.interpolate({
     inputRange: [-100, 0, 100],
-    outputRange: [
-      HEADER_IMAGE_HEIGHT + 100,
-      HEADER_IMAGE_HEIGHT,
-      HEADER_IMAGE_HEIGHT - 100,
-    ],
+    outputRange: [HEADER_IMAGE_HEIGHT + 100, HEADER_IMAGE_HEIGHT, HEADER_IMAGE_HEIGHT - 100],
     extrapolate: 'clamp',
   });
 
@@ -80,7 +79,7 @@ export const DetailProvider = props => {
   });
 
   const [tabPosition, setTabPosition] = useState([]);
-  const ref = useRef(null);
+  const ref = useRef();
 
   const scrollToIndex = index => {
     // if (tabPosition.length > index) {
@@ -104,22 +103,20 @@ export const DetailProvider = props => {
     let categoryTitle = item.categoryTitle;
     return (
       <TouchableOpacity
-        style={
-          categoryTitle === selectedTab
-            ? styles.categoryTitleClicked
-            : styles.categoryTitle
-        }
+        style={categoryTitle === selectedTab ? styles.categoryTitleClicked : styles.categoryTitle}
         onPress={() => {
           scrollToIndex(index);
           setSelectedTab(categoryTitle);
         }}>
-        <Text style={{fontSize: 16, fontWeight: 'bold'}}>
-          {item.categoryTitle}
-        </Text>
+        <Text style={{fontSize: 16, fontWeight: 'bold'}}>{item.categoryTitle}</Text>
       </TouchableOpacity>
     );
   };
-  ``;
+
+  // useEffect(() => {
+  //   console.log(tabPosition);
+  // }, [tabPosition]);
+
   if (loading) {
     return (
       <SafeAreaView style={styles.container}>
@@ -139,7 +136,7 @@ export const DetailProvider = props => {
             {opacity: navbarOpacity, height: navbarHeight},
           ]}>
           <Animated.View style={[styles.navbar, {opacity: navbarOpacity}]}>
-            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+            <TouchableOpacity onPress={() => props.navigation.navigate('Home Page')}>
               <Feather name="arrow-left" size={22} color={'#000'} />
             </TouchableOpacity>
             <Text style={{fontWeight: 'bold', fontSize: 20}}>{data.title}</Text>
@@ -165,12 +162,11 @@ export const DetailProvider = props => {
 
         <Animated.ScrollView
           ref={ref}
-          onScroll={Animated.event(
-            [{nativeEvent: {contentOffset: {y: scrollY}}}],
-            {useNativeDriver: false},
-          )}
-          scrollEventThrottle={16}
-          //pagingEnabled={true}
+          onScroll={Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
+            useNativeDriver: false,
+          })}
+          scrollEventThrottle={1}
+          // pagingEnabled={true}
           style={styles.wrapper}>
           <Animated.Image
             source={data.image}
@@ -179,7 +175,7 @@ export const DetailProvider = props => {
           />
           <Animated.View style={[styles.navbarButtonWrapper, {opacity}]}>
             <TouchableOpacity
-              onPress={() => props.navigation.goBack()}
+              onPress={() => props.navigation.navigate('Home Page')}
               style={{
                 borderRadius: 40,
                 padding: 5,
@@ -223,13 +219,11 @@ export const DetailProvider = props => {
               <View style={styles.info}>
                 <Text style={{fontWeight: '600'}}>
                   {' '}
-                  <Feather name="star" size={17} color={'#000'} /> {data.rating}{' '}
-                  ({data.numberRating} ratings) • {data.mainCategory}
+                  <Feather name="star" size={17} color={'#000'} /> {data.rating} (
+                  {data.numberRating} ratings) • {data.mainCategory}
                 </Text>
                 <Text style={{color: 'gray'}}>Open until {data.openHour}</Text>
-                <Text style={{color: 'gray'}}>
-                  Tap for hours, address and more
-                </Text>
+                <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
               </View>
               <TouchableOpacity>
                 <Feather name="chevron-right" size={24} color={'#000'} />
@@ -294,9 +288,7 @@ export const DetailProvider = props => {
                     <Feather name="star" size={20} color={'#fff'} />
                   </View>
 
-                  <Text style={{fontWeight: 'bold', fontSize: 18}}>
-                    $25 until $100
-                  </Text>
+                  <Text style={{fontWeight: 'bold', fontSize: 18}}>$25 until $100</Text>
                 </View>
                 <Feather name="chevron-right" size={20} color={'#000'} />
               </View>
@@ -319,11 +311,12 @@ export const DetailProvider = props => {
                       const layout = event.nativeEvent.layout;
                       tabPosition[index] = layout.y;
                       setTabPosition(tabPosition);
+                      // setTabPosition(prevState => [...prevState, layout.y]);
                       // console.log(tabPosition);
                       // console.log('height:', layout.height);
                       // console.log('width:', layout.width);
                       // console.log('x:', layout.x);
-                      // console.log('y:', layout.y);
+                      console.log('y:', layout.y);
                     }}
                     style={styles.menuContentWrapper}
                     key={category.categoryId}>
@@ -340,7 +333,10 @@ export const DetailProvider = props => {
                         return (
                           <TouchableOpacity
                             onPress={() =>
-                              props.navigation.navigate('DetailOrder', {item})
+                              props.navigation.navigate('DetailOrder', {
+                                item,
+                                provider: {provider_id: data.id, provider_name: data.title},
+                              })
                             }
                             style={styles.foodWrapper}
                             key={item.itemId}>
@@ -348,13 +344,29 @@ export const DetailProvider = props => {
                               <Text style={{fontWeight: '600', fontSize: 18}}>
                                 {item.itemTitle}
                               </Text>
-                              <Text>{item.price}</Text>
+                              <Text>${item.price}</Text>
                               <Text style={{color: 'gray'}}>{item.note}</Text>
                             </View>
-                            <ImageBackground
-                              style={styles.foodImage}
-                              source={item.image}
-                            />
+                            <ImageBackground style={styles.foodImage} source={item.image}>
+                              {state.userCart.cart.some(obj => obj.product_id === item.itemId) ? (
+                                <View style={styles.productQuantity}>
+                                  <Text
+                                    style={{
+                                      fontWeight: '500',
+                                      color: 'white',
+                                      textAlign: 'center',
+                                    }}>
+                                    {
+                                      state.userCart.cart[
+                                        state.userCart.cart.findIndex(
+                                          obj => obj.product_id === item.itemId,
+                                        )
+                                      ].quantity
+                                    }
+                                  </Text>
+                                </View>
+                              ) : null}
+                            </ImageBackground>
                           </TouchableOpacity>
                         );
                       })}
@@ -365,6 +377,24 @@ export const DetailProvider = props => {
             </View>
           </View>
         </Animated.ScrollView>
+        {state.userCart.cart.length > 0 ? (
+          <TouchableOpacity
+            style={{
+              width: '95%',
+              padding: 15,
+              backgroundColor: 'black',
+              position: 'absolute',
+              top: '99%',
+            }}
+            onPress={() => {
+              dispatch(NavigateToCart());
+              props.navigation.navigate('Home Page');
+            }}>
+            <Text style={{color: 'white', textAlign: 'center', fontSize: 19, fontWeight: '500'}}>
+              View cart ({state.userCart.cart.length})
+            </Text>
+          </TouchableOpacity>
+        ) : null}
       </SafeAreaView>
     );
   }
@@ -375,6 +405,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: 'white',
   },
   wrapper: {
     backgroundColor: 'white',
@@ -486,5 +517,28 @@ const styles = StyleSheet.create({
   foodImage: {
     width: 100,
     height: 100,
+    position: 'relative',
+  },
+  addtocartButton: {
+    padding: 5,
+    borderRadius: 15,
+    borderWidth: 1,
+    borderColor: colors.red,
+    width: '40%',
+    marginTop: 15,
+  },
+  productQuantity: {
+    marginTop: 5,
+    borderRadius: 100,
+    backgroundColor: 'black',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 30,
+    height: 30,
+    paddingVertical: 5,
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'white',
+    left: '65%',
   },
 });
