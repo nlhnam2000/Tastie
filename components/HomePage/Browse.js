@@ -18,13 +18,20 @@ import Feather from 'react-native-vector-icons/Feather';
 import {ShortcutImage} from '../../assets/dummy/ShortcutImage';
 import colors from '../../colors/colors';
 import {NavigationBar} from '../Menu/NavigationBar';
+import io from 'socket.io-client';
+import {IP_ADDRESS} from '../../global';
 
+let socket;
 const {width, height} = Dimensions.get('window');
 
 export const Browse = props => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    socket = io(`http://${IP_ADDRESS}:3007`);
+    socket.on('shipperLocation', data => {
+      console.log('Shipper location', data);
+    });
     setLoading(false);
   }, []);
 

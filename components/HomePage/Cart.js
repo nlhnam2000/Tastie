@@ -20,6 +20,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {NavigateToHome} from '../../store/action/navigation';
 import {popularData} from '../../assets/dummy/popularData';
+import {RemoveCart} from '../../store/action/cart';
 
 const {width} = Dimensions.get('screen');
 
@@ -64,6 +65,7 @@ export const Cart = props => {
   const getProviderInfo = provider_id => {
     console.log(popularData[provider_id - 1]);
     let provider = popularData[provider_id - 1];
+    dispatch(NavigateToHome());
     props.navigation.navigate('DetailProvider', {data: provider});
   };
 
@@ -119,7 +121,10 @@ export const Cart = props => {
         </View>
         <View style={styles.cartWrapper}>
           {state.userCart.cart.map((item, index) => (
-            <View style={styles.cartItem} key={index}>
+            <TouchableOpacity
+              style={styles.cartItem}
+              key={index}
+              onPress={() => dispatch(RemoveCart(item))}>
               <View style={styles.cartItemLeft}>
                 <Text>{item.quantity}x</Text>
                 {additionalOptions[index] !== '' ? (
@@ -140,7 +145,7 @@ export const Cart = props => {
               <View style={styles.cartItemRight}>
                 <Text style={{fontWeight: '500'}}>${item.totalProductPrice}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
           ))}
         </View>
         <View style={styles.totalPriceWrapper}>
@@ -154,6 +159,7 @@ export const Cart = props => {
           color={colors.primary}
           onPress={() => getProviderInfo(state.userCart.provider_id)}
         />
+        <Button title="Show" onPress={() => console.log(state.userCart)} />
       </SafeAreaView>
       <NavigationBar active={props.tabname} />
     </View>

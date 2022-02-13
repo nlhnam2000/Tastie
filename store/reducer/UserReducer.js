@@ -227,9 +227,26 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case REMOVE_CART: {
+      let copy = {...state};
+      let removedPosition = copy.userCart.cart.indexOf(payload.cartRemoved);
+      copy.userCart.cart.splice(removedPosition, 1);
+
+      // if the cart is empty
+      if (copy.userCart.cart.length === 0) {
+        return {
+          ...state,
+          userCart: {
+            provider_id: null,
+            provider_name: null,
+            date: null,
+            cart: [],
+          },
+        };
+      }
+
       return {
         ...state,
-        ...payload,
+        ...copy,
       };
     }
     default: {

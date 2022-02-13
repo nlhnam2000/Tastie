@@ -9,6 +9,7 @@ import {
   StatusBar,
   TouchableOpacity,
   TextInput,
+  Image,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {NavigationBar} from '../Menu/NavigationBar';
@@ -16,10 +17,13 @@ import Geolocation from 'react-native-geolocation-service';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import Geocoder from 'react-native-geocoding';
 import axios from 'axios';
-import {GEOCODING_API} from '../../global';
+import {GEOCODING_API, IP_ADDRESS} from '../../global';
 import {getDistance} from 'geolib';
+import io from 'socket.io-client';
+import {SimpleAlertDialog} from '../Error/AlertDialog';
 
 Geocoder.init('AIzaSyDRXvYbjscujWed7pBPKRGCIsmx922HTJI');
+let socket;
 
 export const Notification = props => {
   const [location, setLocation] = useState({latitude: 0, longitude: 0});
@@ -27,8 +31,11 @@ export const Notification = props => {
     latitude: 0,
     longitude: 0,
   });
+  const [shipperLocation, setShipperLocation] = useState({});
   const [loading, setLoading] = useState(true);
   const [address, setAddress] = useState('Road');
+  const [notification, setNotification] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -80,6 +87,8 @@ export const Notification = props => {
   };
 
   useEffect(() => {
+    socket = io(`http://${IP_ADDRESS}:3007`);
+
     setTimeout(async () => {
       if (Platform.OS === 'ios') {
         let permission = await Geolocation.requestAuthorization('whenInUse');
@@ -105,11 +114,22 @@ export const Notification = props => {
           console.warn(err);
         }
       }
-      console.log(
-        'Lat and long: ' + location.latitude + ' ' + location.longitude,
-      );
+      console.log('Lat and long: ' + location.latitude + ' ' + location.longitude);
     }, 200);
     setTimeout(() => {
+      socket.on('shipperLocation', data => {
+        console.log('Shipper location:', data);
+        setShipperLocation(prevState => ({
+          ...prevState,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          shipperName: data.shipperName,
+        }));
+      });
+      socket.on('shipper-has-arrived', message => {
+        setNotification(message);
+        setOpenModal(true);
+      });
       setLoading(false);
     }, 2000);
 
@@ -117,6 +137,17 @@ export const Notification = props => {
     //   Geolocation.clearWatch(watchID);
     // };
   }, []);
+
+  useEffect(() => {
+    if (location.latitude !== 0 && location.longitude !== 0) {
+      console.log('send location to shipper');
+      socket.emit('send-location', location);
+    }
+  }, [location]);
+
+  useEffect(() => {
+    console.log('Shipper location changed', shipperLocation);
+  }, [shipperLocation]);
 
   if (loading) {
     return (
@@ -136,9 +167,9 @@ export const Notification = props => {
         <MapView
           provider={PROVIDER_GOOGLE} // remove if not using Google Maps
           style={styles.map}
-          minZoomLevel={17}
+          // minZoomLevel={17}
           // onPress={event => getAddressString(event)}
-          onPress={event => setMarker(event)}
+          // onPress={event => setMarker(event)}
           showsUserLocation
           initialRegion={{
             latitude: 12.203214000000004,
@@ -146,26 +177,40 @@ export const Notification = props => {
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}
-          region={{
-            latitude: location.latitude,
-            longitude: location.longitude,
-            latitudeDelta: 0.015,
-            longitudeDelta: 0.0121,
-          }}
+          region={
+            shipperLocation.shipperName
+              ? {
+                  latitude: shipperLocation.latitude,
+                  longitude: shipperLocation.longitude,
+                  latitudeDelta: 0.015,
+                  longitudeDelta: 0.0121,
+                }
+              : {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                  latitudeDelta: 0.015,
+                  longitudeDelta: 0.0121,
+                }
+          }
           // onRegionChange={event => onRegionChange(event)}
         >
-          <Marker
-            coordinate={{
-              latitude: markerLocation.latitude,
-              longitude: markerLocation.longitude,
-            }}
-            title="You are here"
-            description="This is your location"
-          />
+          {shipperLocation.latitude ? (
+            <Marker
+              coordinate={{
+                latitude: shipperLocation.latitude,
+                longitude: shipperLocation.longitude,
+              }}
+              // image={(require('../../assets/image/shipperMarker.png'), {width: '100', height: '100'})}
+              title={shipperLocation.shipperName}
+              description="Your order will be comming soon !">
+              <Image
+                source={require('../../assets/image/shipperMarker.png')}
+                style={{width: 30, height: 30}}
+              />
+            </Marker>
+          ) : null}
         </MapView>
-        <TouchableOpacity
-          style={styles.currentPositionButton}
-          onPress={() => focusToLocation()}>
+        <TouchableOpacity style={styles.currentPositionButton} onPress={() => focusToLocation()}>
           <Feather name="navigation" size={20} color={'black'} />
         </TouchableOpacity>
         <TouchableOpacity
@@ -173,9 +218,15 @@ export const Notification = props => {
           onPress={() => getDistanceLocation(location, markerLocation)}>
           <Feather name="navigation-2" size={20} color={'black'} />
         </TouchableOpacity>
-        <View style={styles.inputWrapper}>
+        {/* <View style={styles.inputWrapper}>
           <TextInput style={styles.inputField} value={address} editable />
-        </View>
+        </View> */}
+        {/* Alert Dialog here */}
+        <SimpleAlertDialog
+          message={notification}
+          visible={openModal}
+          onCancel={() => setOpenModal(false)}
+        />
       </View>
       <NavigationBar active={props.tabname} />
     </View>
@@ -220,6 +271,3 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
 });
-
-//12.203214000000004, 109.19345021534353
-// 10.766593900159473 106.69504882698446

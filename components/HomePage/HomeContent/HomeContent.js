@@ -24,8 +24,6 @@ import {categoryData} from '../../../assets/dummy/categoryData';
 import {popularData} from '../../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
 
-import {signout} from '../../../store/action/auth';
-
 export const HomeContent = props => {
   const headerTab = ['Delivery', 'Pickup'];
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
@@ -36,11 +34,7 @@ export const HomeContent = props => {
   const renderCategoryList = ({item}) => {
     return (
       <View style={styles.categoryItem}>
-        <Image
-          style={styles.categoryImage}
-          source={item.image}
-          resizeMode="contain"
-        />
+        <Image style={styles.categoryImage} source={item.image} resizeMode="contain" />
         <Text style={styles.categoryTitle}>{item.title}</Text>
       </View>
     );
@@ -73,17 +67,11 @@ export const HomeContent = props => {
                   <TouchableOpacity
                     onPress={() => setSelectedTab(tab)}
                     // onPress={() => dispatch(signout())}
-                    style={
-                      tab === selectedTab
-                        ? styles.tabButtonClicked
-                        : styles.tabButton
-                    }
+                    style={tab === selectedTab ? styles.tabButtonClicked : styles.tabButton}
                     key={index}>
                     <Text
                       style={
-                        tab === selectedTab
-                          ? styles.labelTabButtonClicked
-                          : styles.labelTabButton
+                        tab === selectedTab ? styles.labelTabButtonClicked : styles.labelTabButton
                       }>
                       {tab}
                     </Text>
@@ -140,9 +128,7 @@ export const HomeContent = props => {
                 return (
                   <TouchableOpacity
                     key={index}
-                    onPress={() =>
-                      props.navigation.navigate('DetailProvider', {data: item})
-                    }>
+                    onPress={() => props.navigation.navigate('DetailProvider', {data: item})}>
                     <View style={styles.popularDataWrapper}>
                       <ImageBackground
                         style={styles.popularImage}
@@ -151,9 +137,7 @@ export const HomeContent = props => {
                       />
                       <View style={styles.popularDetail}>
                         <View style={styles.popularInfo}>
-                          <Text style={{fontWeight: 'bold', color: 'black'}}>
-                            {item.title}
-                          </Text>
+                          <Text style={{fontWeight: 'bold', color: 'black'}}>{item.title}</Text>
                           <Text>{item.deliveryTime}</Text>
                         </View>
                         <View style={styles.popularRating}>

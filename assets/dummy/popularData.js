@@ -226,13 +226,6 @@ export const popularData = [
             note: '*Limit 2 Pizza Pies per Order*',
             image: require('../image/SlideShowImg/Picture3.jpg'),
           },
-          {
-            itemId: 4,
-            itemTitle: 'Garlic Knots',
-            price: 4.99,
-            note: '*Limit 2 Pizza Pies per Order*',
-            image: require('../image/SlideShowImg/Picture4.jpg'),
-          },
         ],
       },
       {
@@ -295,6 +288,20 @@ export const popularData = [
           },
           {
             itemId: 2,
+            itemTitle: 'Garlic Knots',
+            price: 4.99,
+            note: '*Limit 2 Pizza Pies per Order*',
+            image: require('../image/SlideShowImg/Picture2.jpg'),
+          },
+          {
+            itemId: 3,
+            itemTitle: 'Garlic Knots',
+            price: 4.99,
+            note: '*Limit 2 Pizza Pies per Order*',
+            image: require('../image/SlideShowImg/Picture2.jpg'),
+          },
+          {
+            itemId: 4,
             itemTitle: 'Garlic Knots',
             price: 4.99,
             note: '*Limit 2 Pizza Pies per Order*',

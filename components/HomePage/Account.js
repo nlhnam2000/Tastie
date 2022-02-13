@@ -83,7 +83,9 @@ export const Account = props => {
         </TouchableOpacity>
         <ScrollView>
           <View style={{width, paddingHorizontal: 20, marginTop: 15}}>
-            <TouchableOpacity style={styles.menuWrapper}>
+            <TouchableOpacity
+              style={styles.menuWrapper}
+              onPress={() => props.navigation.navigate('DetailOrder')}>
               <MaterialCommunity name="bookmark" size={26} color={'black'} />
               <Text
                 style={{

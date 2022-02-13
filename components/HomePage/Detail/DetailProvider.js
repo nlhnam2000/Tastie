@@ -93,7 +93,7 @@ export const DetailProvider = props => {
     // }
     ref.current.scrollTo({
       x: 0,
-      y: tabPosition[index - 1],
+      y: tabPosition[index - 1] + 150,
       animated: true,
     });
   };
@@ -112,10 +112,6 @@ export const DetailProvider = props => {
       </TouchableOpacity>
     );
   };
-
-  // useEffect(() => {
-  //   console.log(tabPosition);
-  // }, [tabPosition]);
 
   if (loading) {
     return (
@@ -304,36 +300,32 @@ export const DetailProvider = props => {
                 <Text style={{fontSize: 19}}>Menus</Text>
                 <Feather name="search" size={20} color={'#000'} />
               </View>
-              {data.categories.map((category, index) => {
-                return (
-                  <View
-                    onLayout={event => {
-                      const layout = event.nativeEvent.layout;
-                      tabPosition[index] = layout.y;
-                      setTabPosition(tabPosition);
-                      // setTabPosition(prevState => [...prevState, layout.y]);
-                      // console.log(tabPosition);
-                      // console.log('height:', layout.height);
-                      // console.log('width:', layout.width);
-                      // console.log('x:', layout.x);
-                      console.log('y:', layout.y);
-                    }}
-                    style={styles.menuContentWrapper}
-                    key={category.categoryId}>
-                    <Text
-                      style={{
-                        textAlign: 'left',
-                        fontWeight: 'bold',
-                        fontSize: 25,
-                      }}>
-                      {category.categoryTitle}
-                    </Text>
-                    <View style={styles.menuContent}>
-                      {category.items.map((item, id) => {
+            </View>
+            {data.categories.map((category, index) => {
+              return (
+                <View
+                  onLayout={event => {
+                    const layout = event.nativeEvent.layout;
+                    tabPosition[index] = layout.y;
+                    setTabPosition(tabPosition);
+                  }}
+                  style={styles.menuContentWrapper}
+                  key={category.categoryId}>
+                  <Text
+                    style={{
+                      textAlign: 'left',
+                      fontWeight: 'bold',
+                      fontSize: 25,
+                    }}>
+                    {category.categoryTitle}
+                  </Text>
+                  <View style={styles.menuContent}>
+                    {category.items.map((item, id) => {
+                      if (state.userCart.cart.some(obj => obj.product_id === item.itemId)) {
                         return (
                           <TouchableOpacity
                             onPress={() =>
-                              props.navigation.navigate('DetailOrder', {
+                              props.navigation.navigate('DetailFood', {
                                 item,
                                 provider: {provider_id: data.id, provider_name: data.title},
                               })
@@ -348,33 +340,51 @@ export const DetailProvider = props => {
                               <Text style={{color: 'gray'}}>{item.note}</Text>
                             </View>
                             <ImageBackground style={styles.foodImage} source={item.image}>
-                              {state.userCart.cart.some(obj => obj.product_id === item.itemId) ? (
-                                <View style={styles.productQuantity}>
-                                  <Text
-                                    style={{
-                                      fontWeight: '500',
-                                      color: 'white',
-                                      textAlign: 'center',
-                                    }}>
-                                    {
-                                      state.userCart.cart[
-                                        state.userCart.cart.findIndex(
-                                          obj => obj.product_id === item.itemId,
-                                        )
-                                      ].quantity
-                                    }
-                                  </Text>
-                                </View>
-                              ) : null}
+                              <View style={styles.productQuantity}>
+                                <Text
+                                  style={{
+                                    fontWeight: '500',
+                                    color: 'white',
+                                    textAlign: 'center',
+                                  }}>
+                                  {
+                                    state.userCart.cart[
+                                      state.userCart.cart.findIndex(
+                                        obj => obj.product_id === item.itemId,
+                                      )
+                                    ].quantity
+                                  }
+                                </Text>
+                              </View>
                             </ImageBackground>
                           </TouchableOpacity>
                         );
-                      })}
-                    </View>
+                      }
+                      return (
+                        <TouchableOpacity
+                          onPress={() =>
+                            props.navigation.navigate('DetailFood', {
+                              item,
+                              provider: {provider_id: data.id, provider_name: data.title},
+                            })
+                          }
+                          style={styles.foodWrapper}
+                          key={item.itemId}>
+                          <View style={styles.foodInfo}>
+                            <Text style={{fontWeight: '600', fontSize: 18}}>{item.itemTitle}</Text>
+                            <Text>${item.price}</Text>
+                            <Text style={{color: 'gray'}}>{item.note}</Text>
+                          </View>
+                          <ImageBackground
+                            style={styles.foodImage}
+                            source={item.image}></ImageBackground>
+                        </TouchableOpacity>
+                      );
+                    })}
                   </View>
-                );
-              })}
-            </View>
+                </View>
+              );
+            })}
           </View>
         </Animated.ScrollView>
         {state.userCart.cart.length > 0 ? (
@@ -384,7 +394,7 @@ export const DetailProvider = props => {
               padding: 15,
               backgroundColor: 'black',
               position: 'absolute',
-              top: '99%',
+              top: Platform.OS === 'ios' ? '99%' : '90%',
             }}
             onPress={() => {
               dispatch(NavigateToCart());

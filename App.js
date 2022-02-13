@@ -41,7 +41,7 @@ import {HomeScreen} from './screens/HomeScreen';
 import {SideMenu} from './components/Menu/SideMenu';
 import {Home} from './components/HomePage/Home';
 import {DetailProvider} from './components/HomePage/Detail/DetailProvider';
-import {DetailOrder} from './components/HomePage/Detail/DetailFood';
+import {DetailFood} from './components/HomePage/Detail/DetailFood';
 import {Account} from './components/HomePage/Account';
 import {ForgotForm} from './components/UserAdmission/ForgotPassword/ForgotForm';
 import {ResetPasswordDone} from './components/UserAdmission/ForgotPassword/ResetPasswordDone';
@@ -53,16 +53,12 @@ import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
+import {DetailOrder} from './components/HomePage/Detail/DetailOrder';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
 
-import {
-  EmailVerification,
-  retrieveToken,
-  signout,
-  TokenNotFound,
-} from './store/action/auth';
+import {EmailVerification, retrieveToken, signout, TokenNotFound} from './store/action/auth';
 import colors from './colors/colors';
 import axios from 'axios';
 import {IP_ADDRESS, getAccessToken} from './global';
@@ -113,27 +109,15 @@ export default function App(props) {
           //   />
           // </Drawer.Navigator>
           <Stack.Navigator initialRouteName="Home Page">
-            <Stack.Screen
-              name="Home Page"
-              component={HomeScreen}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Home Page" component={HomeScreen} options={{headerShown: false}} />
             <Stack.Screen
               name="DetailProvider"
               component={DetailProvider}
               options={{headerShown: false}}
             />
-            <Stack.Screen
-              name="DetailOrder"
-              component={DetailOrder}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="DetailFood" component={DetailFood} options={{headerShown: false}} />
             {/* <Stack.Screen name="Cart" component={Cart} /> */}
-            <Stack.Screen
-              name="Account"
-              component={Account}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Account" component={Account} options={{headerShown: false}} />
             <Stack.Screen
               name="DetailAccount"
               component={DetailAccount}
@@ -143,14 +127,15 @@ export default function App(props) {
                 headerShown: false,
               }}
             />
+            <Stack.Screen
+              name="DetailOrder"
+              component={DetailOrder}
+              options={{headerShown: false}}
+            />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName="Begin">
-            <Stack.Screen
-              name="Begin"
-              component={Begin}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Begin" component={Begin} options={{headerShown: false}} />
             <Stack.Screen
               name="Login"
               component={LoginForm}
@@ -181,20 +166,13 @@ export default function App(props) {
               component={PasswordInputForm}
               options={{headerShown: false}}
             />
-            <Stack.Screen
-              name="ForgotForm"
-              component={ForgotForm}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="ForgotForm" component={ForgotForm} options={{headerShown: false}} />
             <Stack.Screen
               name="ChangePasswordForm"
               component={ChangePasswordForm}
               options={{headerShown: false}}
             />
-            <Stack.Screen
-              name="ResetPasswordDone"
-              component={ResetPasswordDone}
-            />
+            <Stack.Screen name="ResetPasswordDone" component={ResetPasswordDone} />
           </Stack.Navigator>
         )}
       </NavigationContainer>

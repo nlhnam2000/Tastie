@@ -25,7 +25,7 @@ import moment from 'moment';
 
 const {width, height} = Dimensions.get('screen');
 
-export const DetailOrder = props => {
+export const DetailFood = props => {
   const {item, provider} = props.route.params;
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);

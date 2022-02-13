@@ -29,7 +29,7 @@ import {popularData} from '../../assets/dummy/popularData';
 import {NavigationBar} from '../Menu/NavigationBar';
 import {HomeContent} from './HomeContent/HomeContent';
 import {DetailProvider} from './Detail/DetailProvider';
-import {DetailOrder} from './Detail/DetailFood';
+import {DetailFood} from './Detail/DetailFood';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -41,11 +41,7 @@ export const Home = props => {
   const renderCategoryList = ({item}) => {
     return (
       <View style={styles.categoryItem}>
-        <Image
-          style={styles.categoryImage}
-          source={item.image}
-          resizeMode="contain"
-        />
+        <Image style={styles.categoryImage} source={item.image} resizeMode="contain" />
         <Text style={styles.categoryTitle}>{item.title}</Text>
       </View>
     );
