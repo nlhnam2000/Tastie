@@ -101,6 +101,7 @@ export const DetailFood = props => {
         totalProductPrice: totalPrice,
         quantity: quantity,
       },
+      status: null,
     };
 
     dispatch(AddToCart(cartForm));

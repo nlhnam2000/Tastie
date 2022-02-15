@@ -54,6 +54,7 @@ import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInput
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
 import {DetailOrder} from './components/HomePage/Detail/DetailOrder';
+import {OrderStatus} from './screens/OrderStatus';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -130,6 +131,11 @@ export default function App(props) {
             <Stack.Screen
               name="DetailOrder"
               component={DetailOrder}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="OrderStatus"
+              component={OrderStatus}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

@@ -22,8 +22,11 @@ import {
   CLEAR_ALERT_MESSAGE,
   ADD_TO_CART,
   REMOVE_CART,
+  INCREASE_QUANTITY,
+  DECREASE_QUANTITY,
+  UPDATE_CART,
+  ORDER_CONFIRMED,
 } from '../action/types';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user_id: null,
@@ -51,6 +54,7 @@ const initialState = {
     provider_name: null,
     date: null,
     cart: [],
+    status: null,
     // totalPrice: 0.0,
   },
   /* 
@@ -223,6 +227,7 @@ export const UserReducer = (state = initialState, action) => {
           provider_name: payload.userCart.provider_name,
           date: payload.userCart.date,
           cart: [...state.userCart.cart, payload.userCart.cartItem],
+          status: payload.userCart.status,
         },
       };
     }
@@ -247,6 +252,44 @@ export const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         ...copy,
+      };
+    }
+    case INCREASE_QUANTITY: {
+      console.log('Increase quantity');
+      let prevCart = [...state.userCart.cart];
+      let position = state.userCart.cart.indexOf(payload.cart);
+
+      prevCart[position].quantity += 1;
+      prevCart[position].totalProductPrice += prevCart[position].productPrice;
+      return {
+        ...state,
+        userCart: {
+          ...state.userCart,
+          cart: prevCart,
+        },
+      };
+    }
+    case DECREASE_QUANTITY: {
+      let prevCart = [...state.userCart.cart];
+      let position = state.userCart.cart.indexOf(payload.cart);
+
+      prevCart[position].quantity -= 1;
+      prevCart[position].totalProductPrice -= prevCart[position].productPrice;
+      return {
+        ...state,
+        userCart: {
+          ...state.userCart,
+          cart: prevCart,
+        },
+      };
+    }
+    case ORDER_CONFIRMED: {
+      return {
+        ...state,
+        userCart: {
+          ...state.userCart,
+          status: payload.orderStatus,
+        },
       };
     }
     default: {

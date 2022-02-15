@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const IP_ADDRESS = '192.168.55.7';
+export const IP_ADDRESS = '192.168.0.102';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 
 export const getAccessToken = async refreshToken => {
