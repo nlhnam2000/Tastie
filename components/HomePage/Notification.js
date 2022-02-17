@@ -14,13 +14,14 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import {NavigationBar} from '../Menu/NavigationBar';
 import Geolocation from 'react-native-geolocation-service';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
+import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import Geocoder from 'react-native-geocoding';
 import axios from 'axios';
-import {GEOCODING_API, IP_ADDRESS} from '../../global';
+import {GEOCODING_API, IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
 import {getDistance} from 'geolib';
 import io from 'socket.io-client';
 import {SimpleAlertDialog} from '../Error/AlertDialog';
+import {ShipperLocation} from '../../assets/dummy/ShipperLocations';
 
 Geocoder.init('AIzaSyDRXvYbjscujWed7pBPKRGCIsmx922HTJI');
 let socket;
@@ -36,6 +37,9 @@ export const Notification = props => {
   const [address, setAddress] = useState('Road');
   const [notification, setNotification] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [polyline, setPolyline] = useState(null);
+
+  const mapRef = useRef();
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -50,6 +54,22 @@ export const Notification = props => {
       },
       {enableHighAccuracy: true},
     );
+  };
+
+  const getDirection = async (fromLocation, toLocation) => {
+    let res = await axios.get(
+      `https://api.mapbox.com/directions/v5/mapbox/driving/${fromLocation.longitude},${fromLocation.latitude};${toLocation.longitude},${toLocation.latitude}?geometries=geojson&access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+    );
+    console.log(res.data.routes[0].geometry.coordinates);
+    let array = [];
+    res.data.routes[0].geometry.coordinates.forEach(c => {
+      array.push({
+        latitude: c[1],
+        longitude: c[0],
+      });
+    });
+    setPolyline(array);
+    // setPolyline([...res.data.routes[0].geometry.coordinates]);
   };
 
   const getAddressString = async event => {
@@ -130,6 +150,7 @@ export const Notification = props => {
         setNotification(message);
         setOpenModal(true);
       });
+      // mapRef.current.fitToElements(true);
       setLoading(false);
     }, 2000);
 
@@ -169,7 +190,7 @@ export const Notification = props => {
           style={styles.map}
           // minZoomLevel={17}
           // onPress={event => getAddressString(event)}
-          // onPress={event => setMarker(event)}
+          onPress={event => setMarker(event)}
           showsUserLocation
           initialRegion={{
             latitude: 12.203214000000004,
@@ -193,7 +214,7 @@ export const Notification = props => {
                 }
           }
           // onRegionChange={event => onRegionChange(event)}
-        >
+          ref={mapRef}>
           {shipperLocation.latitude ? (
             <Marker
               coordinate={{
@@ -209,13 +230,34 @@ export const Notification = props => {
               />
             </Marker>
           ) : null}
+          {markerLocation.latitude !== 0 && markerLocation.longitude !== 0 ? (
+            <Marker
+              coordinate={{
+                latitude: markerLocation.latitude,
+                longitude: markerLocation.longitude,
+              }}
+            />
+          ) : null}
+          {polyline ? (
+            <Polyline
+              coordinates={polyline}
+              strokeColor="green" // fallback for when `strokeColors` is not supported by the map-provider
+              strokeWidth={6}
+            />
+          ) : null}
+          {/* <Polyline
+            coordinates={ShipperLocation}
+            strokeColor="green" // fallback for when `strokeColors` is not supported by the map-provider
+            strokeWidth={6}
+          /> */}
         </MapView>
         <TouchableOpacity style={styles.currentPositionButton} onPress={() => focusToLocation()}>
           <Feather name="navigation" size={20} color={'black'} />
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.currentPositionButton, {top: '70%'}]}
-          onPress={() => getDistanceLocation(location, markerLocation)}>
+          // onPress={() => getDistanceLocation(location, markerLocation)}
+          onPress={() => getDirection(markerLocation, location)}>
           <Feather name="navigation-2" size={20} color={'black'} />
         </TouchableOpacity>
         {/* <View style={styles.inputWrapper}>

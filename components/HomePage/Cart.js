@@ -11,6 +11,7 @@ import {
   Dimensions,
   SafeAreaView,
   Button,
+  ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationBar} from '../Menu/NavigationBar';
@@ -18,14 +19,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {NavigateToHome} from '../../store/action/navigation';
 import {popularData} from '../../assets/dummy/popularData';
-import {
-  RemoveCart,
-  IncreaseQuantity,
-  DecreaseQuantity,
-  OrderConfirmed,
-} from '../../store/action/cart';
+import {RemoveCart, IncreaseQuantity, DecreaseQuantity, SubmitOrder} from '../../store/action/cart';
 import {DuoAlertDialog} from '../Error/AlertDialog';
 import io from 'socket.io-client';
+import {between} from 'react-native-redash';
 
 const {width} = Dimensions.get('screen');
 
@@ -112,63 +109,66 @@ export const Cart = props => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.content}>
-        <TouchableOpacity
-          style={styles.headerWrapper}
-          onPress={() => getProviderInfo(state.userCart.provider_id)}>
-          <Text
-            style={{
-              fontWeight: '600',
-              fontSize: 18,
-              textAlign: 'center',
-            }}>
-            {state.userCart.provider_name}
-          </Text>
-          <Text style={{textAlign: 'center', marginTop: 10, color: 'gray'}}>
-            {state.userCart.date}
-          </Text>
-        </TouchableOpacity>
-        <View style={styles.cartWrapper}>
-          {state.userCart.cart.map((item, index) => (
-            <View
-              style={styles.cartItem}
-              key={index}
-              // onPress={() => dispatch(RemoveCart(item))}
-            >
-              <View style={styles.cartItemLeft}>
-                {additionalOptions[index] !== '' ? (
-                  <View style={{justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                    <Text style={{fontSize: 17, fontWeight: '500'}}>{item.productName}</Text>
-                    <Text style={{marginTop: 5, fontSize: 14, color: 'gray'}}>
-                      {additionalOptions[index]}
+        <ScrollView scrollEnabled={false} contentContainerStyle={{height: '80%'}}>
+          <TouchableOpacity
+            style={styles.headerWrapper}
+            onPress={() => getProviderInfo(state.userCart.provider_id)}>
+            <Text
+              style={{
+                fontWeight: '600',
+                fontSize: 18,
+                textAlign: 'center',
+              }}>
+              {state.userCart.provider_name}
+            </Text>
+            <Text style={{textAlign: 'center', marginTop: 10, color: 'gray'}}>
+              {state.userCart.date}
+            </Text>
+          </TouchableOpacity>
+          <View style={styles.cartWrapper}>
+            {state.userCart.cart.map((item, index) => (
+              <View
+                style={styles.cartItem}
+                key={index}
+                // onPress={() => dispatch(RemoveCart(item))}
+              >
+                <View style={styles.cartItemLeft}>
+                  {additionalOptions[index] !== '' ? (
+                    <View style={{justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+                      <Text style={{fontSize: 17, fontWeight: '500'}}>{item.productName}</Text>
+                      <Text style={{marginTop: 5, fontSize: 14, color: 'gray'}}>
+                        {additionalOptions[index]}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text style={{marginLeft: 20, fontSize: 17, fontWeight: '500'}}>
+                      {item.productName}
                     </Text>
-                  </View>
-                ) : (
-                  <Text style={{marginLeft: 20, fontSize: 17, fontWeight: '500'}}>
-                    {item.productName}
-                  </Text>
-                )}
-              </View>
-              <View style={styles.cartItemRight}>
-                <Text style={{fontWeight: '500', fontSize: 18}}>${item.totalProductPrice}</Text>
-
-                <View style={styles.quantityWrapper}>
-                  <TouchableOpacity style={{marginRight: 10}}>
-                    <Feather
-                      name="minus-circle"
-                      size={21}
-                      color={'black'}
-                      onPress={() =>
-                        item.quantity > 1 ? dispatch(DecreaseQuantity(item)) : setOpenModal(true)
-                      }
-                    />
-                  </TouchableOpacity>
-                  <Text style={{marginRight: 10, fontSize: 18}}>{item.quantity}</Text>
-                  <TouchableOpacity style={{}} onPress={() => dispatch(IncreaseQuantity(item))}>
-                    <Feather name="plus-circle" size={21} color={'black'} />
-                  </TouchableOpacity>
+                  )}
                 </View>
-              </View>
-              <DuoAlertDialog
+                <View style={styles.cartItemRight}>
+                  <Text style={{fontWeight: '500', fontSize: 18}}>${item.totalProductPrice}</Text>
+
+                  <View style={styles.quantityWrapper}>
+                    <TouchableOpacity style={{marginRight: 10}}>
+                      <Feather
+                        name="minus-circle"
+                        size={21}
+                        color={'black'}
+                        onPress={() =>
+                          item.quantity > 1
+                            ? dispatch(DecreaseQuantity(item))
+                            : dispatch(RemoveCart(item))
+                        }
+                      />
+                    </TouchableOpacity>
+                    <Text style={{marginRight: 10, fontSize: 18}}>{item.quantity}</Text>
+                    <TouchableOpacity style={{}} onPress={() => dispatch(IncreaseQuantity(item))}>
+                      <Feather name="plus-circle" size={21} color={'black'} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                {/* <DuoAlertDialog
                 message={'Are you sure to delete from the cart ?'}
                 onConfirm={() => {
                   dispatch(RemoveCart(item));
@@ -176,36 +176,58 @@ export const Cart = props => {
                 }}
                 onCancel={() => setOpenModal(false)}
                 visible={openModal}
-              />
+              /> */}
+              </View>
+            ))}
+          </View>
+          <View style={styles.totalPriceWrapper}>
+            <Text style={{fontWeight: '400', fontSize: 17}}>Total: </Text>
+            <Text style={{fontWeight: '600', fontSize: 17}}>
+              ${totalCartPrice(state.userCart.cart)}
+            </Text>
+          </View>
+          <View style={styles.totalPriceWrapper}>
+            <Text style={{fontWeight: '400', fontSize: 17}}>Payment method: </Text>
+            <View style={{flexDirection: 'row'}}>
+              <View
+                style={{
+                  padding: 5,
+                  borderRadius: 5,
+                  borderWidth: 1,
+                  borderColor: 'black',
+                  marginRight: 5,
+                }}>
+                <Feather name="dollar-sign" size={10} color={'black'} />
+              </View>
+              <Text style={{fontWeight: '600', fontSize: 17}}>Cash</Text>
             </View>
-          ))}
-        </View>
-        <View style={styles.totalPriceWrapper}>
-          <Text style={{fontWeight: '400', fontSize: 17}}>Total: </Text>
-          <Text style={{fontWeight: '600', fontSize: 17}}>
-            ${totalCartPrice(state.userCart.cart)}
-          </Text>
-        </View>
-        {state.userCart.status !== null ? (
-          <Button
-            title="Watch your order"
-            color={colors.primary}
-            onPress={() =>
-              props.navigation.navigate('OrderStatus', {order: null, customerData: null})
-            }
-          />
-        ) : (
-          <Button
-            title="Submit order"
-            color={colors.primary}
-            onPress={() => {
-              dispatch(OrderConfirmed());
-              props.navigation.navigate('OrderStatus', {order: state.userCart});
-            }}
-          />
-        )}
+          </View>
+          {state.userCart.status !== null ? (
+            <Button
+              title="Watch your order"
+              color={colors.primary}
+              onPress={() =>
+                props.navigation.navigate('OrderStatus', {order: null, customerData: null})
+              }
+            />
+          ) : (
+            <Button
+              title="Submit order"
+              color={colors.primary}
+              onPress={() => {
+                dispatch(SubmitOrder());
+                props.navigation.navigate('OrderStatus', {order: state.userCart});
+              }}
+            />
+          )}
 
-        <Button title="Show" onPress={() => console.log(state.userCart)} />
+          {/* <Button title="Show" onPress={() => console.log(state.userCart)} /> */}
+        </ScrollView>
+        {/* <TouchableOpacity style={styles.submitOrderButton}>
+          <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>
+            Submit order
+          </Text>
+        </TouchableOpacity> */}
       </SafeAreaView>
       <NavigationBar active={props.tabname} />
     </View>
@@ -220,7 +242,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   content: {
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
     width,
@@ -264,7 +286,7 @@ const styles = StyleSheet.create({
   totalPriceWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     width,
     paddingHorizontal: 20,
     marginBottom: 40,
@@ -274,5 +296,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 10,
+  },
+  submitOrderButton: {
+    width: '100%',
+    backgroundColor: 'black',
+    padding: 15,
   },
 });

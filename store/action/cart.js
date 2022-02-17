@@ -17,6 +17,7 @@ export const AddToCart = cartForm => dispatch => {
 };
 
 export const RemoveCart = cartRemoved => dispatch => {
+  console.log('cartRemoved', cartRemoved);
   dispatch({
     type: REMOVE_CART,
     payload: {
@@ -43,7 +44,7 @@ export const DecreaseQuantity = cart => dispatch => {
   });
 };
 
-export const OrderConfirmed = () => dispatch => {
+export const SubmitOrder = () => dispatch => {
   dispatch({
     type: ORDER_CONFIRMED,
     payload: {
@@ -51,3 +52,4 @@ export const OrderConfirmed = () => dispatch => {
     },
   });
 };
+

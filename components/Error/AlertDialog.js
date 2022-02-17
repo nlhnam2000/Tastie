@@ -6,7 +6,9 @@ import {
   Button,
   TouchableOpacity,
   Modal,
+  ActivityIndicator,
 } from 'react-native';
+import colors from '../../colors/colors';
 
 // ActionAlertDialog is for onCancel() using dispacth to interact with the redux store
 export const ActionAlertDialog = props => {
@@ -28,9 +30,7 @@ export const ActionAlertDialog = props => {
               width: '100%',
               marginTop: 20,
             }}>
-            <TouchableOpacity
-              style={styles.confirmModal}
-              onPress={() => props.onCancel()}>
+            <TouchableOpacity style={styles.confirmModal} onPress={() => props.onCancel()}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -68,9 +68,7 @@ export const SimpleAlertDialog = props => {
               width: '100%',
               marginTop: 20,
             }}>
-            <TouchableOpacity
-              style={styles.confirmModal}
-              onPress={() => props.onCancel()}>
+            <TouchableOpacity style={styles.confirmModal} onPress={() => props.onCancel()}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -105,9 +103,7 @@ export const DuoAlertDialog = props => {
               width: '100%',
               marginTop: 20,
             }}>
-            <TouchableOpacity
-              style={styles.cancelModal}
-              onPress={() => props.onCancel()}>
+            <TouchableOpacity style={styles.cancelModal} onPress={() => props.onCancel()}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -117,9 +113,7 @@ export const DuoAlertDialog = props => {
                 No
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.confirmModal}
-              onPress={() => props.onConfirm()}>
+            <TouchableOpacity style={styles.confirmModal} onPress={() => props.onConfirm()}>
               <Text
                 style={{
                   textAlign: 'center',
@@ -129,6 +123,30 @@ export const DuoAlertDialog = props => {
                 Yes
               </Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+};
+
+export const SingleDialog = props => {
+  return (
+    <Modal animationType="slide" transparent={true} visible={props.visible}>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalView}>
+          <Text style={{fontSize: 18, fontWeight: '500', textAlign: 'center'}}>
+            {props.message}
+          </Text>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100%',
+              marginTop: 20,
+            }}>
+            <ActivityIndicator size={'large'} color={colors.red} />
           </View>
         </View>
       </View>

@@ -37,7 +37,12 @@ export const DetailOrder = props => {
   useEffect(() => {
     // socket = io(`ws://5fbe-27-69-189-219.ngrok.io`); // ngrok
     socket = io(`http://${IP_ADDRESS}:3007`);
-    socket.on('hello-from-server', data => {
+    // socket.on('hello-from-server', data => {
+    //   setServerMessage(prevState => setServerMessage([...prevState, data.message]));
+    // });
+
+    socket.on('receive-shipper-inbox', data => {
+      console.log(data);
       setServerMessage(prevState => setServerMessage([...prevState, data.message]));
     });
 
@@ -54,7 +59,7 @@ export const DetailOrder = props => {
   // }, [serverMessage]);
 
   const sendMessage = message => {
-    socket.emit('hello-from-client', message);
+    socket.emit('customer-inbox', message);
   };
 
   if (loading) {
