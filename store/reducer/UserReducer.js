@@ -26,6 +26,7 @@ import {
   DECREASE_QUANTITY,
   UPDATE_CART,
   ORDER_CONFIRMED,
+  SET_USER_LOCATION,
 } from '../action/types';
 
 const initialState = {
@@ -49,6 +50,11 @@ const initialState = {
   triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
+  userLocation: {
+    latitude: 0,
+    longitude: 0,
+    address: null,
+  },
   userCart: {
     provider_id: null,
     provider_name: null,
@@ -72,6 +78,7 @@ const initialState = {
           ], 
           totalProductPrice: 1,
           quantity: 1,
+          SpecialInstruction: ''
         }, 
         {
           product_id: 2,
@@ -83,6 +90,7 @@ const initialState = {
           ], 
           totalProductPrice: 1,
           quantity: 1,
+          SpecialInstruction: ''
         }
       ], 
       totalPrice: 0,
@@ -233,7 +241,7 @@ export const UserReducer = (state = initialState, action) => {
     }
     case REMOVE_CART: {
       let copy = {...state};
-      let removedPosition = copy.userCart.cart.indexOf(payload.cartRemoved);
+      let removedPosition = state.userCart.cart.indexOf(payload.cartRemoved);
       copy.userCart.cart.splice(removedPosition, 1);
 
       // if the cart is empty
@@ -289,6 +297,15 @@ export const UserReducer = (state = initialState, action) => {
         userCart: {
           ...state.userCart,
           status: payload.orderStatus,
+        },
+      };
+    }
+    case SET_USER_LOCATION: {
+      return {
+        ...state,
+        userLocation: {
+          ...state.userLocation,
+          ...payload.userLocation,
         },
       };
     }

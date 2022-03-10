@@ -37,3 +37,6 @@ export const UPDATE_CART = 'UPDATE_CART';
 
 // order status
 export const ORDER_CONFIRMED = 'ORDER_CONFIRMED';
+
+// set location
+export const SET_USER_LOCATION = 'SET_USER_LOCATION';

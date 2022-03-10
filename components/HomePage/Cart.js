@@ -22,7 +22,6 @@ import {popularData} from '../../assets/dummy/popularData';
 import {RemoveCart, IncreaseQuantity, DecreaseQuantity, SubmitOrder} from '../../store/action/cart';
 import {DuoAlertDialog} from '../Error/AlertDialog';
 import io from 'socket.io-client';
-import {between} from 'react-native-redash';
 
 const {width} = Dimensions.get('screen');
 
@@ -49,7 +48,6 @@ export const Cart = props => {
     }
 
     setLoading(false);
-    // console.log(typeof state.userCart.cart[0].totalProductPrice);
   }, []);
 
   useEffect(() => {
@@ -139,11 +137,23 @@ export const Cart = props => {
                       <Text style={{marginTop: 5, fontSize: 14, color: 'gray'}}>
                         {additionalOptions[index]}
                       </Text>
+                      {item.SpecialInstruction !== '' ? (
+                        <Text style={{marginTop: 5, fontSize: 14, color: 'gray'}}>
+                          Note: {item.SpecialInstruction}
+                        </Text>
+                      ) : null}
                     </View>
                   ) : (
-                    <Text style={{marginLeft: 20, fontSize: 17, fontWeight: '500'}}>
-                      {item.productName}
-                    </Text>
+                    <>
+                      <Text style={{marginLeft: 20, fontSize: 17, fontWeight: '500'}}>
+                        {item.productName}
+                      </Text>
+                      {item.SpecialInstruction !== '' ? (
+                        <Text style={{marginTop: 5, fontSize: 14, color: 'gray'}}>
+                          Note: {item.SpecialInstruction}
+                        </Text>
+                      ) : null}
+                    </>
                   )}
                 </View>
                 <View style={styles.cartItemRight}>

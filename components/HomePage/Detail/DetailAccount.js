@@ -16,17 +16,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import {useSelector, useDispatch} from 'react-redux';
 import {signout} from '../../../store/action/auth';
 import colors from '../../../colors/colors';
-import {
-  SimpleAlertDialog,
-  DuoAlertDialog,
-  ActionAlertDialog,
-} from '../../Error/AlertDialog';
+import {SimpleAlertDialog, DuoAlertDialog, ActionAlertDialog} from '../../Error/AlertDialog';
 import {IP_ADDRESS, getAccessToken} from '../../../global';
-import {
-  clearAlertMessage,
-  UpdateProfile,
-  retrieveToken,
-} from '../../../store/action/auth';
+import {clearAlertMessage, UpdateProfile, retrieveToken} from '../../../store/action/auth';
 import {NavigateToAccount} from '../../../store/action/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -74,8 +66,7 @@ export const DetailAccount = props => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <SafeAreaView
-          style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <SafeAreaView style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
           <ActivityIndicator size={'large'} color={colors.red} />
         </SafeAreaView>
       </View>
@@ -97,20 +88,13 @@ export const DetailAccount = props => {
               }}>
               Profile
             </Text>
-            <TouchableOpacity
-              disabled={!edit}
-              onPress={() => submitForm(updateForm)}>
-              <Text
-                style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>
-                Update
-              </Text>
+            <TouchableOpacity disabled={!edit} onPress={() => submitForm(updateForm)}>
+              <Text style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>Update</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.accountContent}>
             <View style={styles.inputWrapper}>
-              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-                Mobile Number
-              </Text>
+              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Mobile Number</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -122,9 +106,7 @@ export const DetailAccount = props => {
                   editable={edit}
                   style={styles.inputField}
                   value={updateForm.phone}
-                  onChangeText={phone =>
-                    setUpdateForm({...updateForm, phone: phone})
-                  }
+                  onChangeText={phone => setUpdateForm({...updateForm, phone: phone})}
                   ref={phoneInputRef}
                 />
                 <Button
@@ -142,16 +124,12 @@ export const DetailAccount = props => {
             <View style={{backgroundColor: '#f2f2f2', height: 5, width}}></View>
             <View style={styles.nameInputWrapper}>
               <View>
-                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-                  First Name
-                </Text>
+                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>First Name</Text>
                 <TextInput
                   editable={edit}
                   style={styles.inputField}
                   value={updateForm.first_name}
-                  onChangeText={text =>
-                    setUpdateForm({...updateForm, first_name: text})
-                  }
+                  onChangeText={text => setUpdateForm({...updateForm, first_name: text})}
                   ref={firstnameInputRef}
                   onFocus={() =>
                     firstnameInputRef.current.setNativeProps({
@@ -164,16 +142,12 @@ export const DetailAccount = props => {
                 />
               </View>
               <View>
-                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-                  Last Name
-                </Text>
+                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Last Name</Text>
                 <TextInput
                   editable={edit}
                   style={styles.inputField}
                   value={updateForm.last_name}
-                  onChangeText={text =>
-                    setUpdateForm({...updateForm, last_name: text})
-                  }
+                  onChangeText={text => setUpdateForm({...updateForm, last_name: text})}
                   ref={lastnameInputRef}
                   onFocus={() =>
                     lastnameInputRef.current.setNativeProps({
@@ -187,9 +161,7 @@ export const DetailAccount = props => {
               </View>
             </View>
             <View style={styles.inputWrapper}>
-              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>
-                Email
-              </Text>
+              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Email</Text>
               <View
                 style={{
                   flexDirection: 'row',
@@ -202,9 +174,7 @@ export const DetailAccount = props => {
                   autoCapitalize="none"
                   style={styles.inputField}
                   value={updateForm.email}
-                  onChangeText={email =>
-                    setUpdateForm({...updateForm, email: email})
-                  }
+                  onChangeText={email => setUpdateForm({...updateForm, email: email})}
                   ref={emailInputRef}
                   onFocus={() =>
                     emailInputRef.current.setNativeProps({
@@ -224,18 +194,10 @@ export const DetailAccount = props => {
                 alignItems: 'center',
               }}>
               {Platform.OS === 'ios' ? (
-                <Button
-                  color={colors.yellow}
-                  title="Logout"
-                  onPress={() => setOpenModal(true)}
-                />
+                <Button color={colors.yellow} title="Logout" onPress={() => setOpenModal(true)} />
               ) : (
                 <View style={{width: '30%'}}>
-                  <Button
-                    color={colors.yellow}
-                    title="Logout"
-                    onPress={() => setOpenModal(true)}
-                  />
+                  <Button color={colors.yellow} title="Logout" onPress={() => setOpenModal(true)} />
                 </View>
               )}
             </View>

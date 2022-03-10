@@ -59,7 +59,13 @@ import {OrderStatus} from './screens/OrderStatus';
 // redux
 import {useSelector, useDispatch} from 'react-redux';
 
-import {EmailVerification, retrieveToken, signout, TokenNotFound} from './store/action/auth';
+import {
+  EmailVerification,
+  retrieveToken,
+  signout,
+  TokenNotFound,
+  SetUserLocation,
+} from './store/action/auth';
 import colors from './colors/colors';
 import axios from 'axios';
 import {IP_ADDRESS, getAccessToken} from './global';
@@ -80,10 +86,15 @@ export default function App(props) {
   useEffect(() => {
     setTimeout(async () => {
       let refreshToken = await AsyncStorage.getItem('user_token');
+      let userLocation = await AsyncStorage.getItem('@userLocation');
+      if (userLocation !== null) {
+        dispatch(SetUserLocation(JSON.parse(userLocation)));
+      }
 
       // console.log('refresh token', refreshToken);
       if (refreshToken !== null) {
         let accessToken = await getAccessToken(refreshToken);
+        // console.log('access token', accessToken);
         dispatch(retrieveToken(accessToken));
       } else {
         dispatch(TokenNotFound());
@@ -102,13 +113,6 @@ export default function App(props) {
     return (
       <NavigationContainer>
         {state.user_token !== null ? (
-          // <Drawer.Navigator drawerContent={props => <SideMenu {...props} />}>
-          //   <Drawer.Screen
-          //     name="Home Page"
-          //     component={HomeScreen}
-          //     options={{headerShown: false}}
-          //   />
-          // </Drawer.Navigator>
           <Stack.Navigator initialRouteName="Home Page">
             <Stack.Screen name="Home Page" component={HomeScreen} options={{headerShown: false}} />
             <Stack.Screen

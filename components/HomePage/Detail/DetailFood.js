@@ -31,6 +31,7 @@ export const DetailFood = props => {
   const [loading, setLoading] = useState(true);
   const [totalPrice, setTotalPrice] = useState(parseFloat(item.price));
   const [quantity, setQuantity] = useState(1);
+  const [note, setNote] = useState('');
 
   /* 
     This is pre-processing section
@@ -100,6 +101,7 @@ export const DetailFood = props => {
         additionalOptions: [...additionalOptionForm],
         totalProductPrice: totalPrice,
         quantity: quantity,
+        SpecialInstruction: note,
       },
       status: null,
     };
@@ -320,6 +322,20 @@ export const DetailFood = props => {
               </View>
             );
           })}
+          <View style={{width: '100%', padding: 20}}>
+            <Text style={{fontSize: 17, fontWeight: '600', marginBottom: 5}}>Note</Text>
+            <TextInput
+              style={{
+                width: '100%',
+                paddingVertical: 10,
+                borderBottomWidth: 1,
+                borderBottomColor: 'rgba(230,230,230,1)',
+              }}
+              placeholder="For example: no spicy, ..."
+              placeholderTextColor={'gray'}
+              onChangeText={text => setNote(text)}
+            />
+          </View>
           <View style={styles.quantityWrapper}>
             <TouchableOpacity
               style={{marginRight: 20, opacity: quantity < 2 ? 0.4 : 1}}

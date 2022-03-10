@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -38,6 +38,8 @@ export const OrderStatus = props => {
   const [prepairingStatus, setPrepairingStatus] = useState(false);
   const [inDeliveryStatus, setInDeliveryStatus] = useState(false);
   const [doneStatus, setDoneStatus] = useState(false);
+
+  const mapRef = useRef();
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -169,6 +171,22 @@ export const OrderStatus = props => {
     <View style={styles.container}>
       <View style={styles.container}>
         <MapView
+          ref={mapRef}
+          onLayout={event => {
+            mapRef.current.fitToCoordinates(
+              [
+                {
+                  latitude: 12.215482848373497,
+                  longitude: 109.193544129014,
+                },
+                location,
+              ],
+              {
+                edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+                animated: true,
+              },
+            );
+          }}
           style={styles.map}
           showsUserLocation
           provider={PROVIDER_GOOGLE}
@@ -194,6 +212,16 @@ export const OrderStatus = props => {
                 }
           }
           minZoomLevel={13}>
+          <Marker
+            coordinate={{
+              latitude: 12.215482848373497,
+              longitude: 109.193544129014,
+            }}>
+            <Image
+              source={require('../assets/image/providerMarker.png')}
+              style={{width: 30, height: 30}}
+            />
+          </Marker>
           {shipperLocation.latitude ? (
             <Marker
               coordinate={{

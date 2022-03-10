@@ -17,7 +17,7 @@ export const AddToCart = cartForm => dispatch => {
 };
 
 export const RemoveCart = cartRemoved => dispatch => {
-  console.log('cartRemoved', cartRemoved);
+  // console.log('cartRemoved', cartRemoved.card.additionalOptions);
   dispatch({
     type: REMOVE_CART,
     payload: {
@@ -52,4 +52,3 @@ export const SubmitOrder = () => dispatch => {
     },
   });
 };
-

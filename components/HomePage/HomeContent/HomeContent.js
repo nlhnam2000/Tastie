@@ -17,19 +17,31 @@ import {
   Animated,
   Platform,
   ActivityIndicator,
+  Modal,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {categoryData} from '../../../assets/dummy/categoryData';
 import {popularData} from '../../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
+import {SetUserLocation} from '../../../store/action/auth';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+
+const {width} = Dimensions.get('window');
 
 export const HomeContent = props => {
   const headerTab = ['Delivery', 'Pickup'];
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
   const [loading, setLoading] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
+
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
+  const [markerLocation, setMarkerLocation] = useState({
+    latitude: state.userLocation.latitude || null,
+    longitude: state.userLocation.longitude || null,
+  });
+  const [address, setAddress] = useState(state.userLocation.address || '');
 
   const renderCategoryList = ({item}) => {
     return (
@@ -44,8 +56,19 @@ export const HomeContent = props => {
     console.log(event.nativeEvent.contentOffset);
   };
 
+  const submitLocation = () => {
+    let data = {
+      latitude: markerLocation.latitude,
+      longitude: markerLocation.longitude,
+      address,
+    };
+    dispatch(SetUserLocation(data));
+    setOpenModal(false);
+  };
+
   useEffect(() => {
     setLoading(false);
+    console.log(state.userLocation);
   }, []);
 
   if (loading) {
@@ -79,6 +102,23 @@ export const HomeContent = props => {
                 );
               })}
             </View>
+            <View style={[styles.tabWrapper, {marginTop: -15}]}>
+              <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
+              <TouchableOpacity
+                onPress={() => setOpenModal(true)}
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '50%',
+                  marginLeft: 5,
+                }}>
+                <Text numberOfLines={1} style={{fontWeight: '400', fontSize: 18}}>
+                  {state.userLocation.address || 'Select'}
+                </Text>
+                <Feather name="chevron-down" size={20} color={'black'} />
+              </TouchableOpacity>
+            </View>
           </View>
 
           <ScrollView>
@@ -103,10 +143,6 @@ export const HomeContent = props => {
                     clearButtonMode="always"
                   />
                 </View>
-                {/* <TouchableOpacity style={styles.searchButton}>
-            <Feather name="clock" size={20} style={{marginRight: 5}} />
-            <Text>Search</Text>
-          </TouchableOpacity> */}
               </View>
             </View>
 
@@ -151,6 +187,91 @@ export const HomeContent = props => {
             </View>
           </ScrollView>
         </View>
+        <Modal animationType="slide" transparent={true} visible={openModal}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginBottom: 10,
+                }}>
+                <TouchableOpacity style={styles.modalHeader} onPress={() => setOpenModal(false)}>
+                  <Feather name="x" size={20} color={'black'} />
+                </TouchableOpacity>
+                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Select your location</Text>
+                <View style={{paddingHorizontal: 10}}></View>
+              </View>
+              <MapView
+                initialRegion={{
+                  latitude: state.userLocation.latitude || 12.203214000000004,
+                  longitude: state.userLocation.longitude || 109.19345021534353,
+                  latitudeDelta: 0.015,
+                  longitudeDelta: 0.0121,
+                }}
+                onPress={event =>
+                  setMarkerLocation({
+                    latitude: event.nativeEvent.coordinate.latitude,
+                    longitude: event.nativeEvent.coordinate.longitude,
+                    latitudeDelta: 0.015,
+                    longitudeDelta: 0.0121,
+                  })
+                }
+                showsUserLocation
+                showsMyLocationButton
+                minZoomLevel={17}
+                provider={PROVIDER_GOOGLE}
+                style={styles.map}>
+                {markerLocation.latitude && markerLocation.longitude ? (
+                  <Marker coordinate={markerLocation} />
+                ) : null}
+              </MapView>
+
+              <View style={styles.providerName}>
+                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Enter your address</Text>
+              </View>
+              <View style={styles.sectionWrapper}>
+                <View>
+                  <Feather name="map-pin" size={22} color={'black'} />
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '100%',
+                    paddingHorizontal: 15,
+                  }}>
+                  <TextInput
+                    style={{
+                      width: '100%',
+                      paddingVertical: 15,
+                      borderBottomWidth: 1,
+                    }}
+                    onChangeText={text => setAddress(text)}
+                    value={address}
+                  />
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  width: '100%',
+                  marginTop: 15,
+                  paddingHorizontal: 20,
+                }}>
+                <TouchableOpacity
+                  onPress={() => submitLocation()}
+                  style={{padding: 10, backgroundColor: 'black', borderRadius: 5}}>
+                  <Text style={{fontWeight: '500', color: 'white'}}>Done</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -173,9 +294,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     marginTop: Platform.OS === 'ios' ? 40 : 0,
     paddingHorizontal: 20,
-    // justifyContent: 'center',
-    // alignItems: 'center',
-    // flex: 1,
   },
   tabWrapper: {
     flexDirection: 'row',
@@ -185,7 +303,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   tabButton: {
-    // backgroundColor: '#000',
     borderRadius: 25,
     paddingVertical: 10,
     paddingHorizontal: 15,
@@ -273,5 +390,41 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 40,
     backgroundColor: '#e6e6e6',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    // backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  modalView: {
+    backgroundColor: 'white',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    borderWidth: 1,
+    borderColor: colors.secondary,
+    width,
+    height: '90%',
+    overflow: 'hidden',
+  },
+  map: {
+    width: '100%',
+    height: 200,
+  },
+  modalHeader: {
+    padding: 10,
+  },
+  providerName: {
+    padding: 15,
+    width: '100%',
+  },
+  sectionWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%',
+    paddingHorizontal: 15,
   },
 });

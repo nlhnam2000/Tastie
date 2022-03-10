@@ -16,6 +16,7 @@ import {
   SIGN_IN_ERROR,
   CLEAR_ALERT_MESSAGE,
   EMAIL_VERIFICATION_FAILED,
+  SET_USER_LOCATION,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS} from '../../global';
@@ -35,13 +36,10 @@ export const clearAlertMessage = () => dispatch => {
 
 export const signinWithPhone = (phone, otp) => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/login-with-otp`,
-      {
-        phone: phone,
-        otp: otp,
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/login-with-otp`, {
+      phone: phone,
+      otp: otp,
+    });
     await AsyncStorage.setItem('user_token', res.data.token);
     let token = await AsyncStorage.getItem('user_token');
     dispatch({
@@ -59,13 +57,10 @@ export const signinWithPhone = (phone, otp) => async dispatch => {
 
 export const signin = (phone, password) => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/sign-in`,
-      {
-        phone: phone,
-        password: password,
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/sign-in`, {
+      phone: phone,
+      password: password,
+    });
     // console.log('sign in');
     if (res.data.loginState === true) {
       let token = res.data.refreshToken;
@@ -128,6 +123,16 @@ export const signout = () => async dispatch => {
         isLoading: false,
         user_token: null,
         currentTab: 'Home',
+        userLocation: {
+          latitude: 0,
+          longitude: 0,
+          address: null,
+        },
+        provider_id: null,
+        provider_name: null,
+        date: null,
+        cart: [],
+        status: null,
       },
     });
   } catch (error) {
@@ -137,12 +142,9 @@ export const signout = () => async dispatch => {
 
 export const retrieveToken = token => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/get_profile`,
-      {
-        accessToken: token,
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/get_profile`, {
+      accessToken: token,
+    });
     if (res.data.status === true) {
       await AsyncStorage.setItem('user_token', res.data.profile.user_token);
       dispatch({
@@ -200,10 +202,7 @@ export const CheckExistingEmail = (phone, email) => async dispatch => {
         email,
       },
     );
-    if (
-      res.data.isPhoneDuplicated === true &&
-      res.data.isEmailDuplicated === true
-    ) {
+    if (res.data.isPhoneDuplicated === true && res.data.isEmailDuplicated === true) {
       dispatch({
         type: EMAIL_PHONE_EXISTED,
         payload: {
@@ -211,10 +210,7 @@ export const CheckExistingEmail = (phone, email) => async dispatch => {
         },
       });
     }
-    if (
-      res.data.isPhoneDuplicated === false ||
-      res.data.isEmailDuplicated === false
-    ) {
+    if (res.data.isPhoneDuplicated === false || res.data.isEmailDuplicated === false) {
       dispatch({
         type: EMAIL_PHONE_NOT_EXISTED,
         payload: {
@@ -242,12 +238,9 @@ export const AccountRegistration = body => dispatch => {
 
 export const SendOTP = email => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`,
-      {
-        email: email,
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`, {
+      email: email,
+    });
     if (res.data.status === true) {
       // await AsyncStorage.removeItem('verified_email_token');
       console.log('Email token ', res.data.result.verifyEmailToken);
@@ -265,14 +258,11 @@ export const SendOTP = email => async dispatch => {
 
 export const EmailVerification = (emailToken, otp, email) => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`,
-      {
-        verifyEmailToken: emailToken,
-        code: otp,
-        email: email,
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`, {
+      verifyEmailToken: emailToken,
+      code: otp,
+      email: email,
+    });
     if (res.data.status === true) {
       dispatch({
         type: EMAIL_VERIFICATION_DONE,
@@ -298,19 +288,16 @@ export const EmailVerification = (emailToken, otp, email) => async dispatch => {
 export const SkipUpdate = body => async dispatch => {
   // SKIP UPDATE ==> signup then navigate to the HomeScreen
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/sign-up`,
-      {
-        email: body.email,
-        password: body.password,
-        phone: body.phone,
-        first_name: body.firstname,
-        last_name: body.lastname,
-        role: 1,
-        gender: 1,
-        registered_at: new Date().toISOString().substring(0, 10),
-      },
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/sign-up`, {
+      email: body.email,
+      password: body.password,
+      phone: body.phone,
+      first_name: body.firstname,
+      last_name: body.lastname,
+      role: 1,
+      gender: 1,
+      registered_at: new Date().toISOString().substring(0, 10),
+    });
     if (res.data.registerState === true) {
       let data = res.data.profile;
       let token = res.data.refreshtoken;
@@ -341,10 +328,7 @@ export const SkipUpdate = body => async dispatch => {
 
 export const UpdateProfile = body => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/update`,
-      body,
-    );
+    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/update`, body);
     if (res.data.message === 'Update successfully') {
       if (res.data.refreshToken !== null) {
         await AsyncStorage.setItem('user_token', res.data.refreshToken); // set new refresh token when update email or phone
@@ -375,4 +359,18 @@ export const UpdateProfile = body => async dispatch => {
   } catch (error) {
     console.error(error);
   }
+};
+
+export const SetUserLocation = data => async dispatch => {
+  await AsyncStorage.setItem('@userLocation', JSON.stringify(data));
+  dispatch({
+    type: SET_USER_LOCATION,
+    payload: {
+      userLocation: {
+        latitude: data.latitude,
+        longitude: data.longitude,
+        address: data.address,
+      },
+    },
+  });
 };

@@ -9,6 +9,43 @@ export const popularData = [
     mainCategory: 'Pizza',
     openHour: '5 AM',
     closedHour: '10 PM',
+    address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+    location: {
+      latitude: 10.770426270078108,
+      longitude: 106.69433674255707,
+    },
+    reviews: [
+      {
+        customer: 'Hoang Nam',
+        comments: 'Nice service, quick delivery',
+        ratings: 5,
+      },
+      {
+        customer: 'John Doe',
+        comments: 'Nice service, quick delivery',
+        ratings: 5,
+      },
+      {
+        customer: 'User 1',
+        comments: 'Nice service, quick delivery',
+        ratings: 4,
+      },
+      {
+        customer: 'User 2',
+        comments: 'Nice service, quick delivery',
+        ratings: 5,
+      },
+      {
+        customer: 'User 3',
+        comments: 'Nice service, quick delivery',
+        ratings: 4,
+      },
+      {
+        customer: 'User 4',
+        comments: 'Nice service, quick delivery',
+        ratings: 4,
+      },
+    ],
     categories: [
       {
         categoryId: 1,
