@@ -20,16 +20,10 @@ import {createDrawerNavigator} from '@react-navigation/drawer';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {NavigationContainer} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
-import {signout} from '../../store/action/auth';
 import Feather from 'react-native-vector-icons/Feather';
-import colors from '../../colors/colors';
-import {categoryData} from '../../assets/dummy/categoryData';
-import {popularData} from '../../assets/dummy/popularData';
 
-import {NavigationBar} from '../Menu/NavigationBar';
+import {NavigationBar} from '../../components/Menu/NavigationBar';
 import {HomeContent} from './HomeContent/HomeContent';
-import {DetailProvider} from './Detail/DetailProvider';
-import {DetailFood} from './Detail/DetailFood';
 
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();

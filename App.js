@@ -38,23 +38,23 @@ import {LoginForm} from './components/UserAdmission/Login/LoginForm';
 import {Authentication} from './page/Authentication';
 import {SignupForm} from './screens/SignupForm';
 import {HomeScreen} from './screens/HomeScreen';
-import {SideMenu} from './components/Menu/SideMenu';
-import {Home} from './components/HomePage/Home';
-import {DetailProvider} from './components/HomePage/Detail/DetailProvider';
-import {DetailFood} from './components/HomePage/Detail/DetailFood';
-import {Account} from './components/HomePage/Account';
+import {Home} from './screens/HomePage/Home';
+import {DetailProvider} from './screens/HomePage/Detail/DetailProvider';
+import {DetailFood} from './screens/HomePage/Detail/DetailFood';
+import {Account} from './screens/HomePage/Account';
 import {ForgotForm} from './components/UserAdmission/ForgotPassword/ForgotForm';
 import {ResetPasswordDone} from './components/UserAdmission/ForgotPassword/ResetPasswordDone';
-import {Cart} from './components/HomePage/Cart';
+import {Cart} from './screens/HomePage/Cart';
 import {Begin} from './screens/Begin';
 import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
 import {EmailInputForm} from './components/UserAdmission/Signup/EmailInputForm';
 import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
-import {DetailAccount} from './components/HomePage/Detail/DetailAccount';
-import {DetailOrder} from './components/HomePage/Detail/DetailOrder';
+import {DetailAccount} from './screens/HomePage/Detail/DetailAccount';
+import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
 import {OrderStatus} from './screens/OrderStatus';
+import {GoToCheckout} from './screens/GoToCheckout';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -140,6 +140,11 @@ export default function App(props) {
             <Stack.Screen
               name="OrderStatus"
               component={OrderStatus}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="GoToCheckout"
+              component={GoToCheckout}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

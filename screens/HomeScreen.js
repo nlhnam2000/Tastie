@@ -15,13 +15,11 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {signout} from '../store/action/auth';
 
-import {SideMenu} from '../components/Menu/SideMenu';
-import {NavigationBar} from '../components/Menu/NavigationBar';
-import {Home} from '../components/HomePage/Home';
-import {Account} from '../components/HomePage/Account';
-import {Cart} from '../components/HomePage/Cart';
-import {Browse} from '../components/HomePage/Browse';
-import {Notification} from '../components/HomePage/Notification';
+import {Home} from '../screens/HomePage/Home';
+import {Account} from '../screens/HomePage/Account';
+import {Cart} from '../screens/HomePage/Cart';
+import {Browse} from '../screens/HomePage/Browse';
+import {Notification} from '../screens/HomePage/Notification';
 
 import {useSelector, useDispatch} from 'react-redux';
 

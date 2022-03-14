@@ -12,7 +12,7 @@ import {
   Image,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-import {NavigationBar} from '../Menu/NavigationBar';
+import {NavigationBar} from '../../components/Menu/NavigationBar';
 import Geolocation from 'react-native-geolocation-service';
 import MapView, {PROVIDER_GOOGLE, Marker, Polyline} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import Geocoder from 'react-native-geocoding';
@@ -20,7 +20,7 @@ import axios from 'axios';
 import {GEOCODING_API, IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
 import {getDistance} from 'geolib';
 import io from 'socket.io-client';
-import {SimpleAlertDialog} from '../Error/AlertDialog';
+import {SimpleAlertDialog} from '../../components/Error/AlertDialog';
 import {ShipperLocation} from '../../assets/dummy/ShipperLocations';
 
 Geocoder.init('AIzaSyDRXvYbjscujWed7pBPKRGCIsmx922HTJI');

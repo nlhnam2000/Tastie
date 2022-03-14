@@ -16,7 +16,7 @@ import {
   ImageBackground,
   ActivityIndicator,
 } from 'react-native';
-import {NavigationBar} from '../Menu/NavigationBar';
+import {NavigationBar} from '../../components/Menu/NavigationBar';
 import {useDispatch, useSelector} from 'react-redux';
 import {signout, retrieveToken, TokenNotFound} from '../../store/action/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';

@@ -14,13 +14,13 @@ import {
   ScrollView,
 } from 'react-native';
 import {useSelector, useDispatch} from 'react-redux';
-import {NavigationBar} from '../Menu/NavigationBar';
+import {NavigationBar} from '../../components/Menu/NavigationBar';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {NavigateToHome} from '../../store/action/navigation';
 import {popularData} from '../../assets/dummy/popularData';
 import {RemoveCart, IncreaseQuantity, DecreaseQuantity, SubmitOrder} from '../../store/action/cart';
-import {DuoAlertDialog} from '../Error/AlertDialog';
+import {DuoAlertDialog} from '../../components/Error/AlertDialog';
 import io from 'socket.io-client';
 
 const {width} = Dimensions.get('screen');
@@ -196,23 +196,8 @@ export const Cart = props => {
               ${totalCartPrice(state.userCart.cart)}
             </Text>
           </View>
-          <View style={styles.totalPriceWrapper}>
-            <Text style={{fontWeight: '400', fontSize: 17}}>Payment method: </Text>
-            <View style={{flexDirection: 'row'}}>
-              <View
-                style={{
-                  padding: 5,
-                  borderRadius: 5,
-                  borderWidth: 1,
-                  borderColor: 'black',
-                  marginRight: 5,
-                }}>
-                <Feather name="dollar-sign" size={10} color={'black'} />
-              </View>
-              <Text style={{fontWeight: '600', fontSize: 17}}>Cash</Text>
-            </View>
-          </View>
-          {state.userCart.status !== null ? (
+
+          {/* {state.userCart.status !== null ? (
             <Button
               title="Watch your order"
               color={colors.primary}
@@ -229,9 +214,28 @@ export const Cart = props => {
                 props.navigation.navigate('OrderStatus', {order: state.userCart});
               }}
             />
-          )}
-
-          {/* <Button title="Show" onPress={() => console.log(state.userCart)} /> */}
+          )} */}
+          <View style={{width, paddingHorizontal: 20}}>
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('GoToCheckout')}
+              style={{
+                width: '100%',
+                backgroundColor: 'black',
+                paddingVertical: 15,
+                paddingHorizontal: 20,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                  textTransform: 'uppercase',
+                  textAlign: 'center',
+                }}>
+                Go to checkout
+              </Text>
+            </TouchableOpacity>
+          </View>
         </ScrollView>
         {/* <TouchableOpacity style={styles.submitOrderButton}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>

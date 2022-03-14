@@ -25,9 +25,9 @@ import {useSelector, useDispatch} from 'react-redux';
 import {NavigateToCart} from '../../../store/action/navigation';
 import {FoodMenu} from './Provider/FoodMenu';
 import GestureRecognizer, {swipeDirection} from 'react-native-swipe-gestures';
-import {Rating} from '../../Rating/Rating';
+import {Rating} from '../../../components/Rating/Rating';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import {UpcomingProduct} from '../../Modal/UpcomingProduct';
+import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
