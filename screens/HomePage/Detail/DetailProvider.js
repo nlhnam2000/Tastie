@@ -37,7 +37,7 @@ export const DetailProvider = props => {
   const [loading, setLoading] = useState(true);
   const [openInfo, setOpenInfo] = useState(false);
   const [openAddress, setOpenAddress] = useState(false);
-  const [openUpcoming, setOpenUpcoming] = useState(true);
+  const [openUpcoming, setOpenUpcoming] = useState(false);
   const [openRating, setOpenRating] = useState(false);
   const [firstScroll, setFirstScroll] = useState(true);
   const {data} = props.route.params;
@@ -334,6 +334,23 @@ export const DetailProvider = props => {
                   <Feather name="chevron-right" size={20} color={'#000'} />
                 </View>
               </TouchableOpacity>
+              <View
+                style={{
+                  width: '100%',
+                  paddingHorizontal: 20,
+                  marginTop: 20,
+                }}>
+                <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <TouchableOpacity
+                    style={{borderRadius: 40}}
+                    onPress={() => setOpenUpcoming(true)}>
+                    <ImageBackground
+                      source={require('../../../assets/image/upcomingproduct.png')}
+                      style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
+                  </TouchableOpacity>
+                </View>
+              </View>
               <View style={styles.contentWrapper}>
                 <View
                   style={{

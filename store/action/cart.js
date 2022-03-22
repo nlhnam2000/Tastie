@@ -5,6 +5,7 @@ import {
   DECREASE_QUANTITY,
   UPDATE_CART,
   ORDER_CONFIRMED,
+  SAVE_TO_HISTORY_CART,
 } from './types';
 
 export const AddToCart = cartForm => dispatch => {
@@ -49,6 +50,17 @@ export const SubmitOrder = () => dispatch => {
     type: ORDER_CONFIRMED,
     payload: {
       orderStatus: 'order_confirmed',
+    },
+  });
+};
+
+export const SaveToHistoryCart = cartID => dispatch => {
+  // When the order is completed, save this to history then clear the userCart
+  // use AsyncStorage to store the history (call API when DB is ready)
+  dispatch({
+    type: SAVE_TO_HISTORY_CART,
+    payload: {
+      cartID,
     },
   });
 };

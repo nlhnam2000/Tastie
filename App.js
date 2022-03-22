@@ -31,20 +31,14 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // import components
-import {SignupScreen} from './components/UserAdmission/Signup/SignupScreen';
 import {SignupScreen2} from './components/UserAdmission/Signup/SignupScreen2';
-import {SignupScreen3} from './components/UserAdmission/Signup/SignupScreen3';
 import {LoginForm} from './components/UserAdmission/Login/LoginForm';
-import {Authentication} from './page/Authentication';
-import {SignupForm} from './screens/SignupForm';
 import {HomeScreen} from './screens/HomeScreen';
-import {Home} from './screens/HomePage/Home';
 import {DetailProvider} from './screens/HomePage/Detail/DetailProvider';
 import {DetailFood} from './screens/HomePage/Detail/DetailFood';
 import {Account} from './screens/HomePage/Account';
 import {ForgotForm} from './components/UserAdmission/ForgotPassword/ForgotForm';
 import {ResetPasswordDone} from './components/UserAdmission/ForgotPassword/ResetPasswordDone';
-import {Cart} from './screens/HomePage/Cart';
 import {Begin} from './screens/Begin';
 import {PhoneInputForm} from './components/UserAdmission/Signup/PhoneInputForm';
 import {EmailInputForm} from './components/UserAdmission/Signup/EmailInputForm';

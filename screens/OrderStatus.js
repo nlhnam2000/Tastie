@@ -20,6 +20,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {SimpleAlertDialog, SingleDialog} from '../components/Error/AlertDialog';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
+import {ScrollView} from 'react-native-gesture-handler';
 
 let socket;
 const {width, height} = Dimensions.get('window');
@@ -34,12 +35,20 @@ export const OrderStatus = props => {
   const [openModal, setOpenModal] = useState(false);
   const [polyline, setPolyline] = useState(null);
   const [waiting, setWaiting] = useState(true);
+  const [submittedStatus, setSubmittedStatus] = useState(true);
   const [confirmedStatus, setConfirmedStatus] = useState(false);
-  const [prepairingStatus, setPrepairingStatus] = useState(false);
-  const [inDeliveryStatus, setInDeliveryStatus] = useState(false);
-  const [doneStatus, setDoneStatus] = useState(false);
+  const [assignedStatus, setAssignedStatus] = useState(false);
+  const [pickedStatus, setPickedStatus] = useState(false);
+  const [completedStatus, setCompletedStatus] = useState(false);
+  const [openDetail, setOpenDetail] = useState(false);
+  const [additionalOptions, setAdditionalOptions] = useState([]);
+  const [trackingMessage, setTrackingMessage] = useState({
+    title: 'Order submitted',
+    message: `Your order from ${state.userCart.provider_name} has been placed.`,
+  });
 
   const mapRef = useRef();
+  const scrollRef = useRef();
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -54,6 +63,15 @@ export const OrderStatus = props => {
       },
       {enableHighAccuracy: true},
     );
+  };
+
+  const totalCartPrice = cart => {
+    let price = 0.0;
+    for (let i = 0; i < cart.length; i++) {
+      price += parseFloat(cart[i].totalProductPrice);
+    }
+
+    return price.toFixed(2);
   };
 
   useEffect(() => {
@@ -82,16 +100,29 @@ export const OrderStatus = props => {
           console.warn(err);
         }
       }
-      socket = io(`http://${IP_ADDRESS}:3007`);
+      socket = io(`http://${IP_ADDRESS}:3015`);
       if (order !== undefined || order !== null) {
-        socket.emit('customer-submit-order', order, {
-          customerName: state.first_name + ' ' + state.last_name,
-          customerPhone: state.phone,
-          location: {
-            latitude: 12.203214000000004,
-            longitude: 109.19345021534353,
+        socket.emit(
+          'customer-submit-order',
+          order,
+          {
+            name: state.first_name + ' ' + state.last_name,
+            phone: state.phone,
+            address: state.userLocation.address,
+            location: {
+              latitude: state.userLocation.latitude,
+              longitude: state.userLocation.longitude,
+            },
           },
-        });
+          {
+            name: state.userCart.provider_name,
+            address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+            location: {
+              latitude: 10.770426270078108,
+              longitude: 106.69433674255707,
+            },
+          },
+        );
       }
 
       socket.on('shipperLocation', data => {
@@ -102,34 +133,93 @@ export const OrderStatus = props => {
           longitude: data.longitude,
           shipperName: data.shipperName,
         }));
+        mapRef.current.fitToCoordinates(
+          [
+            {
+              latitude: state.userLocation.latitude,
+              longitude: state.userLocation.longitude,
+            },
+            {
+              latitude: shipperLocation.latitude,
+              longitude: shipperLocation.longitude,
+            },
+            {
+              // restaurant's location
+              latitude: 10.770426270078108,
+              longitude: 106.69433674255707,
+            },
+          ],
+          {
+            edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
+            animated: true,
+          },
+        );
       });
       socket.on('shipper-has-arrived', message => {
         setNotification(message);
         setOpenModal(true);
-        setDoneStatus(true);
+        setCompletedStatus(true);
+        setTrackingMessage(prev => ({
+          ...prev,
+          title: 'Order completed',
+          message: 'The shipper has arrived to your place.',
+        }));
       });
       socket.on('order-accepted', message => {
         setWaiting(false);
         // setNotification(message);
         // setOpenModal(true);
-        setConfirmedStatus(true);
+        setSubmittedStatus(true);
       });
       socket.on('shipper-arrived-provider', message => {
         // setNotification(message);
         // setOpenModal(true);
-        setPrepairingStatus(true);
+        // setPrepairingStatus(true);
+        setConfirmedStatus(true);
+        setTrackingMessage(prev => ({
+          ...prev,
+          title: 'Order confirmed',
+          message: 'The restaurant had confirmed your order and is prepairing your order. ',
+        }));
+      });
+      socket.on('order-assigned', () => {
+        setAssignedStatus(true);
+        setTrackingMessage(prev => ({
+          ...prev,
+          title: 'Order assigned',
+          message: 'We have found the shipper for you. Please wait for a moment',
+        }));
       });
       socket.on('shipper-on-the-way', message => {
         // setNotification(message);
         // setOpenModal(true);
-        setInDeliveryStatus(true);
+        // setInDeliveryStatus(true);
+        setPickedStatus(true);
+        setTrackingMessage(prev => ({
+          ...prev,
+          title: 'Order picked',
+          message: 'The shipper is on the way to your place. Your order will come to you soon',
+        }));
       });
-      socket.on('shipper-almost-arrived', message => {
-        setNotification(message);
-        setOpenModal(true);
-      });
+      // socket.on('shipper-almost-arrived', message => {
+      //   setNotification(message);
+      //   setOpenModal(true);
+      // });
 
       console.log(order);
+
+      let list = [];
+      state.userCart.cart.forEach(cart => {
+        let optionItemName = [];
+        cart.additionalOptions.forEach(additionalOption => {
+          additionalOption.options.forEach(option => {
+            optionItemName.push(option.optionItemName);
+          });
+        });
+        list.push(optionItemName.toString().split(',').join(', '));
+      });
+      setAdditionalOptions(list);
+
       setLoading(false);
     };
 
@@ -172,14 +262,22 @@ export const OrderStatus = props => {
       <View style={styles.container}>
         <MapView
           ref={mapRef}
+          showsMyLocationButton
+          pitchEnabled={false}
+          rotateEnabled={false}
+          scrollEnabled={false}
+          zoomEnabled={false}
           onLayout={event => {
             mapRef.current.fitToCoordinates(
               [
                 {
-                  latitude: 12.215482848373497,
-                  longitude: 109.193544129014,
+                  latitude: state.userLocation.latitude,
+                  longitude: state.userLocation.longitude,
                 },
-                location,
+                {
+                  latitude: 10.770426270078108,
+                  longitude: 106.69433674255707,
+                },
               ],
               {
                 edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
@@ -191,8 +289,8 @@ export const OrderStatus = props => {
           showsUserLocation
           provider={PROVIDER_GOOGLE}
           initialRegion={{
-            latitude: 12.203214000000004,
-            longitude: 109.19345021534353,
+            latitude: state.userLocation.latitude,
+            longitude: state.userLocation.longitude,
             latitudeDelta: 0.015,
             longitudeDelta: 0.0121,
           }}
@@ -254,91 +352,318 @@ export const OrderStatus = props => {
           visible={waiting}
           onCancel={() => setWaiting(false)}
         /> */}
+      </View>
+
+      <View style={[styles.shipperInfo, {height: openDetail ? '80%' : '40%'}]}>
         <TouchableOpacity
           style={{
             padding: 5,
-            borderRadius: 40,
-            borderColor: 'black',
-            borderWidth: 1,
-            backgroundColor: 'white',
-            position: 'absolute',
-            top: '5%',
-            left: '2%',
+            alignSelf: 'flex-start',
           }}
           onPress={() => props.navigation.goBack()}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-      </View>
-
-      <View style={styles.shipperInfo}>
-        {waiting ? (
-          <View
-            style={{
-              justifyContent: 'space-around',
-              alignItems: 'center',
-              height: '100%',
-              paddingHorizontal: 20,
-            }}>
-            <Text style={{fontWeight: '600', fontSize: 18, textAlign: 'center', marginBottom: 10}}>
-              We are finding the shipper for you. Please wait for a second
-            </Text>
-            <ActivityIndicator size={'large'} color={colors.red} />
+        <View
+          style={{
+            backgroundColor: 'white',
+            padding: 10,
+            marginTop: -95,
+            width: '25%',
+            borderRadius: 50,
+            alignSelf: 'center',
+          }}>
+          <View style={styles.remainingTime}>
+            <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>14 mins</Text>
           </View>
-        ) : (
-          <>
+        </View>
+        <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 20}}>
+          <Text style={{fontSize: 18, fontWeight: '500', marginBottom: 15}}>
+            {trackingMessage.title}
+          </Text>
+          <Text style={{textAlign: 'center'}}>{trackingMessage.message}</Text>
+        </View>
+        {shipperLocation.provider_name ? (
+          <View style={[styles.flexRowBetween, {paddingHorizontal: 20, marginTop: 15}]}>
+            <View style={styles.flexRow}>
+              <Image
+                source={require('../assets/image/shipperMarker.png')}
+                style={{width: 30, height: 30, borderRadius: 40, marginRight: 10}}
+              />
+              <View>
+                <Text style={{fontSize: 17, fontWeight: '400', marginBottom: 10}}>Brian J</Text>
+                <Text style={{fontSize: 17, fontWeight: '400'}}>12123123</Text>
+              </View>
+            </View>
+            <View style={styles.flexRow}>
+              <TouchableOpacity
+                style={{
+                  padding: 10,
+                  borderRadius: 40,
+                  borderWidth: 1,
+                  backgroundColor: 'white',
+                  marginRight: 10,
+                }}>
+                <Feather name="phone" size={14} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{padding: 10, borderRadius: 40, borderWidth: 1, backgroundColor: 'white'}}>
+                <Feather name="message-square" size={14} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        <View style={styles.progress}>
+          <View style={{alignItems: 'center', position: 'relative'}}>
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                width: '100%',
-                paddingHorizontal: 20,
+                padding: 10,
+                backgroundColor: submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                borderRadius: 40,
+                position: 'absolute',
+                left: '2%',
               }}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                }}>
-                <Image
-                  source={require('../assets/image/shipperMarker.png')}
-                  style={{width: 30, height: 30}}
-                />
+              <Feather name={submittedStatus ? 'check' : 'loader'} size={10} color="white" />
+            </View>
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                borderRadius: 40,
+                position: 'absolute',
+                left: '23%',
+              }}>
+              <Feather name={confirmedStatus ? 'check' : 'loader'} size={10} color="white" />
+            </View>
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                borderRadius: 40,
+                position: 'absolute',
+                left: '45%',
+              }}>
+              <Feather name={assignedStatus ? 'check' : 'loader'} size={10} color="white" />
+            </View>
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                borderRadius: 40,
+                position: 'absolute',
+                left: '68%',
+              }}>
+              <Feather name={pickedStatus ? 'check' : 'loader'} size={10} color="white" />
+            </View>
+            <View
+              style={{
+                padding: 10,
+                backgroundColor: completedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                borderRadius: 40,
+                position: 'absolute',
+                left: '90%',
+              }}>
+              <Feather name={completedStatus ? 'check' : 'loader'} size={10} color="white" />
+            </View>
+            <View
+              style={{
+                width: '18%',
+                padding: 2,
+                position: 'absolute',
+                top: 13,
+                left: '8%',
+                backgroundColor: submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                zIndex: -10,
+              }}></View>
+            <View
+              style={{
+                width: '18%',
+                padding: 2,
+                position: 'absolute',
+                top: 13,
+                left: '28%',
+                backgroundColor: confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                zIndex: -10,
+              }}></View>
+            <View
+              style={{
+                width: '18%',
+                padding: 2,
+                position: 'absolute',
+                top: 13,
+                left: '51%',
+                backgroundColor: assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                zIndex: -10,
+              }}></View>
+            <View
+              style={{
+                width: '18%',
+                padding: 2,
+                position: 'absolute',
+                top: 13,
+                left: '75%',
+                backgroundColor: pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+                zIndex: -10,
+              }}></View>
 
-                <Text style={{fontWeight: '600', fontSize: 18, marginLeft: 20}}>
-                  {shipperLocation.shipperName}
-                </Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+            <Text
+              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: -2}}>
+              Submitted
+            </Text>
+            <Text
+              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '18%'}}>
+              Confirming
+            </Text>
+            <Text
+              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '42%'}}>
+              Assigned
+            </Text>
+            <Text
+              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '67%'}}>
+              Picked
+            </Text>
+            <Text
+              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '84%'}}>
+              Completed
+            </Text>
+          </View>
+        </View>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: openDetail ? 20 : 60,
+          }}>
+          {openDetail ? (
+            <>
+              <ScrollView
+                style={{width: '100%', height: 350}}
+                ref={scrollRef}
+                onLayout={event => {
+                  scrollRef.current.scrollToEnd();
                 }}>
+                <Text style={{fontSize: 19, fontWeight: 'bold', textAlign: 'center'}}>
+                  Your items
+                </Text>
+                <View
+                  style={{
+                    width: '100%',
+                    paddingHorizontal: 20,
+                    marginTop: 15,
+                  }}>
+                  {state.userCart.cart.map((item, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: 15,
+                      }}>
+                      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        <Text style={{fontSize: 16}}>{item.quantity}x</Text>
+                        <View>
+                          <Text
+                            style={{
+                              marginLeft: 15,
+                              marginBottom: 10,
+                              fontSize: 17,
+                              fontWeight: '600',
+                            }}>
+                            {item.productName}
+                          </Text>
+                          <Text style={{marginLeft: 15, fontStyle: 'italic', color: 'gray'}}>
+                            {additionalOptions[index]}
+                          </Text>
+                          {item.SpecialInstruction ? (
+                            <Text>Note: {item.SpecialInstruction}</Text>
+                          ) : null}
+                        </View>
+                      </View>
+                      <Text style={{fontWeight: '600', fontSize: 17}}>
+                        ${item.totalProductPrice}
+                      </Text>
+                    </View>
+                  ))}
+                  <View
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderColor: 'rgb(230,230,230)',
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                    }}>
+                    <View style={styles.flexRowBetween}>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>Subtotal (2 items)</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${totalCartPrice(state.userCart.cart)}
+                      </Text>
+                    </View>
+                    <View style={styles.flexRowBetween}>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>Delivery fee: 2.8km</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>$0.4</Text>
+                    </View>
+                    <View style={styles.flexRowBetween}>
+                      <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>
+                        Coupon
+                      </Text>
+                      <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>-$1.5</Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderColor: 'rgb(230,230,230)',
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                    }}>
+                    <View style={styles.flexRowBetween}>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>Total</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${totalCartPrice(state.userCart.cart)}
+                      </Text>
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 20,
+                      paddingVertical: 10,
+                      borderColor: 'rgb(230,230,230)',
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                    }}>
+                    <View style={styles.flexRowBetween}>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>Paid by</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>Cash</Text>
+                    </View>
+                  </View>
+                </View>
+              </ScrollView>
+              <View style={{marginTop: 20}}>
                 <TouchableOpacity
-                  onPress={() => props.navigation.navigate('DetailOrder')}
-                  style={{borderRadius: 40, padding: 10, borderWidth: 1, borderColor: 'black'}}>
-                  <Feather name="message-square" size={20} color={'black'} />
+                  onPress={() => setOpenDetail(prev => !prev)}
+                  style={{padding: 20, backgroundColor: 'black'}}>
+                  <Text
+                    style={{fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>
+                    See less
+                  </Text>
                 </TouchableOpacity>
               </View>
-            </View>
-            <View style={styles.shipperProgress}>
-              {/* <View style={styles.progressbar}></View> */}
-              <View style={[styles.progressName, {opacity: confirmedStatus ? 1 : 0.2}]}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>Confirmed</Text>
-              </View>
-              <View style={[styles.progressName, {opacity: prepairingStatus ? 1 : 0.2}]}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>Prepairing</Text>
-              </View>
-              <View style={[styles.progressName, {opacity: inDeliveryStatus ? 1 : 0.2}]}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>In delivery</Text>
-              </View>
-              <View style={[styles.progressName, {opacity: doneStatus ? 1 : 0.2}]}>
-                <Text style={{textAlign: 'center', fontWeight: 'bold'}}>Done</Text>
-              </View>
-            </View>
-          </>
-        )}
+            </>
+          ) : (
+            <TouchableOpacity
+              onPress={() => setOpenDetail(prev => !prev)}
+              style={{padding: 20, backgroundColor: 'black'}}>
+              <Text style={{fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>
+                Show order details
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     </View>
   );
@@ -390,33 +715,33 @@ const styles = StyleSheet.create({
   },
   shipperInfo: {
     width: '100%',
-    height: '20%',
+    height: '40%',
     backgroundColor: 'white',
     marginBottom: 30,
     paddingVertical: 20,
-    justifyContent: 'space-between',
   },
-  shipperProgress: {
-    // marginTop: 30,
-    // flexBasis: '17%',
-    alignItems: 'center',
+  remainingTime: {
+    padding: 15,
+    borderRadius: 40,
+    borderWidth: 2,
+    borderColor: '#AB2E15',
+    backgroundColor: 'white',
+  },
+  progress: {
+    width: '100%',
+    paddingHorizontal: 10,
+    marginTop: 20,
+    height: '10%',
+  },
+  flexRowBetween: {
+    width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    // height: '100%',
-    width,
+    alignItems: 'center',
+    paddingVertical: 5,
   },
-  progressbar: {
-    height: 5,
-    backgroundColor: 'green',
-    width: '100%',
-  },
-  progressName: {
-    paddingTop: 10,
-    borderTopWidth: 2,
-    borderTopColor: 'black',
-    paddingHorizontal: 2,
-    // backgroundColor: 'red',
-    // borderWidth: 1,
-    width: '25%',
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

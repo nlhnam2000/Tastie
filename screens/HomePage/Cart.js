@@ -107,7 +107,7 @@ export const Cart = props => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.content}>
-        <ScrollView scrollEnabled={false} contentContainerStyle={{height: '80%'}}>
+        <ScrollView contentContainerStyle={{height: '80%'}} style={{width: '100%'}}>
           <TouchableOpacity
             style={styles.headerWrapper}
             onPress={() => getProviderInfo(state.userCart.provider_id)}>
@@ -215,28 +215,28 @@ export const Cart = props => {
               }}
             />
           )} */}
-          <View style={{width, paddingHorizontal: 20}}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('GoToCheckout')}
-              style={{
-                width: '100%',
-                backgroundColor: 'black',
-                paddingVertical: 15,
-                paddingHorizontal: 20,
-              }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                  textTransform: 'uppercase',
-                  textAlign: 'center',
-                }}>
-                Go to checkout
-              </Text>
-            </TouchableOpacity>
-          </View>
         </ScrollView>
+        <View style={{width, paddingHorizontal: 20}}>
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('GoToCheckout')}
+            style={{
+              width: '100%',
+              backgroundColor: 'black',
+              paddingVertical: 15,
+              paddingHorizontal: 20,
+            }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '600',
+                color: 'white',
+                textTransform: 'uppercase',
+                textAlign: 'center',
+              }}>
+              Go to checkout
+            </Text>
+          </TouchableOpacity>
+        </View>
         {/* <TouchableOpacity style={styles.submitOrderButton}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>
             Submit order

@@ -11,11 +11,14 @@ import {
   KeyboardAvoidingView,
 } from 'react-native';
 import colors from '../colors/colors';
+import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
+import {SubmitOrder} from '../store/action/cart';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {PaymentMethodModal} from '../components/Modal/PaymentMethodModal';
 import {AddPromoModal} from '../components/Modal/AddPromoModal';
+import {IP_ADDRESS, convertDollar} from '../global';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -31,6 +34,10 @@ export const GoToCheckout = props => {
   const [openPromo, setOpenPromo] = useState(false);
   const [promoCode, setPromoCode] = useState(null);
   const [additionalOptions, setAdditionalOptions] = useState([]);
+  const [selectedTip, setSelectedTip] = useState(null);
+  const [deliveryfee, setDeliveryfee] = useState(0);
+
+  const dispatch = useDispatch();
 
   const totalCartPrice = cart => {
     let price = 0.0;
@@ -42,18 +49,35 @@ export const GoToCheckout = props => {
   };
 
   useEffect(() => {
-    let list = [];
-    state.userCart.cart.forEach(cart => {
-      let optionItemName = [];
-      cart.additionalOptions.forEach(additionalOption => {
-        additionalOption.options.forEach(option => {
-          optionItemName.push(option.optionItemName);
+    const loadData = async () => {
+      let list = [];
+      state.userCart.cart.forEach(cart => {
+        let optionItemName = [];
+        cart.additionalOptions.forEach(additionalOption => {
+          additionalOption.options.forEach(option => {
+            optionItemName.push(option.optionItemName);
+          });
         });
+        list.push(optionItemName.toString().split(',').join(', '));
       });
-      list.push(optionItemName.toString().split(',').join(', '));
-    });
-    setAdditionalOptions(list);
-    setLoading(false);
+      setAdditionalOptions(list);
+
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+        {
+          longitude: state.userLocation.longitude,
+          latitude: state.userLocation.latitude,
+          provider_id: 1000005,
+        },
+      );
+      if (res.data.delivery_fee) {
+        setDeliveryfee(convertDollar(res.data.delivery_fee));
+      }
+
+      setLoading(false);
+    };
+
+    loadData();
   }, []);
 
   if (loading) {
@@ -71,7 +95,7 @@ export const GoToCheckout = props => {
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
       </View>
-      <ScrollView>
+      <ScrollView style={{width: '100%'}}>
         <View style={styles.content}>
           <Text style={styles.heading}>{state.userCart.provider_name}</Text>
           <View style={styles.tabWrapper}>
@@ -121,7 +145,7 @@ export const GoToCheckout = props => {
                         height: 15,
                       }}></View>
                   </TouchableOpacity>
-                  <Text style={{fontSize: 17, fontWeight: '500'}}>{method}</Text>
+                  <Text style={{fontSize: 17, fontWeight: '400'}}>{method}</Text>
                 </View>
               ))}
             </View>
@@ -140,8 +164,10 @@ export const GoToCheckout = props => {
                 }}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={{fontSize: 17}}>{item.quantity}x</Text>
-                  <View>
-                    <Text style={{marginLeft: 10, fontSize: 17}}>{item.productName}</Text>
+                  <View style={{width: '80%'}}>
+                    <Text style={{marginLeft: 10, fontSize: 17, fontWeight: '500'}}>
+                      {item.productName}
+                    </Text>
                     <Text
                       style={{
                         marginLeft: 10,
@@ -168,66 +194,58 @@ export const GoToCheckout = props => {
               }}
             />
           </View>
-          <View style={{marginTop: 20}}>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
-              <Text style={styles.heading}>Add a tip</Text>
-              <TouchableOpacity style={{marginLeft: 10}} onPress={() => setOpenTip(prev => !prev)}>
-                <Feather name={openTip ? 'chevron-up' : 'chevron-down'} size={20} color="black" />
-              </TouchableOpacity>
+          {selectedTab === 'Delivery' ? (
+            <View style={{marginTop: 20}}>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center'}}>
+                <Text style={styles.heading}>Add a tip</Text>
+                <TouchableOpacity
+                  style={{marginLeft: 10}}
+                  onPress={() => setOpenTip(prev => !prev)}>
+                  <Feather name={openTip ? 'chevron-up' : 'chevron-down'} size={20} color="black" />
+                </TouchableOpacity>
+              </View>
+              {openTip && (
+                <>
+                  <Text style={{fontStyle: 'italic', marginTop: 10}}>
+                    Tip is an optional way to say thanks to your delivery persion
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginTop: 10,
+                    }}>
+                    {['10%', '20%', '30%', 'Other'].map((tip, index) => (
+                      <TouchableOpacity
+                        onPress={() =>
+                          selectedTip === tip ? setSelectedTip(null) : setSelectedTip(tip)
+                        }
+                        key={index}
+                        style={{
+                          paddingHorizontal: 15,
+                          paddingVertical: 10,
+                          borderRadius: 20,
+                          borderWidth: 1,
+                          backgroundColor: selectedTip === tip ? 'black' : 'white',
+                        }}>
+                        <Text
+                          style={{
+                            textAlign: 'center',
+                            fontWeight: '600',
+                            color: selectedTip === tip ? 'white' : 'black',
+                          }}>
+                          {tip}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </>
+              )}
             </View>
-            {openTip && (
-              <>
-                <Text style={{fontStyle: 'italic', marginTop: 10}}>
-                  Tip is an optional way to say thanks to your delivery persion
-                </Text>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    marginTop: 10,
-                  }}>
-                  <View
-                    style={{
-                      paddingHorizontal: 15,
-                      paddingVertical: 10,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                    }}>
-                    <Text style={{textAlign: 'center', fontWeight: '600'}}>10%</Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 15,
-                      paddingVertical: 10,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                    }}>
-                    <Text style={{textAlign: 'center', fontWeight: '600'}}>20%</Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 15,
-                      paddingVertical: 10,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                    }}>
-                    <Text style={{textAlign: 'center', fontWeight: '600'}}>30%</Text>
-                  </View>
-                  <View
-                    style={{
-                      paddingHorizontal: 15,
-                      paddingVertical: 10,
-                      borderRadius: 20,
-                      borderWidth: 1,
-                    }}>
-                    <Text style={{textAlign: 'center', fontWeight: '600'}}>Other</Text>
-                  </View>
-                </View>
-              </>
-            )}
-          </View>
+          ) : null}
+
           <View
             style={{
               marginTop: 20,
@@ -245,11 +263,17 @@ export const GoToCheckout = props => {
               <Text style={{fontSize: 19, fontWeight: '500'}}>Subtotal</Text>
               <Text style={styles.heading}>${totalCartPrice(state.userCart.cart)}</Text>
             </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-              <Text style={{fontSize: 19, fontWeight: '500'}}>Delivery fee</Text>
-              <Text style={styles.heading}>$1.99</Text>
-            </View>
+            {selectedTab === 'Delivery' ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                <Text style={{fontSize: 19, fontWeight: '500'}}>Delivery fee</Text>
+                <Text style={styles.heading}>${deliveryfee}</Text>
+              </View>
+            ) : null}
           </View>
         </View>
       </ScrollView>
@@ -296,10 +320,18 @@ export const GoToCheckout = props => {
           <View>
             <Text style={styles.heading}>Total</Text>
             <Text style={{marginTop: 10, fontSize: 17, fontWeight: '500'}}>
-              ${parseFloat(parseFloat(totalCartPrice(state.userCart.cart)) + 1.99).toFixed(2)}
+              $
+              {selectedTab === 'Delivery'
+                ? parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
+                : parseFloat(totalCartPrice(state.userCart.cart))}
             </Text>
           </View>
-          <TouchableOpacity style={{width: '70%', backgroundColor: 'black', padding: 15}}>
+          <TouchableOpacity
+            onPress={() => {
+              dispatch(SubmitOrder());
+              props.navigation.navigate('OrderStatus', {order: state.userCart});
+            }}
+            style={{width: '70%', backgroundColor: 'black', padding: 15}}>
             <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18, textAlign: 'center'}}>
               Place order
             </Text>

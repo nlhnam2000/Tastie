@@ -27,6 +27,7 @@ import {
   UPDATE_CART,
   ORDER_CONFIRMED,
   SET_USER_LOCATION,
+  SAVE_TO_HISTORY_CART,
 } from '../action/types';
 
 const initialState = {
@@ -308,6 +309,9 @@ export const UserReducer = (state = initialState, action) => {
           ...payload.userLocation,
         },
       };
+    }
+    case SAVE_TO_HISTORY_CART: {
+      return {};
     }
     default: {
       return state;

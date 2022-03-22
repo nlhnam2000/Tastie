@@ -19,3 +19,7 @@ export const getAccessToken = async refreshToken => {
     console.error(error);
   }
 };
+
+export const convertDollar = vnd => {
+  return (vnd / 22862.0).toFixed(2);
+};
