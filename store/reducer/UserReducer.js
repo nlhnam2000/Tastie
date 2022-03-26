@@ -29,6 +29,7 @@ import {
   SET_USER_LOCATION,
   SAVE_TO_HISTORY_CART,
 } from '../action/types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const initialState = {
   user_id: null,
@@ -64,6 +65,20 @@ const initialState = {
     status: null,
     // totalPrice: 0.0,
   },
+  orderHistory: [
+    // {
+    //   provider_id: null,
+    //   provider_name: null,
+    //   date: null,
+    //   cart: [],
+    //   status: null,
+    //   deliveryfee: 1,
+    //   distance:
+    //   total: $12 (subtotal + deliveryfee),
+    //   paymentMethod: Cash,
+    //   completedTime: 12/03/2022
+    // },
+  ],
   /* 
     userCart: {
       provider_id: 100000, 
@@ -311,7 +326,20 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case SAVE_TO_HISTORY_CART: {
-      return {};
+      let orderHistory;
+      AsyncStorage.getItem('@orderHistory').then(data => {
+        orderHistory = JSON.parse(data);
+        orderHistory.push(payload.cart);
+
+        AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory)).then(
+          console.log('Order history saved'),
+        );
+      });
+
+      return {
+        ...state,
+        orderHistory: orderHistory,
+      };
     }
     default: {
       return state;

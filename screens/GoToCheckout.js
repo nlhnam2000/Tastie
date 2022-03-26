@@ -13,12 +13,13 @@ import {
 import colors from '../colors/colors';
 import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
-import {SubmitOrder} from '../store/action/cart';
+import {SaveToHistoryCart, SubmitOrder} from '../store/action/cart';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {PaymentMethodModal} from '../components/Modal/PaymentMethodModal';
 import {AddPromoModal} from '../components/Modal/AddPromoModal';
 import {IP_ADDRESS, convertDollar} from '../global';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -46,6 +47,36 @@ export const GoToCheckout = props => {
     }
 
     return price.toFixed(2);
+  };
+
+  const PlaceOrder = async () => {
+    dispatch(SubmitOrder());
+    let _orderHistory = await AsyncStorage.getItem('@orderHistory');
+    if (_orderHistory) {
+      let orderHistory = JSON.parse(_orderHistory);
+      orderHistory.push({
+        ...state.userCart,
+        total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
+          2,
+        ),
+        paymentMethod: selectedPayment,
+      });
+      await AsyncStorage.removeItem('@orderHistory');
+      await AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory));
+    } else {
+      let list = [];
+      list.push({
+        ...state.userCart,
+        total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
+          2,
+        ),
+        paymentMethod: selectedPayment,
+        deliveryfee: deliveryfee,
+      });
+      await AsyncStorage.removeItem('@orderHistory');
+      await AsyncStorage.setItem('@orderHistory', JSON.stringify(list));
+    }
+    props.navigation.navigate('OrderStatus', {order: state.userCart});
   };
 
   useEffect(() => {
@@ -322,14 +353,15 @@ export const GoToCheckout = props => {
             <Text style={{marginTop: 10, fontSize: 17, fontWeight: '500'}}>
               $
               {selectedTab === 'Delivery'
-                ? parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
-                : parseFloat(totalCartPrice(state.userCart.cart))}
+                ? (
+                    parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
+                  ).toFixed(2)
+                : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
             </Text>
           </View>
           <TouchableOpacity
             onPress={() => {
-              dispatch(SubmitOrder());
-              props.navigation.navigate('OrderStatus', {order: state.userCart});
+              PlaceOrder();
             }}
             style={{width: '70%', backgroundColor: 'black', padding: 15}}>
             <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18, textAlign: 'center'}}>

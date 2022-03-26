@@ -46,9 +46,12 @@ import {NameInputForm} from './components/UserAdmission/Signup/NameInputForm';
 import {PasswordInputForm} from './components/UserAdmission/Signup/PasswordInputForm';
 import {ChangePasswordForm} from './components/UserAdmission/ForgotPassword/ChangePasswordForm';
 import {DetailAccount} from './screens/HomePage/Detail/DetailAccount';
-import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
+import {Chat} from './screens/HomePage/Detail/Chat';
 import {OrderStatus} from './screens/OrderStatus';
 import {GoToCheckout} from './screens/GoToCheckout';
+import {OrderHistory} from './screens/HomePage/Account/OrderHistory';
+import {YourFavorites} from './screens/HomePage/Account/YourFavorites';
+import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -126,11 +129,7 @@ export default function App(props) {
                 headerShown: false,
               }}
             />
-            <Stack.Screen
-              name="DetailOrder"
-              component={DetailOrder}
-              options={{headerShown: false}}
-            />
+            <Stack.Screen name="Chat" component={Chat} options={{headerShown: false}} />
             <Stack.Screen
               name="OrderStatus"
               component={OrderStatus}
@@ -139,6 +138,21 @@ export default function App(props) {
             <Stack.Screen
               name="GoToCheckout"
               component={GoToCheckout}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="OrderHistory"
+              component={OrderHistory}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="YourFavorites"
+              component={YourFavorites}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="DetailOrder"
+              component={DetailOrder}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

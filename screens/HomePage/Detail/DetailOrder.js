@@ -1,207 +1,277 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
-  SafeAreaView,
-  StyleSheet,
-  Button,
+  ScrollView,
   Dimensions,
-  TextInput,
-  Modal,
+  StyleSheet,
   ActivityIndicator,
-  Platform,
+  SafeAreaView,
 } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
-import {useSelector, useDispatch} from 'react-redux';
-import {signout} from '../../../store/action/auth';
 import colors from '../../../colors/colors';
-import {SimpleAlertDialog, DuoAlertDialog, ActionAlertDialog} from '../../Error/AlertDialog';
-import {IP_ADDRESS, getAccessToken} from '../../../global';
-import {clearAlertMessage, UpdateProfile, retrieveToken} from '../../../store/action/auth';
-import {NavigateToAccount} from '../../../store/action/navigation';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import io from 'socket.io-client';
-const {width, height} = Dimensions.get('window');
-
-let socket;
+import Feather from 'react-native-vector-icons/Feather';
+import {useSelector} from 'react-redux';
 
 export const DetailOrder = props => {
-  const dispatch = useDispatch();
-  const state = useSelector(state => state.UserReducer);
   const [loading, setLoading] = useState(true);
-  const [message, setMessage] = useState(null);
-  const [serverMessage, setServerMessage] = useState([]);
+  const state = useSelector(state => state.UserReducer);
+  const {order} = props.route.params;
+  const [additionalOptions, setAdditionalOptions] = useState([]);
+
+  const totalCartPrice = cart => {
+    let price = 0.0;
+    for (let i = 0; i < cart.length; i++) {
+      price += parseFloat(cart[i].totalProductPrice);
+    }
+
+    return price.toFixed(2);
+  };
 
   useEffect(() => {
-    // socket = io(`ws://5fbe-27-69-189-219.ngrok.io`); // ngrok
-    socket = io(`http://${IP_ADDRESS}:3007`);
-    // socket.on('hello-from-server', data => {
-    //   setServerMessage(prevState => setServerMessage([...prevState, data.message]));
-    // });
-
-    socket.on('receive-shipper-inbox', data => {
-      console.log(data);
-      setServerMessage(prevState => setServerMessage([...prevState, data.message]));
+    let list = [];
+    order.cart.forEach(cart => {
+      let optionItemName = [];
+      cart.additionalOptions.forEach(additionalOption => {
+        additionalOption.options.forEach(option => {
+          optionItemName.push(option.optionItemName);
+        });
+      });
+      list.push(optionItemName.toString().split(',').join(', '));
     });
-
+    setAdditionalOptions(list);
     setLoading(false);
-    return () => {
-      socket.disconnect();
-    };
   }, []);
-
-  // useEffect(() => {
-  //   this.socket.on('hello-from-server', data => {
-  //     setServerMessage(prevState => setServerMessage([...prevState, data.message]));
-  //   });
-  // }, [serverMessage]);
-
-  const sendMessage = message => {
-    socket.emit('customer-inbox', message);
-  };
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <SafeAreaView style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size={'large'} color={colors.red} />
-        </SafeAreaView>
-      </View>
-    );
-  } else {
-    return (
-      <View style={styles.container}>
-        <SafeAreaView style={[styles.content, {justifyContent: 'space-between'}]}>
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity onPress={() => props.navigation.goBack()}>
-              <Feather name="arrow-left" size={20} color={'black'} />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontWeight: 'bold',
-                fontSize: 18,
-                textAlign: 'center',
-                marginLeft: 30,
-              }}>
-              Orders
-            </Text>
-            <TouchableOpacity>
-              <Text style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>Update</Text>
-            </TouchableOpacity>
-          </View>
-          {/* <View>
-            <Text>{message !== null ? message : 'Hihi'}</Text>
-          </View> */}
-          <View>
-            {serverMessage
-              ? serverMessage.map((item, index) => <Text key={index}>{item}</Text>)
-              : null}
-          </View>
-          <View
-            style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-            <TextInput
-              placeholder="type something"
-              placeholderTextColor={'gray'}
-              style={{
-                width: '80%',
-                borderWidth: 1,
-                borderColor: 'gray',
-                padding: 10,
-                backgroundColor: 'rgba(230,230,230,0.5)',
-              }}
-              onChangeText={text => setMessage(text)}
-            />
-            <Button title="Send" onPress={() => sendMessage(message)} />
-          </View>
-        </SafeAreaView>
-        {/* Alert Dialog */}
+        <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
   }
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={{width: '100%'}}>
+        <View style={styles.headerWrapper}>
+          <TouchableOpacity onPress={() => props.navigation.goBack()} style={styles.backButton}>
+            <Feather name="arrow-left" size={20} color={'black'} />
+          </TouchableOpacity>
+          <Text style={[styles.heading, {textAlign: 'center'}]}>Order detail</Text>
+        </View>
+        <View style={styles.orderProgress}>
+          <View style={styles.progress}>
+            <View style={{alignItems: 'center'}}>
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 40,
+                  backgroundColor: colors.secondary,
+                  marginBottom: 10,
+                }}></View>
+              <Text style={{color: 'gray'}}>Submitted</Text>
+              <Text style={{color: 'gray'}}>15:30</Text>
+            </View>
+            <View
+              style={{
+                width: '20%',
+                height: 2,
+                backgroundColor: colors.secondary,
+                marginTop: 10,
+              }}></View>
+            <View style={{alignItems: 'center'}}>
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 40,
+                  backgroundColor: colors.secondary,
+                  marginBottom: 10,
+                }}></View>
+              <Text style={{color: 'gray'}}>Picked</Text>
+              <Text style={{color: 'gray'}}>15:40</Text>
+            </View>
+            <View
+              style={{
+                width: '20%',
+                height: 2,
+                backgroundColor: colors.secondary,
+                marginTop: 10,
+              }}></View>
+            <View style={{alignItems: 'center'}}>
+              <View
+                style={{
+                  padding: 10,
+                  borderRadius: 40,
+                  backgroundColor: '#AB2E15',
+                  marginBottom: 10,
+                }}></View>
+              <Text>Completed</Text>
+              <Text style={{color: 'gray'}}>15:50</Text>
+            </View>
+          </View>
+        </View>
+        <ScrollView style={{width: '100%'}}>
+          <View style={styles.orderSummary}>
+            <View style={{paddingVertical: 10, paddingHorizontal: 20}}>
+              <Text style={styles.subheading}>{order.provider_name}</Text>
+              <Text style={{color: 'gray', marginBottom: 10}}>
+                $ {order.total} ({order.cart.length} items) - {order.paymentMethod}
+              </Text>
+              <Text style={{color: 'gray', marginBottom: 10}}>
+                {state.first_name} {state.last_name} - {state.phone}
+              </Text>
+              <Text style={styles.subheading}>Delivery to</Text>
+              <Text style={{color: 'gray', marginBottom: 10}}>{state.userLocation.address}</Text>
+              <Text style={{color: 'gray', marginBottom: 10}}>
+                Completed time: 2022/03/12 15:50
+              </Text>
+            </View>
+          </View>
+          <View style={styles.orderDetail}>
+            <View style={{paddingVertical: 10, paddingHorizontal: 20}}>
+              <Text style={[styles.heading, {paddingVertical: 10, marginBottom: 10}]}>
+                {order.provider_name}
+              </Text>
+              {order.cart.map((item, index) => (
+                <View key={index} style={styles.detail}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{fontSize: 17}}>{item.quantity}x</Text>
+                    <View style={{marginLeft: 20}}>
+                      <Text style={{fontSize: 17, fontWeight: '500', marginBottom: 10}}>
+                        {item.productName}
+                      </Text>
+                      <Text style={{color: 'gray'}}>{additionalOptions[index]}</Text>
+                    </View>
+                  </View>
+                  <View>
+                    <Text style={{fontSize: 17}}>${item.totalProductPrice}</Text>
+                  </View>
+                </View>
+              ))}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginTop: 15,
+                }}>
+                <Text style={{fontSize: 16}}>Subtotal</Text>
+                <Text style={{fontSize: 16}}>${totalCartPrice(order.cart)}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginTop: 15,
+                }}>
+                <Text style={{fontSize: 16}}>Delivery fee</Text>
+                <Text style={{fontSize: 16}}>${order.deliveryfee}</Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginTop: 15,
+                }}>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>Total</Text>
+                <Text style={{fontSize: 16, fontWeight: 'bold'}}>${order.total}</Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
+      <View
+        style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          width: '100%',
+        }}>
+        <TouchableOpacity
+          style={{
+            width: '40%',
+            borderWidth: 2,
+            borderColor: 'black',
+            paddingVertical: 15,
+          }}>
+          <Text style={[styles.heading, {textAlign: 'center'}]}>View Rating</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={{
+            width: '40%',
+            borderWidth: 2,
+            borderColor: 'black',
+            paddingVertical: 15,
+            backgroundColor: 'black',
+          }}>
+          <Text style={[styles.heading, {color: 'white', textAlign: 'center'}]}>Re-order</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    width: '100%',
+    justifyContent: 'space-between',
   },
   headerWrapper: {
     width: '100%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'white',
-    marginTop: Platform.OS === 'android' ? 10 : 0,
-  },
-  accountContent: {
-    width,
-    // paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  inputWrapper: {
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  nameInputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginTop: 20,
-    width: '80%',
-  },
-  inputField: {
-    width: '85%',
-    fontWeight: '500',
-    marginTop: 5,
-    fontSize: 17,
     paddingVertical: 10,
-    color: 'black',
+    position: 'relative',
   },
-  modalContainer: {
-    flex: 1,
+  backButton: {
+    position: 'absolute',
+    top: 10,
+    left: 20,
+    zIndex: 1,
+  },
+  heading: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  orderProgress: {
+    width: '100%',
+    borderBottomWidth: 1,
+    paddingBottom: 5,
+    borderBottomColor: colors.secondary,
+  },
+  progress: {
+    flexDirection: 'row',
     justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  orderSummary: {
+    width: '100%',
+    borderBottomWidth: 1,
+    paddingBottom: 5,
+    borderBottomColor: colors.secondary,
+  },
+  subheading: {
+    fontSize: 17,
+    fontWeight: '500',
+    marginBottom: 10,
+  },
+  orderDetail: {
+    width: '100%',
+    paddingBottom: 5,
+    marginBottom: 30,
+  },
+  detail: {
+    flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-    width: '80%',
-  },
-  cancelModal: {
-    backgroundColor: colors.red,
-    borderRadius: 20,
-    padding: 10,
-    width: '30%',
-    marginRight: 20,
-  },
-  confirmModal: {
-    backgroundColor: colors.yellow,
-    borderRadius: 20,
-    padding: 10,
-    width: '30%',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 15,
   },
 });

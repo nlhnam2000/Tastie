@@ -5,15 +5,11 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   Button,
   TouchableOpacity,
   TextInput,
   Dimensions,
-  FlatList,
-  Image,
-  ImageBackground,
   ActivityIndicator,
 } from 'react-native';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
@@ -85,7 +81,8 @@ export const Account = props => {
           <View style={{width, paddingHorizontal: 20, marginTop: 15}}>
             <TouchableOpacity
               style={styles.menuWrapper}
-              onPress={() => props.navigation.navigate('DetailOrder')}>
+              // onPress={() => props.navigation.navigate('DetailOrder')}
+              onPress={() => props.navigation.navigate('OrderHistory')}>
               <MaterialCommunity name="bookmark" size={26} color={'black'} />
               <Text
                 style={{
@@ -98,7 +95,9 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuWrapper}>
+            <TouchableOpacity
+              style={styles.menuWrapper}
+              onPress={() => props.navigation.navigate('YourFavorites')}>
               <MaterialCommunity color={'black'} name="heart" size={26} />
               <Text
                 style={{

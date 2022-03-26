@@ -7,6 +7,7 @@ import {
   ORDER_CONFIRMED,
   SAVE_TO_HISTORY_CART,
 } from './types';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const AddToCart = cartForm => dispatch => {
   dispatch({
@@ -54,13 +55,17 @@ export const SubmitOrder = () => dispatch => {
   });
 };
 
-export const SaveToHistoryCart = cartID => dispatch => {
+export const SaveToHistoryCart = cart => async dispatch => {
   // When the order is completed, save this to history then clear the userCart
   // use AsyncStorage to store the history (call API when DB is ready)
+  // let _orderHistory = await AsyncStorage.getItem('@orderHistory');
+  // if (_orderHistory) {
+  //   _orderHistory.push(cart)
+  // }
   dispatch({
     type: SAVE_TO_HISTORY_CART,
     payload: {
-      cartID,
+      cart,
     },
   });
 };
