@@ -18,6 +18,8 @@ import {
   Platform,
   ActivityIndicator,
   Modal,
+  Switch,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
@@ -26,6 +28,7 @@ import {popularData} from '../../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
 import {SetUserLocation} from '../../../store/action/auth';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
+import {BrowseCategory} from '../../../components/Menu/BrowseCatergory';
 
 const {width} = Dimensions.get('window');
 
@@ -34,6 +37,20 @@ export const HomeContent = props => {
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const [animateModal, setAnimateModal] = useState(false);
+  const [showFilter, setShowFilter] = useState(false);
+  const [selectedSort, setSelectedSort] = useState('Picked for you');
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
+  const [enableSwitches, setEnableSwitches] = useState({
+    deals: false,
+    mostorder: false,
+  });
+  const [filterToogled, setFilterToogled] = useState({
+    sort: true,
+    justforyou: true,
+    pricerange: true,
+    dietary: true,
+  });
 
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
@@ -81,10 +98,10 @@ export const HomeContent = props => {
   } else {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
+        <View style={[styles.content, {backgroundColor: showFilter ? 'rgba(0,0,0,0.4)' : 'white'}]}>
           <StatusBar barStyle="dark-content" />
           <View style={styles.headerWrapper}>
-            <View style={styles.tabWrapper}>
+            <View style={[styles.tabWrapper, {}]}>
               {headerTab.map((tab, index) => {
                 return (
                   <TouchableOpacity
@@ -102,7 +119,7 @@ export const HomeContent = props => {
                 );
               })}
             </View>
-            <View style={[styles.tabWrapper, {marginTop: -15}]}>
+            <View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
               <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
               <TouchableOpacity
                 onPress={() => setOpenModal(true)}
@@ -113,16 +130,21 @@ export const HomeContent = props => {
                   width: '50%',
                   marginLeft: 5,
                 }}>
-                <Text numberOfLines={1} style={{fontWeight: '400', fontSize: 18}}>
+                <Text numberOfLines={1} style={{fontWeight: '400', fontSize: 18, width: '90%'}}>
                   {state.userLocation.address || 'Select'}
                 </Text>
                 <Feather name="chevron-down" size={20} color={'black'} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={{position: 'absolute', left: '100%'}}
+                onPress={() => setShowFilter(true)}>
+                <Feather name="filter" size={20} color="black" />
               </TouchableOpacity>
             </View>
           </View>
 
           <ScrollView>
-            <View
+            {/* <View
               style={{
                 justifyContent: 'center',
                 alignItems: 'center',
@@ -144,9 +166,9 @@ export const HomeContent = props => {
                   />
                 </View>
               </View>
-            </View>
+            </View> */}
 
-            <View style={styles.categoryWrapper}>
+            {/* <View style={styles.categoryWrapper}>
               <FlatList
                 data={categoryData}
                 renderItem={renderCategoryList}
@@ -154,6 +176,9 @@ export const HomeContent = props => {
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
               />
+            </View> */}
+            <View style={{width}}>
+              <BrowseCategory />
             </View>
             <View
               style={styles.contentWrapper}
@@ -272,6 +297,255 @@ export const HomeContent = props => {
             </View>
           </View>
         </Modal>
+        <Modal animationType="slide" transparent visible={showFilter}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalView}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: '100%',
+                  marginBottom: 10,
+                  position: 'relative',
+                  marginTop: 10,
+                }}>
+                <TouchableOpacity
+                  style={{position: 'absolute', left: '2%', top: '2%'}}
+                  onPress={() => setShowFilter(false)}>
+                  <Feather name="x" size={20} color={'black'} />
+                </TouchableOpacity>
+                <Text style={{fontSize: 17, fontWeight: '500'}}>All stores</Text>
+              </View>
+              <View
+                style={{
+                  width: '100%',
+                  paddingHorizontal: 20,
+                  justifyContent: 'space-between',
+                  height: '90%',
+                }}>
+                <ScrollView style={{width: '100%', height: '90%'}}>
+                  <View style={styles.flexRowBetween}>
+                    <Text style={{fontSize: 17, fontWeight: '600'}}>Sort</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setFilterToogled(prev => ({
+                          ...prev,
+                          sort: !prev.sort,
+                        }))
+                      }>
+                      <Feather
+                        name={filterToogled.sort ? 'chevron-up' : 'chevron-down'}
+                        size={20}
+                        color="black"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {filterToogled.sort && (
+                    <View style={{marginBottom: 20}}>
+                      {['Picked for you', 'Most popular', 'Rating', 'Delivery time'].map(
+                        (item, index) => (
+                          <View
+                            style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}
+                            key={index}>
+                            <TouchableOpacity
+                              onPress={() => setSelectedSort(item)}
+                              style={{
+                                width: 25,
+                                height: 25,
+                                borderWidth: 2,
+                                borderColor: colors.secondary,
+                                marginRight: 10,
+                                borderRadius: 40,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}>
+                              <View
+                                style={{
+                                  padding: 7,
+                                  backgroundColor: selectedSort === item ? 'black' : 'white',
+                                  borderRadius: 30,
+                                }}></View>
+                            </TouchableOpacity>
+                            <Text>{item}</Text>
+                          </View>
+                        ),
+                      )}
+                    </View>
+                  )}
+                  <View style={styles.flexRowBetween}>
+                    <Text style={{fontSize: 17, fontWeight: '600'}}>Just for you</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setFilterToogled(prev => ({
+                          ...prev,
+                          justforyou: !prev.justforyou,
+                        }))
+                      }>
+                      <Feather
+                        name={filterToogled.justforyou ? 'chevron-up' : 'chevron-down'}
+                        size={20}
+                        color="black"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {filterToogled.justforyou && (
+                    <View style={{marginBottom: 20}}>
+                      <View style={styles.flexRowBetween}>
+                        <Text>Deals</Text>
+                        <Switch
+                          trackColor={{false: 'red', true: 'black'}}
+                          onValueChange={() =>
+                            setEnableSwitches(prev => ({
+                              ...prev,
+                              deals: !prev.deals,
+                            }))
+                          }
+                          value={enableSwitches.deals}
+                        />
+                      </View>
+                      <View style={styles.flexRowBetween}>
+                        <Text>Most order</Text>
+                        <Switch
+                          trackColor={{false: 'red', true: 'black'}}
+                          onValueChange={() =>
+                            setEnableSwitches(prev => ({
+                              ...prev,
+                              mostorder: !prev.mostorder,
+                            }))
+                          }
+                          value={enableSwitches.mostorder}
+                        />
+                      </View>
+                    </View>
+                  )}
+                  <View style={styles.flexRowBetween}>
+                    <Text style={{fontSize: 17, fontWeight: '600'}}>Price range</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setFilterToogled(prev => ({
+                          ...prev,
+                          pricerange: !prev.pricerange,
+                        }))
+                      }>
+                      <Feather
+                        name={filterToogled.pricerange ? 'chevron-up' : 'chevron-down'}
+                        size={20}
+                        color="black"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {filterToogled.pricerange && (
+                    <View
+                      style={{
+                        width: '90%',
+                        marginBottom: 20,
+                        position: 'relative',
+                        marginLeft: 'auto',
+                        marginRight: 'auto',
+                      }}>
+                      <View
+                        style={{
+                          width: '100%',
+                          height: 1,
+                          backgroundColor: 'black',
+                          marginTop: 40,
+                          zIndex: -1,
+                          marginBottom: 20,
+                        }}></View>
+                      {['Free', '$', '$$', '$$$', '$$$$'].map((item, index) => (
+                        <View
+                          key={index}
+                          style={{
+                            position: 'absolute',
+                            top: 25,
+                            alignItems: 'center',
+                            left: 23 * index + '%',
+                          }}>
+                          <TouchableOpacity
+                            onPress={() => setSelectedPriceRange(item)}
+                            style={{
+                              width: 30,
+                              height: 30,
+                              borderWidth: 2,
+                              borderColor: colors.secondary,
+                              borderRadius: 40,
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              zIndex: 1,
+                              backgroundColor: 'white',
+                              marginBottom: 5,
+                            }}>
+                            <View
+                              style={{
+                                padding: 10,
+                                borderRadius: 40,
+                                backgroundColor: selectedPriceRange === item ? 'black' : 'white',
+                              }}></View>
+                          </TouchableOpacity>
+                          <Text>{item}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
+                  <View style={styles.flexRowBetween}>
+                    <Text style={{fontSize: 17, fontWeight: '600'}}>Dietary</Text>
+                    <TouchableOpacity
+                      onPress={() =>
+                        setFilterToogled(prev => ({
+                          ...prev,
+                          dietary: !prev.dietary,
+                        }))
+                      }>
+                      <Feather
+                        name={filterToogled.dietary ? 'chevron-up' : 'chevron-down'}
+                        size={20}
+                        color="black"
+                      />
+                    </TouchableOpacity>
+                  </View>
+                  {filterToogled.dietary && (
+                    <View
+                      style={{
+                        marginTop: 10,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        flexBasis: '20%',
+                        flexWrap: 'wrap',
+                        width: '100%',
+                      }}>
+                      {[
+                        'Vegetarian',
+                        'Vegan',
+                        'Gluten-free',
+                        'Good for health',
+                        'Alergy-friendly',
+                      ].map((item, index) => (
+                        <TouchableOpacity
+                          key={index}
+                          style={{
+                            padding: 10,
+                            borderRadius: 15,
+                            backgroundColor: 'rgba(230,230,230,0.8)',
+                            marginRight: 10,
+                            marginBottom: 10,
+                          }}>
+                          <Text>{item}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  )}
+                </ScrollView>
+                <TouchableOpacity style={{padding: 15, backgroundColor: 'black', width: '100%'}}>
+                  <Text
+                    style={{textAlign: 'center', color: 'white', fontSize: 17, fontWeight: 'bold'}}>
+                    Apply
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   }
@@ -291,7 +565,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerWrapper: {
-    backgroundColor: '#fff',
     marginTop: Platform.OS === 'ios' ? 40 : 0,
     paddingHorizontal: 20,
   },
@@ -318,18 +591,18 @@ const styles = StyleSheet.create({
   labelTabButton: {
     color: 'black',
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
   },
   labelTabButtonClicked: {
     fontWeight: 'bold',
-    fontSize: 18,
+    fontSize: 16,
     color: 'white',
   },
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#e6e6e6',
+    backgroundColor: '#f2f2f2',
     width: '90%',
     paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     paddingHorizontal: 8,
@@ -426,5 +699,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 15,
+  },
+  flexRowBetween: {
+    width: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  flexRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
   },
 });
