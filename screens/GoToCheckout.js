@@ -54,7 +54,7 @@ export const GoToCheckout = props => {
     let _orderHistory = await AsyncStorage.getItem('@orderHistory');
     if (_orderHistory) {
       let orderHistory = JSON.parse(_orderHistory);
-      orderHistory.push({
+      orderHistory.unshift({
         ...state.userCart,
         total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
           2,
@@ -65,7 +65,7 @@ export const GoToCheckout = props => {
       await AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory));
     } else {
       let list = [];
-      list.push({
+      list.unshift({
         ...state.userCart,
         total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
           2,

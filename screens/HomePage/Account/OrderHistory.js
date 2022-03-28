@@ -90,7 +90,7 @@ export const OrderHistory = props => {
             </TouchableOpacity>
           </View>
         ) : (
-          <ScrollView style={{width: '100%'}} showsVerticalScrollIndicator={false}>
+          <ScrollView style={{width: '100%', height}} showsVerticalScrollIndicator={false}>
             {orderHistory?.map((order, index) => (
               <View
                 key={index}
