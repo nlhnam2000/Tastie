@@ -23,8 +23,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigateToCart} from '../../../store/action/navigation';
-import {FoodMenu} from './Provider/FoodMenu';
-import GestureRecognizer, {swipeDirection} from 'react-native-swipe-gestures';
 import {Rating} from '../../../components/Rating/Rating';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';

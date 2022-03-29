@@ -103,7 +103,7 @@ export const OrderHistory = props => {
                   style={styles.orderContent}
                   onPress={() => props.navigation.navigate('DetailOrder', {order})}>
                   <ImageBackground
-                    source={require('../../../assets/image/SlideShowImg/Picture1.jpg')}
+                    source={require('../../../assets/image/orderhistory.png')}
                     style={{width: 150, height: 120, marginRight: 20}}
                   />
                   <View style={styles.orderContentDetail}>
@@ -122,6 +122,7 @@ export const OrderHistory = props => {
                   <Text style={{fontSize: 14, fontWeight: '400'}}>Completed</Text>
                   <View style={styles.buttons}>
                     <TouchableOpacity
+                      onPress={() => props.navigation.navigate('RatingProvider')}
                       style={{
                         paddingVertical: 10,
                         paddingHorizontal: 20,

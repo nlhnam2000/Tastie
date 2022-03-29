@@ -1,3 +1,7 @@
+export const getProvider = provider_id => {
+  return popularData[provider_id - 1];
+};
+
 export const popularData = [
   {
     id: 1,

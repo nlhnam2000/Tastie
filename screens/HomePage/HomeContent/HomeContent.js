@@ -29,6 +29,8 @@ import {useDispatch, useSelector} from 'react-redux';
 import {SetUserLocation} from '../../../store/action/auth';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {BrowseCategory} from '../../../components/Menu/BrowseCatergory';
+import {CategoryList} from '../../../components/Provider/CategoryList';
+import {ProviderList} from '../../../components/Provider/ProviderList';
 
 const {width} = Dimensions.get('window');
 
@@ -51,6 +53,7 @@ export const HomeContent = props => {
     pricerange: true,
     dietary: true,
   });
+  const [selectedDietary, setSelectedDietary] = useState([]);
 
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
@@ -143,7 +146,7 @@ export const HomeContent = props => {
             </View>
           </View>
 
-          <ScrollView>
+          <ScrollView style={{width}}>
             {/* <View
               style={{
                 justifyContent: 'center',
@@ -209,6 +212,38 @@ export const HomeContent = props => {
                   </TouchableOpacity>
                 );
               })}
+            </View>
+            <View style={{width}}>
+              <CategoryList {...props} categoryTitle="In a rush" />
+            </View>
+            <View style={styles.contentWrapper}>
+              {popularData.map((item, index) => {
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    onPress={() => props.navigation.navigate('DetailProvider', {data: item})}>
+                    <View style={styles.popularDataWrapper}>
+                      <ImageBackground
+                        style={styles.popularImage}
+                        resizeMode="cover"
+                        source={item.image}
+                      />
+                      <View style={styles.popularDetail}>
+                        <View style={styles.popularInfo}>
+                          <Text style={{fontWeight: 'bold', color: 'black'}}>{item.title}</Text>
+                          <Text>{item.deliveryTime}</Text>
+                        </View>
+                        <View style={styles.popularRating}>
+                          <Text style={{color: 'black'}}>{item.rating}</Text>
+                        </View>
+                      </View>
+                    </View>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+            <View style={{width}}>
+              <CategoryList categoryTitle="Today offer" />
             </View>
           </ScrollView>
         </View>
@@ -522,15 +557,30 @@ export const HomeContent = props => {
                         'Alergy-friendly',
                       ].map((item, index) => (
                         <TouchableOpacity
+                          onPress={() => {
+                            let pos = selectedDietary.indexOf(item);
+                            let copy = [...selectedDietary];
+                            if (pos !== -1) {
+                              copy.splice(pos, 1); // remove item
+                              setSelectedDietary(copy);
+                            } else {
+                              copy.push(item); // add item
+                              setSelectedDietary(copy);
+                            }
+                          }}
                           key={index}
                           style={{
                             padding: 10,
                             borderRadius: 15,
-                            backgroundColor: 'rgba(230,230,230,0.8)',
+                            backgroundColor: selectedDietary.includes(item)
+                              ? 'black'
+                              : 'rgba(230,230,230,0.8)',
                             marginRight: 10,
                             marginBottom: 10,
                           }}>
-                          <Text>{item}</Text>
+                          <Text style={{color: selectedDietary.includes(item) ? 'white' : 'black'}}>
+                            {item}
+                          </Text>
                         </TouchableOpacity>
                       ))}
                     </View>
@@ -642,6 +692,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 20,
+    paddingHorizontal: 15,
   },
   popularImage: {
     height: 200,

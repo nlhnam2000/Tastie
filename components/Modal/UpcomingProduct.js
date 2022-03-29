@@ -46,6 +46,7 @@ export const UpcomingProduct = props => {
             </TouchableOpacity>
           </View>
           <ScrollView
+            showsVerticalScrollIndicator={false}
             style={{width: '100%', position: 'absolute', height: Dimensions.get('window').height}}>
             <View style={{width: '100%', height: 'auto'}}>
               <Image

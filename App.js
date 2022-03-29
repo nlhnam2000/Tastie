@@ -52,6 +52,7 @@ import {GoToCheckout} from './screens/GoToCheckout';
 import {OrderHistory} from './screens/HomePage/Account/OrderHistory';
 import {YourFavorites} from './screens/HomePage/Account/YourFavorites';
 import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
+import {RatingProvider} from './screens/HomePage/Account/Rating/RatingProvider';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -153,6 +154,11 @@ export default function App(props) {
             <Stack.Screen
               name="DetailOrder"
               component={DetailOrder}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="RatingProvider"
+              component={RatingProvider}
               options={{headerShown: false}}
             />
           </Stack.Navigator>
