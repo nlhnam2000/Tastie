@@ -28,7 +28,7 @@ import colors from '../../../colors/colors';
 import {categoryData} from '../../../assets/dummy/categoryData';
 import {popularData} from '../../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
-import {SetUserLocation} from '../../../store/action/auth';
+import {SetUserLocation, AutoSetLocation} from '../../../store/action/auth';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {BrowseCategory} from '../../../components/Menu/BrowseCatergory';
 import {CategoryList} from '../../../components/Provider/CategoryList';
@@ -63,14 +63,18 @@ export const HomeContent = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
   const [markerLocation, setMarkerLocation] = useState({
-    latitude: state.userLocation.latitude || null,
-    longitude: state.userLocation.longitude || null,
+    latitude: state.userLocation.latitude ?? null,
+    longitude: state.userLocation.longitude ?? null,
   });
-  const [address, setAddress] = useState(state.userLocation.address || '');
+  const [address, setAddress] = useState(state.userLocation.address ?? '');
   const filterModalize = useRef();
+  const userLocationModalize = useRef();
 
   const openFilterModalize = () => {
     filterModalize.current?.open();
+  };
+  const openUserLocationModalize = () => {
+    userLocationModalize.current?.open();
   };
 
   const renderCategoryList = ({item}) => {
@@ -134,7 +138,7 @@ export const HomeContent = props => {
             <View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
               <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
               <TouchableOpacity
-                onPress={() => setOpenModal(true)}
+                onPress={() => openUserLocationModalize()}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
@@ -143,7 +147,7 @@ export const HomeContent = props => {
                   marginLeft: 5,
                 }}>
                 <Text numberOfLines={1} style={{fontWeight: '400', fontSize: 18, width: '90%'}}>
-                  {state.userLocation.address || 'Select'}
+                  {state.userLocation.address ?? 'Select'}
                 </Text>
                 <Feather name="chevron-down" size={20} color={'black'} />
               </TouchableOpacity>
@@ -165,6 +169,10 @@ export const HomeContent = props => {
                 onRefresh={() => {
                   setIsRefreshing(true);
                   setTimeout(() => {
+                    if (state.userLocation.latitude === 0 && state.userLocation.longitude === 0) {
+                      console.log('auto set location');
+                      dispatch(AutoSetLocation());
+                    }
                     setIsRefreshing(false);
                   }, 3000);
                 }}
@@ -279,91 +287,96 @@ export const HomeContent = props => {
             </View>
           </ScrollView>
         </View>
-        <Modal animationType="slide" transparent={true} visible={openModal}>
+        <Modalize
+          ref={userLocationModalize}
+          modalHeight={Dimensions.get('window').height - 200}
+          HeaderComponent={
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                width: '100%',
+                marginBottom: 10,
+              }}>
+              <TouchableOpacity style={styles.modalHeader} onPress={() => setOpenModal(false)}>
+                <Feather name="x" size={20} color={'black'} />
+              </TouchableOpacity>
+              <Text style={{fontSize: 18, fontWeight: 'bold'}}>Select your location</Text>
+              <View style={{paddingHorizontal: 10}}></View>
+            </View>
+          }>
           <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '100%',
-                  marginBottom: 10,
-                }}>
-                <TouchableOpacity style={styles.modalHeader} onPress={() => setOpenModal(false)}>
-                  <Feather name="x" size={20} color={'black'} />
-                </TouchableOpacity>
-                <Text style={{fontSize: 18, fontWeight: 'bold'}}>Select your location</Text>
-                <View style={{paddingHorizontal: 10}}></View>
-              </View>
-              <MapView
-                initialRegion={{
-                  latitude: state.userLocation.latitude || 12.203214000000004,
-                  longitude: state.userLocation.longitude || 109.19345021534353,
+            <MapView
+              initialRegion={{
+                latitude: state.userLocation.latitude ?? 12.203214000000004,
+                longitude: state.userLocation.longitude ?? 109.19345021534353,
+                latitudeDelta: 0.015,
+                longitudeDelta: 0.0121,
+              }}
+              onPress={event =>
+                setMarkerLocation({
+                  latitude: event.nativeEvent.coordinate.latitude,
+                  longitude: event.nativeEvent.coordinate.longitude,
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
-                }}
-                onPress={event =>
-                  setMarkerLocation({
-                    latitude: event.nativeEvent.coordinate.latitude,
-                    longitude: event.nativeEvent.coordinate.longitude,
-                    latitudeDelta: 0.015,
-                    longitudeDelta: 0.0121,
-                  })
-                }
-                showsUserLocation
-                showsMyLocationButton
-                minZoomLevel={17}
-                provider={PROVIDER_GOOGLE}
-                style={styles.map}>
-                {markerLocation.latitude && markerLocation.longitude ? (
-                  <Marker coordinate={markerLocation} />
-                ) : null}
-              </MapView>
+                })
+              }
+              showsUserLocation
+              showsMyLocationButton
+              minZoomLevel={17}
+              provider={PROVIDER_GOOGLE}
+              style={styles.map}>
+              {markerLocation.latitude && markerLocation.longitude ? (
+                <Marker coordinate={markerLocation} />
+              ) : null}
+            </MapView>
 
-              <View style={styles.providerName}>
-                <Text style={{fontSize: 20, fontWeight: 'bold'}}>Enter your address</Text>
-              </View>
-              <View style={styles.sectionWrapper}>
-                <View>
-                  <Feather name="map-pin" size={22} color={'black'} />
-                </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
-                    paddingHorizontal: 15,
-                  }}>
-                  <TextInput
-                    style={{
-                      width: '100%',
-                      paddingVertical: 15,
-                      borderBottomWidth: 1,
-                    }}
-                    onChangeText={text => setAddress(text)}
-                    value={address}
-                  />
-                </View>
+            <View style={styles.providerName}>
+              <Text style={{fontSize: 20, fontWeight: 'bold'}}>Enter your address</Text>
+            </View>
+            <View style={styles.sectionWrapper}>
+              <View>
+                <Feather name="map-pin" size={22} color={'black'} />
               </View>
               <View
                 style={{
                   flexDirection: 'row',
-                  justifyContent: 'center',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
                   width: '100%',
-                  marginTop: 15,
-                  paddingHorizontal: 20,
+                  paddingHorizontal: 15,
                 }}>
-                <TouchableOpacity
-                  onPress={() => submitLocation()}
-                  style={{padding: 10, backgroundColor: 'black', borderRadius: 5}}>
-                  <Text style={{fontWeight: '500', color: 'white'}}>Done</Text>
-                </TouchableOpacity>
+                <TextInput
+                  style={{
+                    width: '100%',
+                    paddingVertical: 15,
+                    borderBottomWidth: 1,
+                  }}
+                  onChangeText={text => setAddress(text)}
+                  value={address}
+                />
               </View>
             </View>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                width: '100%',
+                marginTop: 15,
+                paddingHorizontal: 20,
+              }}>
+              <TouchableOpacity
+                onPress={() => {
+                  submitLocation();
+                  userLocationModalize.current.close();
+                }}
+                style={{padding: 10, backgroundColor: 'black', borderRadius: 5}}>
+                <Text style={{fontWeight: '500', color: 'white'}}>Done</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </Modal>
+        </Modalize>
         <Modalize
           ref={filterModalize}
           modalHeight={Dimensions.get('window').height - 200}

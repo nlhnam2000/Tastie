@@ -28,7 +28,7 @@ export const CategoryList = props => {
       let res = await axios.post(
         `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
         {
-          group_provider_id: 7,
+          group_provider_id: group_id,
           limit: 6,
           offset: 1,
           latitude: state.userLocation.latitude,

@@ -1,4 +1,3 @@
-import axios from 'axios';
 import {
   SIGN_IN,
   SIGN_OUT,
@@ -17,9 +16,12 @@ import {
   CLEAR_ALERT_MESSAGE,
   EMAIL_VERIFICATION_FAILED,
   SET_USER_LOCATION,
+  AUTO_SET_LOCATION,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {IP_ADDRESS} from '../../global';
+import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
+import Geolocation from 'react-native-geolocation-service';
+import axios from 'axios';
 
 // const validateEmailOrPhone = () => {};
 
@@ -105,6 +107,7 @@ export const signin = (phone, password) => async dispatch => {
 export const signout = () => async dispatch => {
   try {
     await AsyncStorage.removeItem('user_token');
+    await AsyncStorage.removeItem('@userLocation');
     dispatch({
       type: SIGN_OUT,
       payload: {
@@ -133,6 +136,7 @@ export const signout = () => async dispatch => {
         date: null,
         cart: [],
         status: null,
+        orderHistory: [],
       },
     });
   } catch (error) {
@@ -373,4 +377,44 @@ export const SetUserLocation = data => async dispatch => {
       },
     },
   });
+};
+
+export const AutoSetLocation = () => dispatch => {
+  Geolocation.getCurrentPosition(
+    position => {
+      let address = '';
+      axios
+        .get(
+          `https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude},${position.coords.latitude}.json?access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+        )
+        .then(res => {
+          address = res.data.features[0].place_name;
+          return {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            address: address,
+          };
+        })
+        .then(data => {
+          dispatch({
+            type: AUTO_SET_LOCATION,
+            payload: {
+              userLocation: {
+                latitude: data.latitude,
+                longitude: data.longitude,
+                address: data.address,
+              },
+            },
+          });
+          return data;
+        })
+        .then(data => {
+          AsyncStorage.setItem('@userLocation', JSON.stringify(data));
+        });
+    },
+    err => {
+      alert(err.message);
+    },
+    {enableHighAccuracy: true},
+  );
 };

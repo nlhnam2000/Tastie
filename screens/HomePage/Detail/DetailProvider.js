@@ -19,6 +19,7 @@ import {
   Platform,
   Modal,
   SectionList,
+  RefreshControl,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
@@ -30,6 +31,7 @@ import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
 import {IP_ADDRESS} from '../../../global';
+import {popularData} from '../../../assets/dummy/popularData';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -49,37 +51,32 @@ export const DetailProvider = props => {
   const dispatch = useDispatch();
   const [menuCategory, setMenuCategory] = useState([]);
   const [item, setItem] = useState([]);
+  const [info, setInfo] = useState({});
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // const DATA = [
-  //   {
-  //     title: 'Main dishes',
-  //     name: 'a',
-  //     data: ['Pizza', 'Burger', 'Risotto'],
-  //   },
-  //   {
-  //     title: 'Sides',
-  //     name: 'a',
-  //     data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
-  //   },
-  //   {
-  //     title: 'Drinks',
-  //     name: 'a',
-  //     data: ['Water', 'Coke', 'Beer'],
-  //   },
-  //   {
-  //     title: 'Desserts',
-  //     name: 'a',
-  //     data: ['Cheese Cake', 'Ice Cream'],
-  //   },
-  // ];
+  const getListProduct = async provider_id => {
+    let res = await axios.get(
+      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
+    );
 
-  useEffect(() => {
-    const loadDetailProvider = async provider_id => {
-      let res = await axios.get(
-        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
-      );
-      if (res.data.result) {
-        res.data.result.forEach((item, index) => {
+    return res.data;
+  };
+
+  const getProviderInfo = async provider_id => {
+    let res = await axios.get(
+      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/${provider_id}/get-info`,
+    );
+
+    return res.data;
+  };
+
+  const loadDetailProvider = provider_id => {
+    const res1 = getListProduct(provider_id);
+    const res2 = getProviderInfo(provider_id);
+    Promise.all([res1, res2]).then(data => {
+      // data[0] means the response from 1st api call
+      if (data[0].result) {
+        data[0].result.forEach((item, index) => {
           setMenuCategory(prev => [
             ...prev,
             {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
@@ -90,18 +87,23 @@ export const DetailProvider = props => {
         });
 
         // clone the "products" property to "data" property to use SectionList
-        let data = res.data.result.reduce((r, s) => {
+        let providerDetailResult = data[0].result.reduce((r, s) => {
           r.push({...s, data: s.products});
           return r;
         }, []);
 
-        setItem(data);
-      } else {
-        setItem([]);
+        setItem(providerDetailResult);
       }
 
+      // data[1] means the response from 2nd api call
+      if (data[1].provider_info) {
+        setInfo(prev => ({...prev, ...data[1].provider_info}));
+      }
       setLoading(false);
-    };
+    });
+  };
+
+  useEffect(() => {
     loadDetailProvider(data.provider_id);
   }, []);
 
@@ -175,15 +177,6 @@ export const DetailProvider = props => {
     setSelectedTab(categoryTitle);
   };
 
-  const scrollToContent = () => {
-    ref.current.scrollTo({
-      x: 0,
-      y: 430,
-      animated: true,
-    });
-    setFirstScroll(false);
-  };
-
   const renderCategoryTitle = ({item}) => {
     // let index = item.menu_category_id;
     let categoryTitle = item.menuCategoryName;
@@ -214,6 +207,29 @@ export const DetailProvider = props => {
       </TouchableOpacity>
     );
   };
+
+  const UpcomingProductList = React.memo(function UpcomingProductList(props) {
+    return (
+      <FlatList
+        data={[{id: 1}, {id: 2}]}
+        keyExtractor={item => item.id.toString()}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderItem={({item}) => (
+          <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 20}}>
+            <TouchableOpacity
+              style={{borderRadius: 40}}
+              // onPress={() => setOpenUpcoming(true)}
+              onPress={() => openModalize()}>
+              <ImageBackground
+                source={require('../../../assets/image/upcomingproduct.png')}
+                style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
+            </TouchableOpacity>
+          </View>
+        )}
+      />
+    );
+  });
 
   if (loading) {
     return (
@@ -253,7 +269,7 @@ export const DetailProvider = props => {
               }}>
               <FlatList
                 data={menuCategory}
-                keyExtractor={item => item.menuCategoryId.toString()}
+                keyExtractor={(item, index) => index.toString()}
                 horizontal={true}
                 renderItem={renderCategoryTitle}
                 showsHorizontalScrollIndicator={false}
@@ -265,18 +281,31 @@ export const DetailProvider = props => {
             sections={item}
             keyExtractor={(item, index) => index.toString()}
             stickySectionHeadersEnabled={false}
+            refreshControl={
+              <RefreshControl
+                tintColor={colors.boldred}
+                refreshing={isRefreshing}
+                onRefresh={async () => {
+                  setIsRefreshing(true);
+                  await loadDetailProvider(data.provider_id);
+                  setTimeout(() => {
+                    setIsRefreshing(false);
+                  }, 500);
+                }}
+              />
+            }
             onScroll={Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
               useNativeDriver: false,
             })}
+            removeClippedSubviews={true}
             ref={ref}
             renderItem={({item}) => (
               <View style={styles.menuContentWrapper}>
                 <View style={styles.menuContent}>
                   <TouchableOpacity
                     onPress={() =>
-                      props.navigation.navigate('DetailFood', {
-                        item,
-                        provider: {provider_id: data.id, provider_name: data.title},
+                      props.navigation.navigate('ProductOptions', {
+                        data: item,
                       })
                     }
                     style={styles.foodWrapper}>
@@ -284,7 +313,7 @@ export const DetailProvider = props => {
                       <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
                         {item.product_name}
                       </Text>
-                      <Text>${item.price}</Text>
+                      <Text>${item.price.toFixed(2)}</Text>
                       <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
                         {item.description}
                       </Text>
@@ -312,7 +341,7 @@ export const DetailProvider = props => {
             ListHeaderComponent={() => (
               <>
                 <Animated.Image
-                  source={{uri: data.profile_pic}}
+                  source={{uri: info.data.cover_picture}}
                   resizeMode="cover"
                   style={[styles.providerCover, {opacity}]}
                 />
@@ -358,7 +387,7 @@ export const DetailProvider = props => {
                 </View>
                 <View style={styles.mainContent}>
                   <Text style={{fontSize: 22, fontWeight: 'bold', paddingHorizontal: 20}}>
-                    {data.provider_name}
+                    {info.data.merchant_name}
                   </Text>
                   <View style={styles.infoWrapper}>
                     <View style={styles.info}>
@@ -445,16 +474,7 @@ export const DetailProvider = props => {
                       marginTop: 20,
                     }}>
                     <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
-                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <TouchableOpacity
-                        style={{borderRadius: 40}}
-                        // onPress={() => setOpenUpcoming(true)}
-                        onPress={() => openModalize()}>
-                        <ImageBackground
-                          source={require('../../../assets/image/upcomingproduct.png')}
-                          style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
-                      </TouchableOpacity>
-                    </View>
+                    <UpcomingProductList />
                   </View>
                   <View style={styles.contentWrapper}>
                     <View

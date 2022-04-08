@@ -29,6 +29,7 @@ import {
   SET_USER_LOCATION,
   SAVE_TO_HISTORY_CART,
   ORDER_COMPLETED,
+  AUTO_SET_LOCATION,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -353,6 +354,12 @@ export const UserReducer = (state = initialState, action) => {
           status: null,
           // totalPrice: 0.0,
         },
+      };
+    }
+    case AUTO_SET_LOCATION: {
+      return {
+        ...state,
+        userLocation: {...payload.userLocation},
       };
     }
     default: {

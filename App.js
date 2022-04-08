@@ -54,6 +54,7 @@ import {YourFavorites} from './screens/HomePage/Account/YourFavorites';
 import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
 import {RatingProvider} from './screens/HomePage/Account/Rating/RatingProvider';
 import {RatingShipper} from './screens/HomePage/Account/Rating/RatingShipper';
+import {ProductOptions} from './screens/HomePage/Detail/ProductOptions';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -64,6 +65,7 @@ import {
   signout,
   TokenNotFound,
   SetUserLocation,
+  AutoSetLocation,
 } from './store/action/auth';
 import colors from './colors/colors';
 import axios from 'axios';
@@ -88,6 +90,9 @@ export default function App(props) {
       let userLocation = await AsyncStorage.getItem('@userLocation');
       if (userLocation !== null) {
         dispatch(SetUserLocation(JSON.parse(userLocation)));
+      } else if (userLocation === undefined) {
+        // set the current coordinate
+        dispatch(AutoSetLocation());
       }
 
       // console.log('refresh token', refreshToken);
@@ -165,6 +170,11 @@ export default function App(props) {
             <Stack.Screen
               name="RatingShipper"
               component={RatingShipper}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ProductOptions"
+              component={ProductOptions}
               options={{headerShown: false}}
             />
           </Stack.Navigator>
