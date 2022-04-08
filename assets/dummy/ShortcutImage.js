@@ -42,8 +42,7 @@ export const ShortcutImage = [
   {
     id: 9,
     name: 'Japanese',
-    image:
-      'https://d4p17acsd5wyj.cloudfront.net/shortcuts/cuisines/japanese.png',
+    image: 'https://d4p17acsd5wyj.cloudfront.net/shortcuts/cuisines/japanese.png',
   },
   {
     id: 10,
@@ -68,8 +67,7 @@ export const ShortcutImage = [
   {
     id: 14,
     name: 'Italian',
-    image:
-      'https://d4p17acsd5wyj.cloudfront.net/shortcuts/cuisines/italian.png',
+    image: 'https://d4p17acsd5wyj.cloudfront.net/shortcuts/cuisines/italian.png',
   },
   {
     id: 15,

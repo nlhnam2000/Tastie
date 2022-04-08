@@ -53,6 +53,7 @@ import {OrderHistory} from './screens/HomePage/Account/OrderHistory';
 import {YourFavorites} from './screens/HomePage/Account/YourFavorites';
 import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
 import {RatingProvider} from './screens/HomePage/Account/Rating/RatingProvider';
+import {RatingShipper} from './screens/HomePage/Account/Rating/RatingShipper';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -161,10 +162,19 @@ export default function App(props) {
               component={RatingProvider}
               options={{headerShown: false}}
             />
+            <Stack.Screen
+              name="RatingShipper"
+              component={RatingShipper}
+              options={{headerShown: false}}
+            />
           </Stack.Navigator>
         ) : (
           <Stack.Navigator initialRouteName="Begin">
-            <Stack.Screen name="Begin" component={Begin} options={{headerShown: false}} />
+            <Stack.Screen
+              name="Begin"
+              component={Begin}
+              options={{headerShown: false, animationTypeForReplace: 'pop'}}
+            />
             <Stack.Screen
               name="Login"
               component={LoginForm}

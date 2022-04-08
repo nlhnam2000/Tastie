@@ -33,93 +33,88 @@ export const UpcomingProduct = props => {
     'It is not my thing!',
     'Other',
   ];
+
   return (
-    <Modal animationType="slide" transparent={true} visible={props.visible}>
-      <View style={styles.modalContainer}>
-        <View style={styles.modalView}>
-          <View style={styles.modalHeader}>
-            <View style={styles.upcomingBanner}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', color: 'white'}}>Comming soon</Text>
-            </View>
-            <TouchableOpacity onPress={() => props.onCancel()}>
-              <Feather name="x" size={20} color={'black'} style={{paddingHorizontal: 10}} />
-            </TouchableOpacity>
+    <ScrollView
+      showsVerticalScrollIndicator={false}
+      style={{width: '100%', position: 'absolute', height: Dimensions.get('window').height}}>
+      <View style={{width: '100%', height: 'auto'}}>
+        <ImageBackground
+          source={require('../../assets/image/upcomingproduct.png')}
+          resizeMode="cover"
+          style={{width: '100%', height: 250, position: 'relative'}}>
+          <View
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 0,
+              padding: 15,
+              backgroundColor: '#53B404',
+              borderBottomRightRadius: 25,
+            }}>
+            <Text style={{fontSize: 16, fontWeight: 'bold', color: 'white'}}>Comming soon</Text>
           </View>
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            style={{width: '100%', position: 'absolute', height: Dimensions.get('window').height}}>
-            <View style={{width: '100%', height: 'auto'}}>
-              <Image
-                source={require('../../assets/image/upcomingproduct.png')}
-                resizeMode="cover"
-                style={{width: '100%', height: 250}}
-              />
-              <View style={styles.productInfo}>
-                <View style={styles.productHeader}>
-                  <Text style={styles.heading}>Sunny Side Breakfast Bowl</Text>
-                  <Text>$5.50</Text>
-                </View>
-                <Text>
-                  Organic sunny-side egg, avocado, caramelized onion, roasted Brussels sprouts and
-                  sweet potato, farro, massaged kale, citrus-cumin salt, pistachio dukkah. This item
-                  contains nuts.
-                </Text>
-                <View style={styles.optionHeader}>
-                  <Text style={{fontSize: 17, fontWeight: '500'}}>
-                    Are you eager to try this upcoming product?
-                  </Text>
-                  <Text style={{color: 'gray', marginTop: 5}}>Required</Text>
-                </View>
-                <View style={styles.optionWrapper}>
-                  {options.map((item, index) => (
-                    <View key={index} style={styles.options}>
-                      <TouchableOpacity
-                        style={styles.radioButton}
-                        onPress={() => setSelected(item)}>
-                        <View
-                          style={{
-                            borderRadius: 40,
-                            backgroundColor: selected === item ? 'black' : 'white',
-                            width: 15,
-                            height: 15,
-                          }}></View>
-                      </TouchableOpacity>
-                      <Text style={{fontSize: 17, fontWeight: '400'}}>{item}</Text>
-                    </View>
-                  ))}
-                </View>
-                {selected === 'Other' && (
-                  <KeyboardAvoidingView
-                    style={styles.inputField}
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                    <TextInput
-                      placeholder="Tell us about your idea ..."
-                      placeholderTextColor={'#787878'}
-                      style={{padding: 15}}
-                      multiline={true}
-                      numberOfLines={3}
-                    />
-                  </KeyboardAvoidingView>
-                )}
-                <TouchableOpacity
-                  style={{
-                    padding: 10,
-                    backgroundColor: 'black',
-                    marginTop: 15,
-                    width: '100%',
-                  }}>
-                  <Text
-                    style={{color: 'white', fontWeight: '500', textAlign: 'center', fontSize: 18}}>
-                    Submit
-                  </Text>
+        </ImageBackground>
+        <View style={styles.productInfo}>
+          <View style={styles.productHeader}>
+            <Text style={styles.heading}>Sunny Side Breakfast Bowl</Text>
+            <Text>$5.50</Text>
+          </View>
+          <Text>
+            Organic sunny-side egg, avocado, caramelized onion, roasted Brussels sprouts and sweet
+            potato, farro, massaged kale, citrus-cumin salt, pistachio dukkah. This item contains
+            nuts.
+          </Text>
+          <View style={styles.optionHeader}>
+            <Text style={{fontSize: 17, fontWeight: '500'}}>
+              Are you eager to try this upcoming product?
+            </Text>
+            <Text style={{color: 'gray', marginTop: 5}}>Required</Text>
+          </View>
+          <View style={styles.optionWrapper}>
+            {options.map((item, index) => (
+              <View key={index} style={styles.options}>
+                <TouchableOpacity style={styles.radioButton} onPress={() => setSelected(item)}>
+                  <View
+                    style={{
+                      borderRadius: 40,
+                      backgroundColor: selected === item ? 'black' : 'white',
+                      width: 15,
+                      height: 15,
+                    }}></View>
                 </TouchableOpacity>
-                <View style={{width: '100%', height: 100}}></View>
+                <Text style={{fontSize: 17, fontWeight: '400'}}>{item}</Text>
               </View>
-            </View>
-          </ScrollView>
+            ))}
+          </View>
+          {selected === 'Other' && (
+            <KeyboardAvoidingView
+              style={styles.inputField}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+              <TextInput
+                placeholder="Tell us about your idea ..."
+                placeholderTextColor={'#787878'}
+                style={{padding: 15}}
+                multiline={true}
+                numberOfLines={3}
+              />
+            </KeyboardAvoidingView>
+          )}
+          <TouchableOpacity
+            style={{
+              padding: 10,
+              backgroundColor: 'black',
+              marginTop: 15,
+              width: '100%',
+            }}>
+            <Text style={{color: 'white', fontWeight: '500', textAlign: 'center', fontSize: 18}}>
+              Submit
+            </Text>
+          </TouchableOpacity>
+          <View style={{width: '100%', height: 100}}></View>
         </View>
       </View>
-    </Modal>
+    </ScrollView>
   );
 };
 

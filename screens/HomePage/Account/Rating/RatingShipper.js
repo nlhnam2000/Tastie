@@ -13,13 +13,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../../../colors/colors';
 
-export const RatingProvider = props => {
+export const RatingShipper = props => {
   const [loading, setLoading] = useState(true);
   const [ratingTitle, setRatingTitle] = useState('Share your compliments');
-  const [selectedAnonymous, setSelectedAnonymous] = useState(false);
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
+  const {shipperName} = props.route.params;
 
   useEffect(() => {
     setLoading(false);
@@ -36,10 +36,17 @@ export const RatingProvider = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
-        <Text style={styles.heading}>Rate shop</Text>
+        <Text style={styles.heading}>Rate shipper</Text>
         <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Feather name="x" size={20} color="black" />
         </TouchableOpacity>
+      </View>
+      <View style={{marginVertical: 10, alignItems: 'center'}}>
+        <Image
+          source={require('../../../../assets/image/shipperMarker.png')}
+          style={{width: 40, height: 40, borderRadius: 40, marginBottom: 10}}
+        />
+        <Text>{shipperName}</Text>
       </View>
       <View style={styles.flexRowCenter}>
         <TouchableOpacity
@@ -104,8 +111,18 @@ export const RatingProvider = props => {
         </TouchableOpacity>
       </View>
       <Text style={{textAlign: 'center'}}>{ratingTitle}</Text>
-      <View style={[styles.flexRowCenter, {width: '100%'}]}>
-        {['Yummy!', 'Good packaging', 'Filling', 'Affordable'].map((item, index) => (
+      <View
+        style={[
+          styles.flexRowCenter,
+          {width: '100%', flexBasis: '20%', flexWrap: 'wrap', marginTop: 10, marginBottom: 0},
+        ]}>
+        {[
+          'Friendly!',
+          'Careful package handling',
+          'Proper uniform',
+          'Fast delivery',
+          'Supportive',
+        ].map((item, index) => (
           <TouchableOpacity
             onPress={() => {
               if (selectedTags.includes(item)) {
@@ -119,10 +136,11 @@ export const RatingProvider = props => {
             key={index}
             style={{
               padding: 10,
-              backgroundColor: selectedTags.includes(item) ? 'black' : 'rgba(230,230,230,0.7)',
-              marginRight: index === 3 ? 0 : 10,
+              backgroundColor: 'rgba(230,230,230,0.7)',
+              marginRight: index === 4 ? 0 : 10,
+              marginBottom: 10,
             }}>
-            <Text style={{color: selectedTags.includes(item) ? 'white' : 'black'}}>{item}</Text>
+            <Text>{item}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -141,50 +159,13 @@ export const RatingProvider = props => {
           placeholderTextColor={'#c4c4c4'}
           onChangeText={text => setComment(text)}
         />
-        <TouchableOpacity
-          style={{
-            alignItems: 'center',
-            padding: 10,
-            borderWidth: 1,
-            borderColor: '#AB2E15',
-            position: 'absolute',
-            bottom: 10,
-            left: 30,
-            borderStyle: 'dashed',
-          }}>
-          <Feather name="camera" size={20} color={'#AB2E15'} />
-          <Text style={{color: '#AB2E15', marginTop: 10}}>Add photo</Text>
-        </TouchableOpacity>
         <Text style={{color: 'gray', position: 'absolute', right: 30, bottom: 10}}>
           {comment.length}/150
         </Text>
       </View>
-      <View style={styles.flexRow}>
-        <TouchableOpacity
-          onPress={() => setSelectedAnonymous(!selectedAnonymous)}
-          style={{
-            width: 25,
-            height: 25,
-            borderRadius: 40,
-            borderWidth: 1,
-            borderColor: colors.secondary,
-            marginRight: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'white',
-          }}>
-          <View
-            style={{
-              padding: 9,
-              backgroundColor: selectedAnonymous ? 'black' : 'white',
-              borderRadius: 40,
-            }}></View>
-        </TouchableOpacity>
-        <Text>Make my rating anonymous</Text>
-      </View>
       <View style={styles.flexRowCenter}>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('Home Page')}
+          onPress={() => props.navigation.navigate('RatingProvider')}
           style={{paddingVertical: 10, width: '50%', backgroundColor: 'black'}}>
           <Text style={{textAlign: 'center', fontSize: 18, fontWeight: '600', color: 'white'}}>
             Submit

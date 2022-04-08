@@ -38,6 +38,7 @@ export const SAVE_TO_HISTORY_CART = 'SAVE_TO_HISTORY_CART';
 
 // order status
 export const ORDER_CONFIRMED = 'ORDER_CONFIRMED';
+export const ORDER_COMPLETED = 'ORDER_COMPLETED';
 
 // set location
 export const SET_USER_LOCATION = 'SET_USER_LOCATION';

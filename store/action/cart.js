@@ -6,6 +6,7 @@ import {
   UPDATE_CART,
   ORDER_CONFIRMED,
   SAVE_TO_HISTORY_CART,
+  ORDER_COMPLETED,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -51,6 +52,15 @@ export const SubmitOrder = () => dispatch => {
     type: ORDER_CONFIRMED,
     payload: {
       orderStatus: 'order_confirmed',
+    },
+  });
+};
+
+export const OrderCompleted = () => dispatch => {
+  dispatch({
+    type: ORDER_COMPLETED,
+    payload: {
+      // orderStatus: 'order_completed'
     },
   });
 };

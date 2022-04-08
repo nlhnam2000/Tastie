@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -20,6 +20,8 @@ import {
   Modal,
   Switch,
   TouchableWithoutFeedback,
+  RefreshControl,
+  NativeModules,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
@@ -31,6 +33,8 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {BrowseCategory} from '../../../components/Menu/BrowseCatergory';
 import {CategoryList} from '../../../components/Provider/CategoryList';
 import {ProviderList} from '../../../components/Provider/ProviderList';
+import {Modalize} from 'react-native-modalize';
+import axios from 'axios';
 
 const {width} = Dimensions.get('window');
 
@@ -54,6 +58,7 @@ export const HomeContent = props => {
     dietary: true,
   });
   const [selectedDietary, setSelectedDietary] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
@@ -62,6 +67,11 @@ export const HomeContent = props => {
     longitude: state.userLocation.longitude || null,
   });
   const [address, setAddress] = useState(state.userLocation.address || '');
+  const filterModalize = useRef();
+
+  const openFilterModalize = () => {
+    filterModalize.current?.open();
+  };
 
   const renderCategoryList = ({item}) => {
     return (
@@ -88,7 +98,6 @@ export const HomeContent = props => {
 
   useEffect(() => {
     setLoading(false);
-    console.log(state.userLocation);
   }, []);
 
   if (loading) {
@@ -101,7 +110,7 @@ export const HomeContent = props => {
   } else {
     return (
       <View style={styles.container}>
-        <View style={[styles.content, {backgroundColor: showFilter ? 'rgba(0,0,0,0.4)' : 'white'}]}>
+        <View style={[styles.content]}>
           <StatusBar barStyle="dark-content" />
           <View style={styles.headerWrapper}>
             <View style={[styles.tabWrapper, {}]}>
@@ -140,13 +149,27 @@ export const HomeContent = props => {
               </TouchableOpacity>
               <TouchableOpacity
                 style={{position: 'absolute', left: '100%'}}
-                onPress={() => setShowFilter(true)}>
+                // onPress={() => setShowFilter(true)}
+                onPress={() => openFilterModalize()}>
                 <Feather name="filter" size={20} color="black" />
               </TouchableOpacity>
             </View>
           </View>
 
-          <ScrollView style={{width}}>
+          <ScrollView
+            style={{width}}
+            refreshControl={
+              <RefreshControl
+                tintColor={colors.boldred}
+                refreshing={isRefreshing}
+                onRefresh={() => {
+                  setIsRefreshing(true);
+                  setTimeout(() => {
+                    setIsRefreshing(false);
+                  }, 3000);
+                }}
+              />
+            }>
             {/* <View
               style={{
                 justifyContent: 'center',
@@ -183,7 +206,7 @@ export const HomeContent = props => {
             <View style={{width}}>
               <BrowseCategory />
             </View>
-            <View
+            {/* <View
               style={styles.contentWrapper}
               // onScroll={handleScroll}
               // scrollEventThrottle={16}
@@ -212,11 +235,17 @@ export const HomeContent = props => {
                   </TouchableOpacity>
                 );
               })}
+            </View> */}
+            <View style={{width}}>
+              <CategoryList {...props} groupID={1} categoryTitle="Order near you" />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} categoryTitle="In a rush" />
+              <CategoryList {...props} groupID={3} categoryTitle="Most rating" />
             </View>
-            <View style={styles.contentWrapper}>
+            <View style={{width}}>
+              <CategoryList {...props} groupID={4} categoryTitle="In a rush" />
+            </View>
+            {/* <View style={styles.contentWrapper}>
               {popularData.map((item, index) => {
                 return (
                   <TouchableOpacity
@@ -241,9 +270,12 @@ export const HomeContent = props => {
                   </TouchableOpacity>
                 );
               })}
+            </View> */}
+            <View style={{width}}>
+              <CategoryList {...props} groupID={5} categoryTitle="New on Tastie" />
             </View>
             <View style={{width}}>
-              <CategoryList categoryTitle="Today offer" />
+              <CategoryList {...props} groupID={6} categoryTitle="Most popular" />
             </View>
           </ScrollView>
         </View>
@@ -332,270 +364,259 @@ export const HomeContent = props => {
             </View>
           </View>
         </Modal>
-        <Modal animationType="slide" transparent visible={showFilter}>
-          <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  width: '100%',
-                  marginBottom: 10,
-                  position: 'relative',
-                  marginTop: 10,
-                }}>
+        <Modalize
+          ref={filterModalize}
+          modalHeight={Dimensions.get('window').height - 200}
+          HeaderComponent={
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                marginBottom: 10,
+                position: 'relative',
+                marginTop: 10,
+              }}>
+              <TouchableOpacity
+                style={{position: 'absolute', left: '2%', top: '2%'}}
+                onPress={() => filterModalize.current.close()}>
+                <Feather name="x" size={20} color={'black'} />
+              </TouchableOpacity>
+              <Text style={{fontSize: 17, fontWeight: '500'}}>All stores</Text>
+            </View>
+          }>
+          <View
+            style={{
+              width: '100%',
+              paddingHorizontal: 20,
+              justifyContent: 'space-between',
+            }}>
+            <ScrollView style={{width: '100%'}}>
+              <View style={styles.flexRowBetween}>
+                <Text style={{fontSize: 17, fontWeight: '600'}}>Sort</Text>
                 <TouchableOpacity
-                  style={{position: 'absolute', left: '2%', top: '2%'}}
-                  onPress={() => setShowFilter(false)}>
-                  <Feather name="x" size={20} color={'black'} />
+                  onPress={() =>
+                    setFilterToogled(prev => ({
+                      ...prev,
+                      sort: !prev.sort,
+                    }))
+                  }>
+                  <Feather
+                    name={filterToogled.sort ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="black"
+                  />
                 </TouchableOpacity>
-                <Text style={{fontSize: 17, fontWeight: '500'}}>All stores</Text>
               </View>
-              <View
-                style={{
-                  width: '100%',
-                  paddingHorizontal: 20,
-                  justifyContent: 'space-between',
-                  height: '90%',
-                }}>
-                <ScrollView style={{width: '100%', height: '90%'}}>
-                  <View style={styles.flexRowBetween}>
-                    <Text style={{fontSize: 17, fontWeight: '600'}}>Sort</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setFilterToogled(prev => ({
-                          ...prev,
-                          sort: !prev.sort,
-                        }))
-                      }>
-                      <Feather
-                        name={filterToogled.sort ? 'chevron-up' : 'chevron-down'}
-                        size={20}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  {filterToogled.sort && (
-                    <View style={{marginBottom: 20}}>
-                      {['Picked for you', 'Most popular', 'Rating', 'Delivery time'].map(
-                        (item, index) => (
-                          <View
-                            style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}
-                            key={index}>
-                            <TouchableOpacity
-                              onPress={() => setSelectedSort(item)}
-                              style={{
-                                width: 25,
-                                height: 25,
-                                borderWidth: 2,
-                                borderColor: colors.secondary,
-                                marginRight: 10,
-                                borderRadius: 40,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                              }}>
-                              <View
-                                style={{
-                                  padding: 7,
-                                  backgroundColor: selectedSort === item ? 'black' : 'white',
-                                  borderRadius: 30,
-                                }}></View>
-                            </TouchableOpacity>
-                            <Text>{item}</Text>
-                          </View>
-                        ),
-                      )}
-                    </View>
-                  )}
-                  <View style={styles.flexRowBetween}>
-                    <Text style={{fontSize: 17, fontWeight: '600'}}>Just for you</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setFilterToogled(prev => ({
-                          ...prev,
-                          justforyou: !prev.justforyou,
-                        }))
-                      }>
-                      <Feather
-                        name={filterToogled.justforyou ? 'chevron-up' : 'chevron-down'}
-                        size={20}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  {filterToogled.justforyou && (
-                    <View style={{marginBottom: 20}}>
-                      <View style={styles.flexRowBetween}>
-                        <Text>Deals</Text>
-                        <Switch
-                          trackColor={{false: 'red', true: 'black'}}
-                          onValueChange={() =>
-                            setEnableSwitches(prev => ({
-                              ...prev,
-                              deals: !prev.deals,
-                            }))
-                          }
-                          value={enableSwitches.deals}
-                        />
-                      </View>
-                      <View style={styles.flexRowBetween}>
-                        <Text>Most order</Text>
-                        <Switch
-                          trackColor={{false: 'red', true: 'black'}}
-                          onValueChange={() =>
-                            setEnableSwitches(prev => ({
-                              ...prev,
-                              mostorder: !prev.mostorder,
-                            }))
-                          }
-                          value={enableSwitches.mostorder}
-                        />
-                      </View>
-                    </View>
-                  )}
-                  <View style={styles.flexRowBetween}>
-                    <Text style={{fontSize: 17, fontWeight: '600'}}>Price range</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setFilterToogled(prev => ({
-                          ...prev,
-                          pricerange: !prev.pricerange,
-                        }))
-                      }>
-                      <Feather
-                        name={filterToogled.pricerange ? 'chevron-up' : 'chevron-down'}
-                        size={20}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  {filterToogled.pricerange && (
-                    <View
-                      style={{
-                        width: '90%',
-                        marginBottom: 20,
-                        position: 'relative',
-                        marginLeft: 'auto',
-                        marginRight: 'auto',
-                      }}>
+              {filterToogled.sort && (
+                <View style={{marginBottom: 20}}>
+                  {['Picked for you', 'Most popular', 'Rating', 'Delivery time'].map(
+                    (item, index) => (
                       <View
-                        style={{
-                          width: '100%',
-                          height: 1,
-                          backgroundColor: 'black',
-                          marginTop: 40,
-                          zIndex: -1,
-                          marginBottom: 20,
-                        }}></View>
-                      {['Free', '$', '$$', '$$$', '$$$$'].map((item, index) => (
-                        <View
-                          key={index}
-                          style={{
-                            position: 'absolute',
-                            top: 25,
-                            alignItems: 'center',
-                            left: 23 * index + '%',
-                          }}>
-                          <TouchableOpacity
-                            onPress={() => setSelectedPriceRange(item)}
-                            style={{
-                              width: 30,
-                              height: 30,
-                              borderWidth: 2,
-                              borderColor: colors.secondary,
-                              borderRadius: 40,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              zIndex: 1,
-                              backgroundColor: 'white',
-                              marginBottom: 5,
-                            }}>
-                            <View
-                              style={{
-                                padding: 10,
-                                borderRadius: 40,
-                                backgroundColor: selectedPriceRange === item ? 'black' : 'white',
-                              }}></View>
-                          </TouchableOpacity>
-                          <Text>{item}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                  <View style={styles.flexRowBetween}>
-                    <Text style={{fontSize: 17, fontWeight: '600'}}>Dietary</Text>
-                    <TouchableOpacity
-                      onPress={() =>
-                        setFilterToogled(prev => ({
-                          ...prev,
-                          dietary: !prev.dietary,
-                        }))
-                      }>
-                      <Feather
-                        name={filterToogled.dietary ? 'chevron-up' : 'chevron-down'}
-                        size={20}
-                        color="black"
-                      />
-                    </TouchableOpacity>
-                  </View>
-                  {filterToogled.dietary && (
-                    <View
-                      style={{
-                        marginTop: 10,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        flexBasis: '20%',
-                        flexWrap: 'wrap',
-                        width: '100%',
-                      }}>
-                      {[
-                        'Vegetarian',
-                        'Vegan',
-                        'Gluten-free',
-                        'Good for health',
-                        'Alergy-friendly',
-                      ].map((item, index) => (
+                        style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}
+                        key={index}>
                         <TouchableOpacity
-                          onPress={() => {
-                            let pos = selectedDietary.indexOf(item);
-                            let copy = [...selectedDietary];
-                            if (pos !== -1) {
-                              copy.splice(pos, 1); // remove item
-                              setSelectedDietary(copy);
-                            } else {
-                              copy.push(item); // add item
-                              setSelectedDietary(copy);
-                            }
-                          }}
-                          key={index}
+                          onPress={() => setSelectedSort(item)}
+                          style={{
+                            width: 25,
+                            height: 25,
+                            borderWidth: 2,
+                            borderColor: colors.secondary,
+                            marginRight: 10,
+                            borderRadius: 40,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}>
+                          <View
+                            style={{
+                              padding: 7,
+                              backgroundColor: selectedSort === item ? 'black' : 'white',
+                              borderRadius: 30,
+                            }}></View>
+                        </TouchableOpacity>
+                        <Text>{item}</Text>
+                      </View>
+                    ),
+                  )}
+                </View>
+              )}
+              <View style={styles.flexRowBetween}>
+                <Text style={{fontSize: 17, fontWeight: '600'}}>Just for you</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setFilterToogled(prev => ({
+                      ...prev,
+                      justforyou: !prev.justforyou,
+                    }))
+                  }>
+                  <Feather
+                    name={filterToogled.justforyou ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              </View>
+              {filterToogled.justforyou && (
+                <View style={{marginBottom: 20}}>
+                  <View style={styles.flexRowBetween}>
+                    <Text>Deals</Text>
+                    <Switch
+                      trackColor={{false: 'red', true: 'black'}}
+                      onValueChange={() =>
+                        setEnableSwitches(prev => ({
+                          ...prev,
+                          deals: !prev.deals,
+                        }))
+                      }
+                      value={enableSwitches.deals}
+                    />
+                  </View>
+                  <View style={styles.flexRowBetween}>
+                    <Text>Most order</Text>
+                    <Switch
+                      trackColor={{false: 'red', true: 'black'}}
+                      onValueChange={() =>
+                        setEnableSwitches(prev => ({
+                          ...prev,
+                          mostorder: !prev.mostorder,
+                        }))
+                      }
+                      value={enableSwitches.mostorder}
+                    />
+                  </View>
+                </View>
+              )}
+              <View style={styles.flexRowBetween}>
+                <Text style={{fontSize: 17, fontWeight: '600'}}>Price range</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setFilterToogled(prev => ({
+                      ...prev,
+                      pricerange: !prev.pricerange,
+                    }))
+                  }>
+                  <Feather
+                    name={filterToogled.pricerange ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="black"
+                  />
+                </TouchableOpacity>
+              </View>
+              {filterToogled.pricerange && (
+                <View
+                  style={{
+                    width: '90%',
+                    marginBottom: 20,
+                    position: 'relative',
+                    marginLeft: 'auto',
+                    marginRight: 'auto',
+                  }}>
+                  <View
+                    style={{
+                      width: '100%',
+                      height: 1,
+                      backgroundColor: 'black',
+                      marginTop: 40,
+                      zIndex: -1,
+                      marginBottom: 20,
+                    }}></View>
+                  {['Free', '$', '$$', '$$$', '$$$$'].map((item, index) => (
+                    <View
+                      key={index}
+                      style={{
+                        position: 'absolute',
+                        top: 25,
+                        alignItems: 'center',
+                        left: 23 * index + '%',
+                      }}>
+                      <TouchableOpacity
+                        onPress={() => setSelectedPriceRange(item)}
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderWidth: 2,
+                          borderColor: colors.secondary,
+                          borderRadius: 40,
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          zIndex: 1,
+                          backgroundColor: 'white',
+                          marginBottom: 5,
+                        }}>
+                        <View
                           style={{
                             padding: 10,
-                            borderRadius: 15,
-                            backgroundColor: selectedDietary.includes(item)
-                              ? 'black'
-                              : 'rgba(230,230,230,0.8)',
-                            marginRight: 10,
-                            marginBottom: 10,
-                          }}>
-                          <Text style={{color: selectedDietary.includes(item) ? 'white' : 'black'}}>
-                            {item}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
+                            borderRadius: 40,
+                            backgroundColor: selectedPriceRange === item ? 'black' : 'white',
+                          }}></View>
+                      </TouchableOpacity>
+                      <Text>{item}</Text>
                     </View>
-                  )}
-                </ScrollView>
-                <TouchableOpacity style={{padding: 15, backgroundColor: 'black', width: '100%'}}>
-                  <Text
-                    style={{textAlign: 'center', color: 'white', fontSize: 17, fontWeight: 'bold'}}>
-                    Apply
-                  </Text>
+                  ))}
+                </View>
+              )}
+              <View style={styles.flexRowBetween}>
+                <Text style={{fontSize: 17, fontWeight: '600'}}>Dietary</Text>
+                <TouchableOpacity
+                  onPress={() =>
+                    setFilterToogled(prev => ({
+                      ...prev,
+                      dietary: !prev.dietary,
+                    }))
+                  }>
+                  <Feather
+                    name={filterToogled.dietary ? 'chevron-up' : 'chevron-down'}
+                    size={20}
+                    color="black"
+                  />
                 </TouchableOpacity>
               </View>
-            </View>
+              {filterToogled.dietary && (
+                <View
+                  style={{
+                    marginTop: 10,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    flexBasis: '20%',
+                    flexWrap: 'wrap',
+                    width: '100%',
+                  }}>
+                  {['Vegetarian', 'Vegan', 'Gluten-free', 'Good for health', 'Alergy-friendly'].map(
+                    (item, index) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          let pos = selectedDietary.indexOf(item);
+                          let copy = [...selectedDietary];
+                          if (pos !== -1) {
+                            copy.splice(pos, 1); // remove item
+                            setSelectedDietary(copy);
+                          } else {
+                            copy.push(item); // add item
+                            setSelectedDietary(copy);
+                          }
+                        }}
+                        key={index}
+                        style={{
+                          padding: 10,
+                          borderRadius: 15,
+                          backgroundColor: selectedDietary.includes(item)
+                            ? 'black'
+                            : 'rgba(230,230,230,0.8)',
+                          marginRight: 10,
+                          marginBottom: 10,
+                        }}>
+                        <Text style={{color: selectedDietary.includes(item) ? 'white' : 'black'}}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    ),
+                  )}
+                </View>
+              )}
+            </ScrollView>
           </View>
-        </Modal>
+        </Modalize>
       </View>
     );
   }

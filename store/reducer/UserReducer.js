@@ -28,6 +28,7 @@ import {
   ORDER_CONFIRMED,
   SET_USER_LOCATION,
   SAVE_TO_HISTORY_CART,
+  ORDER_COMPLETED,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -339,6 +340,19 @@ export const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         orderHistory: orderHistory,
+      };
+    }
+    case ORDER_COMPLETED: {
+      return {
+        ...state,
+        userCart: {
+          provider_id: null,
+          provider_name: null,
+          date: null,
+          cart: [],
+          status: null,
+          // totalPrice: 0.0,
+        },
       };
     }
     default: {

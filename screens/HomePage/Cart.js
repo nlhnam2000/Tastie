@@ -217,25 +217,47 @@ export const Cart = props => {
           )} */}
         </ScrollView>
         <View style={{width, paddingHorizontal: 20}}>
-          <TouchableOpacity
-            onPress={() => props.navigation.navigate('GoToCheckout')}
-            style={{
-              width: '100%',
-              backgroundColor: 'black',
-              paddingVertical: 15,
-              paddingHorizontal: 20,
-            }}>
-            <Text
+          {state.userCart.status === null ? (
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('GoToCheckout')}
               style={{
-                fontSize: 18,
-                fontWeight: '600',
-                color: 'white',
-                textTransform: 'uppercase',
-                textAlign: 'center',
+                width: '100%',
+                backgroundColor: 'black',
+                paddingVertical: 15,
+                paddingHorizontal: 20,
               }}>
-              Go to checkout
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                  textTransform: 'uppercase',
+                  textAlign: 'center',
+                }}>
+                Go to checkout
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => props.navigation.navigate('OrderStatus', {order: state.userCart})}
+              style={{
+                width: '100%',
+                backgroundColor: 'black',
+                paddingVertical: 15,
+                paddingHorizontal: 20,
+              }}>
+              <Text
+                style={{
+                  fontSize: 18,
+                  fontWeight: '600',
+                  color: 'white',
+                  textTransform: 'uppercase',
+                  textAlign: 'center',
+                }}>
+                Order tracking
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
         {/* <TouchableOpacity style={styles.submitOrderButton}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>

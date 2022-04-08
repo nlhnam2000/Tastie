@@ -10,17 +10,38 @@ import {
   Dimensions,
 } from 'react-native';
 import {popularData} from '../../assets/dummy/popularData';
-import {shuffle} from '../../global';
+import {shuffle, IP_ADDRESS} from '../../global';
 import colors from '../../colors/colors';
+import axios from 'axios';
+import {useSelector} from 'react-redux';
 
 const {width} = Dimensions.get('window');
 
 export const CategoryList = props => {
   const data = shuffle([...popularData]);
   const [loading, setLoading] = useState(true);
+  const [providerList, setProviderList] = useState([]);
+  const state = useSelector(state => state.UserReducer);
 
   useEffect(() => {
-    setLoading(false);
+    const loadProvider = async group_id => {
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+        {
+          group_provider_id: 7,
+          limit: 6,
+          offset: 1,
+          latitude: state.userLocation.latitude,
+          longitude: state.userLocation.longitude,
+        },
+      );
+      if (res.data.response) {
+        setProviderList(res.data.response);
+      }
+      setLoading(false);
+    };
+
+    loadProvider(props.groupID);
   }, []);
 
   if (loading) {
@@ -38,8 +59,8 @@ export const CategoryList = props => {
         <Text>View all</Text>
       </View>
       <FlatList
-        data={data}
-        keyExtractor={item => item.id}
+        data={providerList}
+        keyExtractor={item => item.provider_id}
         horizontal
         showsHorizontalScrollIndicator={false}
         renderItem={({item}) => {
@@ -48,18 +69,22 @@ export const CategoryList = props => {
               onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
               style={styles.providerWrapper}>
               <ImageBackground
-                source={item.image}
+                source={{uri: item.profile_pic}}
                 resizeMode="cover"
-                style={{width: width - 60, height: 150}}
+                style={{height: 150, width: width - 80}}
               />
-              <View style={styles.flexRowBetween}>
+              <View style={[styles.flexRowBetween]}>
                 <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
-                  <Text style={styles.subheading}>{item.title}</Text>
-                  <Text>{item.deliveryTime}</Text>
+                  <View style={{width: width - 200, marginBottom: 5}}>
+                    <Text numberOfLines={1} style={[styles.subheading]}>
+                      {item.provider_name}
+                    </Text>
+                  </View>
+                  <Text>{item.estimated_cooking_time} minutes</Text>
                 </View>
                 <View
                   style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-                  <Text>{item.rating}</Text>
+                  <Text>{item.order_totals}</Text>
                 </View>
               </View>
             </TouchableOpacity>

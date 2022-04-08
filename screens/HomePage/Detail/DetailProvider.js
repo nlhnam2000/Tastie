@@ -18,6 +18,7 @@ import {
   ActivityIndicator,
   Platform,
   Modal,
+  SectionList,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
@@ -26,6 +27,9 @@ import {NavigateToCart} from '../../../store/action/navigation';
 import {Rating} from '../../../components/Rating/Rating';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
+import {Modalize} from 'react-native-modalize';
+import axios from 'axios';
+import {IP_ADDRESS} from '../../../global';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -35,19 +39,79 @@ export const DetailProvider = props => {
   const [loading, setLoading] = useState(true);
   const [openInfo, setOpenInfo] = useState(false);
   const [openAddress, setOpenAddress] = useState(false);
-  const [openUpcoming, setOpenUpcoming] = useState(false);
   const [openRating, setOpenRating] = useState(false);
   const [firstScroll, setFirstScroll] = useState(true);
   const {data} = props.route.params;
   const scrollY = useRef(new Animated.Value(0)).current;
   const state = useSelector(state => state.UserReducer);
   const mapref = useRef();
+  const modalizeRef = useRef();
   const dispatch = useDispatch();
+  const [menuCategory, setMenuCategory] = useState([]);
+  const [item, setItem] = useState([]);
+
+  // const DATA = [
+  //   {
+  //     title: 'Main dishes',
+  //     name: 'a',
+  //     data: ['Pizza', 'Burger', 'Risotto'],
+  //   },
+  //   {
+  //     title: 'Sides',
+  //     name: 'a',
+  //     data: ['French Fries', 'Onion Rings', 'Fried Shrimps'],
+  //   },
+  //   {
+  //     title: 'Drinks',
+  //     name: 'a',
+  //     data: ['Water', 'Coke', 'Beer'],
+  //   },
+  //   {
+  //     title: 'Desserts',
+  //     name: 'a',
+  //     data: ['Cheese Cake', 'Ice Cream'],
+  //   },
+  // ];
 
   useEffect(() => {
-    console.log(tabPosition);
-    setLoading(false);
+    const loadDetailProvider = async provider_id => {
+      let res = await axios.get(
+        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
+      );
+      if (res.data.result) {
+        res.data.result.forEach((item, index) => {
+          setMenuCategory(prev => [
+            ...prev,
+            {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
+          ]);
+          if (index === 0) {
+            setSelectedTab(item.menu_category_name);
+          }
+        });
+
+        // clone the "products" property to "data" property to use SectionList
+        let data = res.data.result.reduce((r, s) => {
+          r.push({...s, data: s.products});
+          return r;
+        }, []);
+
+        setItem(data);
+      } else {
+        setItem([]);
+      }
+
+      setLoading(false);
+    };
+    loadDetailProvider(data.provider_id);
   }, []);
+
+  // useEffect(() => {
+  //   console.log(menuCategory);
+  // }, [menuCategory]);
+
+  const openModalize = () => {
+    modalizeRef.current?.open();
+  };
 
   let modes = ['Delivery', 'Pickup'];
   let contentTabs = ['Menu', 'Comments', 'Info'];
@@ -55,10 +119,10 @@ export const DetailProvider = props => {
   const [selectedContentTabs, setSelectedContentTabs] = useState(contentTabs[0]);
 
   let tabs = [];
-  data.categories.forEach(item => {
-    tabs.push(item.categoryTitle);
+  menuCategory.forEach(item => {
+    tabs.push(item.menuCategoryName);
   });
-  const [selectedTab, setSelectedTab] = useState(tabs[0]);
+  const [selectedTab, setSelectedTab] = useState('');
 
   const height = scrollY.interpolate({
     inputRange: [-100, 0, 100],
@@ -121,22 +185,31 @@ export const DetailProvider = props => {
   };
 
   const renderCategoryTitle = ({item}) => {
-    let index = item.categoryId;
-    let categoryTitle = item.categoryTitle;
+    // let index = item.menu_category_id;
+    let categoryTitle = item.menuCategoryName;
     return (
       <TouchableOpacity
-        style={categoryTitle === selectedTab ? styles.categoryTitleClicked : styles.categoryTitle}
+        style={
+          item.menuCategoryName === selectedTab ? styles.categoryTitleClicked : styles.categoryTitle
+        }
+        // onPress={() => {
+        //   scrollToIndex(index, categoryTitle);
+        // }}
         onPress={() => {
-          scrollToIndex(index, categoryTitle);
-          // setSelectedTab(categoryTitle);
+          // ref.current.scrollToLocation({
+          //   sectionIndex: 0,
+          //   itemIndex: 1,
+          //   animated: true,
+          // });
+          setSelectedTab(item.menuCategoryName);
         }}>
         <Text
           style={{
             fontSize: 16,
             fontWeight: 'bold',
-            opacity: categoryTitle === selectedTab ? 1 : 0.4,
+            opacity: item.menuCategoryName === selectedTab ? 1 : 0.4,
           }}>
-          {item.categoryTitle}
+          {item.menuCategoryName}
         </Text>
       </TouchableOpacity>
     );
@@ -165,7 +238,9 @@ export const DetailProvider = props => {
               <TouchableOpacity onPress={() => props.navigation.navigate('Home Page')}>
                 <Feather name="arrow-left" size={22} color={'#000'} />
               </TouchableOpacity>
-              <Text style={{fontWeight: 'bold', fontSize: 20}}>{data.title}</Text>
+              <Text numberOfLines={1} style={{fontWeight: 'bold', fontSize: 20, width: '70%'}}>
+                {data.provider_name}
+              </Text>
               <TouchableOpacity>
                 <Feather name="info" size={22} color={'#000'} />
               </TouchableOpacity>
@@ -177,8 +252,8 @@ export const DetailProvider = props => {
                 paddingVertical: 15,
               }}>
               <FlatList
-                data={data.categories}
-                keyExtractor={item => item.categoryId}
+                data={menuCategory}
+                keyExtractor={item => item.menuCategoryId.toString()}
                 horizontal={true}
                 renderItem={renderCategoryTitle}
                 showsHorizontalScrollIndicator={false}
@@ -186,178 +261,210 @@ export const DetailProvider = props => {
             </Animated.View>
           </Animated.View>
 
-          <Animated.ScrollView
-            ref={ref}
+          <SectionList
+            sections={item}
+            keyExtractor={(item, index) => index.toString()}
+            stickySectionHeadersEnabled={false}
             onScroll={Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
               useNativeDriver: false,
             })}
-            // onMomentumScrollBegin={() => {
-            //   console.log(scrollY);
-            // }}
-            onScrollEndDrag={() => {
-              if (firstScroll) {
-                scrollToContent();
-              }
-              if (scrollY <= 0) {
-                setFirstScroll(true);
-              }
-            }}
-            scrollEventThrottle={1}
-            // pagingEnabled={true}
-            style={styles.wrapper}>
-            <Animated.Image
-              source={data.image}
-              resizeMode="cover"
-              style={[styles.providerCover, {opacity}]}
-            />
-            <Animated.View style={[styles.navbarButtonWrapper, {opacity}]}>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate('Home Page')}
-                style={{
-                  borderRadius: 40,
-                  padding: 5,
-                  backgroundColor: 'white',
-                }}>
-                <Feather name="arrow-left" size={22} color={'#000'} />
-              </TouchableOpacity>
-
-              <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity
-                  style={{
-                    borderRadius: 40,
-                    padding: 5,
-                    backgroundColor: 'white',
-                  }}>
-                  <Feather name="heart" size={22} color={'#000'} />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={{
-                    borderRadius: 40,
-                    padding: 5,
-                    backgroundColor: 'white',
-                    marginLeft: 10,
-                  }}>
-                  <Feather name="info" size={22} color={'#000'} />
-                </TouchableOpacity>
-              </View>
-            </Animated.View>
-            <View style={styles.content}>
-              <View
-                style={{
-                  height: 5,
-                  width: '20%',
-                  backgroundColor: '#e6e6e6',
-                  borderRadius: 20,
-                }}></View>
-            </View>
-            <View style={styles.mainContent}>
-              <Text style={{fontSize: 22, fontWeight: 'bold'}}>{data.title}</Text>
-              <View style={styles.infoWrapper}>
-                <View style={styles.info}>
-                  <Text style={{fontWeight: '600'}}>
-                    {' '}
-                    <Feather name="star" size={17} color={'#000'} /> {data.rating} (
-                    {data.numberRating} ratings) • {data.mainCategory}
-                  </Text>
-                  <Text style={{color: 'gray', marginTop: 10}}>Open until {data.openHour}</Text>
-                  <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
-                </View>
-                <TouchableOpacity onPress={() => setOpenInfo(true)}>
-                  <Feather name="chevron-right" size={24} color={'#000'} />
-                </TouchableOpacity>
-              </View>
-              <View
-                style={{
-                  backgroundColor: '#e6e6e6',
-                  borderRadius: 30,
-                  padding: 5,
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '88%',
-                  marginTop: 20,
-                }}>
-                {modes.map((mode, index) => {
-                  return (
-                    <TouchableOpacity
-                      onPress={() => setSelectedMode(mode)}
-                      key={index}
-                      style={
-                        mode === selectedMode
-                          ? {
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: 'white',
-                              padding: 10,
-                              paddingHorizontal: 15,
-                              borderRadius: 30,
-                            }
-                          : {
-                              justifyContent: 'center',
-                              alignItems: 'center',
-                              backgroundColor: 'transparent',
-                              padding: 10,
-                              paddingHorizontal: 15,
-                              borderRadius: 30,
-                            }
-                      }>
-                      <Text style={{fontWeight: 'bold'}}>{mode}</Text>
-                      <Text style={{color: 'gray'}}>20-30 mins • $0.49</Text>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View>
-              <TouchableOpacity
-                style={styles.promotionWrapper}
-                onPress={() => console.log(scrollY)}>
-                <View style={styles.promotion}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                    }}>
-                    <View
-                      style={{
-                        backgroundColor: 'green',
-                        borderRadius: 40,
-                        marginRight: 10,
-                        padding: 2,
-                      }}>
-                      <Feather name="star" size={20} color={'#fff'} />
-                    </View>
-
-                    <Text style={{fontWeight: 'bold', fontSize: 18}}>$25 until $100</Text>
-                  </View>
-                  <Feather name="chevron-right" size={20} color={'#000'} />
-                </View>
-              </TouchableOpacity>
-              <View
-                style={{
-                  width: '100%',
-                  paddingHorizontal: 20,
-                  marginTop: 20,
-                }}>
-                <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            ref={ref}
+            renderItem={({item}) => (
+              <View style={styles.menuContentWrapper}>
+                <View style={styles.menuContent}>
                   <TouchableOpacity
-                    style={{borderRadius: 40}}
-                    onPress={() => setOpenUpcoming(true)}>
+                    onPress={() =>
+                      props.navigation.navigate('DetailFood', {
+                        item,
+                        provider: {provider_id: data.id, provider_name: data.title},
+                      })
+                    }
+                    style={styles.foodWrapper}>
+                    <View style={[styles.foodInfo, {width: '70%'}]}>
+                      <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
+                        {item.product_name}
+                      </Text>
+                      <Text>${item.price}</Text>
+                      <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
+                        {item.description}
+                      </Text>
+                    </View>
                     <ImageBackground
-                      source={require('../../../assets/image/upcomingproduct.png')}
-                      style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
+                      style={styles.foodImage}
+                      source={{uri: item.product_image}}></ImageBackground>
                   </TouchableOpacity>
                 </View>
               </View>
-              <View style={styles.contentWrapper}>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    padding: 20,
-                  }}>
-                  {/* {contentTabs.map((tab, index) => (
+            )}
+            renderSectionHeader={({section: {menu_category_name}}) => (
+              <Text
+                style={{
+                  textAlign: 'left',
+                  fontWeight: 'bold',
+                  fontSize: 25,
+                  paddingHorizontal: 20,
+                }}>
+                {menu_category_name}
+              </Text>
+            )}
+            // renderSectionHeader={({section}) => <Text>{section.menu_category_name}</Text>}
+            ListEmptyComponent={() => <Text>Empty</Text>}
+            ListHeaderComponent={() => (
+              <>
+                <Animated.Image
+                  source={{uri: data.profile_pic}}
+                  resizeMode="cover"
+                  style={[styles.providerCover, {opacity}]}
+                />
+                <Animated.View style={[styles.navbarButtonWrapper, {opacity}]}>
+                  <TouchableOpacity
+                    onPress={() => props.navigation.navigate('Home Page')}
+                    style={{
+                      borderRadius: 40,
+                      padding: 5,
+                      backgroundColor: 'white',
+                    }}>
+                    <Feather name="arrow-left" size={22} color={'#000'} />
+                  </TouchableOpacity>
+
+                  <View style={{flexDirection: 'row'}}>
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: 40,
+                        padding: 5,
+                        backgroundColor: 'white',
+                      }}>
+                      <Feather name="heart" size={22} color={'#000'} />
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        borderRadius: 40,
+                        padding: 5,
+                        backgroundColor: 'white',
+                        marginLeft: 10,
+                      }}>
+                      <Feather name="info" size={22} color={'#000'} />
+                    </TouchableOpacity>
+                  </View>
+                </Animated.View>
+                <View style={styles.content}>
+                  <View
+                    style={{
+                      height: 5,
+                      width: '20%',
+                      backgroundColor: '#e6e6e6',
+                      borderRadius: 20,
+                    }}></View>
+                </View>
+                <View style={styles.mainContent}>
+                  <Text style={{fontSize: 22, fontWeight: 'bold', paddingHorizontal: 20}}>
+                    {data.provider_name}
+                  </Text>
+                  <View style={styles.infoWrapper}>
+                    <View style={styles.info}>
+                      <Text style={{fontWeight: '600'}}>
+                        {' '}
+                        <Feather name="star" size={17} color={'#000'} /> {data.order_totals} (
+                        {data.numberRating} ratings) • {data.mainCategory}
+                      </Text>
+                      <Text style={{color: 'gray', marginTop: 10}}>Open until {data.openHour}</Text>
+                      <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => setOpenInfo(true)}>
+                      <Feather name="chevron-right" size={24} color={'#000'} />
+                    </TouchableOpacity>
+                  </View>
+                  <View
+                    style={{
+                      backgroundColor: '#e6e6e6',
+                      borderRadius: 30,
+                      padding: 5,
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '88%',
+                      marginTop: 20,
+                    }}>
+                    {modes.map((mode, index) => {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => setSelectedMode(mode)}
+                          key={index}
+                          style={
+                            mode === selectedMode
+                              ? {
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  backgroundColor: 'white',
+                                  padding: 10,
+                                  paddingHorizontal: 15,
+                                  borderRadius: 30,
+                                }
+                              : {
+                                  justifyContent: 'center',
+                                  alignItems: 'center',
+                                  backgroundColor: 'transparent',
+                                  padding: 10,
+                                  paddingHorizontal: 15,
+                                  borderRadius: 30,
+                                }
+                          }>
+                          <Text style={{fontWeight: 'bold'}}>{mode}</Text>
+                          <Text style={{color: 'gray'}}>20-30 mins • $0.49</Text>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                  <TouchableOpacity style={styles.promotionWrapper}>
+                    <View style={styles.promotion}>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                        }}>
+                        <View
+                          style={{
+                            backgroundColor: 'green',
+                            borderRadius: 40,
+                            marginRight: 10,
+                            padding: 2,
+                          }}>
+                          <Feather name="star" size={20} color={'#fff'} />
+                        </View>
+
+                        <Text style={{fontWeight: 'bold', fontSize: 18}}>$25 until $100</Text>
+                      </View>
+                      <Feather name="chevron-right" size={20} color={'#000'} />
+                    </View>
+                  </TouchableOpacity>
+                  <View
+                    style={{
+                      width: '100%',
+                      paddingHorizontal: 20,
+                      marginTop: 20,
+                    }}>
+                    <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
+                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <TouchableOpacity
+                        style={{borderRadius: 40}}
+                        // onPress={() => setOpenUpcoming(true)}
+                        onPress={() => openModalize()}>
+                        <ImageBackground
+                          source={require('../../../assets/image/upcomingproduct.png')}
+                          style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                  <View style={styles.contentWrapper}>
+                    <View
+                      style={{
+                        flexDirection: 'row',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: 20,
+                      }}>
+                      {/* {contentTabs.map((tab, index) => (
                   <TouchableOpacity
                     key={index}
                     onPress={() => setSelectedContentTabs(tab)}
@@ -372,11 +479,13 @@ export const DetailProvider = props => {
                     </Text>
                   </TouchableOpacity>
                 ))} */}
-                  <Text style={{fontSize: 19, fontWeight: '600', textAlign: 'center'}}>Menu</Text>
-                  <Feather name="search" size={20} color={'#000'} />
-                </View>
-              </View>
-              {data.categories.map((category, index) => {
+                      <Text style={{fontSize: 19, fontWeight: '600', textAlign: 'center'}}>
+                        Menu
+                      </Text>
+                      <Feather name="search" size={20} color={'#000'} />
+                    </View>
+                  </View>
+                  {/* {item.map((category, index) => {
                 return (
                   <View
                     onLayout={event => {
@@ -385,18 +494,18 @@ export const DetailProvider = props => {
                       setTabPosition(tabPosition);
                     }}
                     style={styles.menuContentWrapper}
-                    key={category.categoryId}>
+                    key={category.menu_category_id}>
                     <Text
                       style={{
                         textAlign: 'left',
                         fontWeight: 'bold',
                         fontSize: 25,
                       }}>
-                      {category.categoryTitle}
+                      {category.menu_category_name}
                     </Text>
                     <View style={styles.menuContent}>
-                      {category.items.map((item, id) => {
-                        if (state.userCart.cart.some(obj => obj.product_id === item.itemId)) {
+                      {category.products.map((item, id) => {
+                        if (state.userCart.cart.some(obj => obj.product_id === item.product_id)) {
                           return (
                             <TouchableOpacity
                               onPress={() =>
@@ -406,15 +515,23 @@ export const DetailProvider = props => {
                                 })
                               }
                               style={styles.foodWrapper}
-                              key={item.itemId}>
-                              <View style={styles.foodInfo}>
-                                <Text style={{fontWeight: '600', fontSize: 18}}>
-                                  {item.itemTitle}
-                                </Text>
+                              key={item.product_id}>
+                              <View style={[styles.foodInfo, {width: '60%'}]}>
+                                <View>
+                                  <Text numberOfLines={1} style={{fontWeight: '600', fontSize: 18}}>
+                                    {item.product_name}
+                                  </Text>
+                                </View>
                                 <Text>${item.price}</Text>
-                                <Text style={{color: 'gray'}}>{item.note}</Text>
+                                <View>
+                                  <Text numberOfLines={3} style={{color: 'gray'}}>
+                                    {item.description}
+                                  </Text>
+                                </View>
                               </View>
-                              <ImageBackground style={styles.foodImage} source={item.image}>
+                              <ImageBackground
+                                style={[styles.foodImage]}
+                                source={{uri: item.product_image}}>
                                 <View style={styles.productQuantity}>
                                   <Text
                                     style={{
@@ -425,7 +542,7 @@ export const DetailProvider = props => {
                                     {
                                       state.userCart.cart[
                                         state.userCart.cart.findIndex(
-                                          obj => obj.product_id === item.itemId,
+                                          obj => obj.product_id === item.product_id,
                                         )
                                       ].quantity
                                     }
@@ -444,26 +561,31 @@ export const DetailProvider = props => {
                               })
                             }
                             style={styles.foodWrapper}
-                            key={item.itemId}>
-                            <View style={styles.foodInfo}>
+                            key={item.product_id}>
+                            <View style={[styles.foodInfo, {width: '75%'}]}>
                               <Text style={{fontWeight: '600', fontSize: 18}}>
-                                {item.itemTitle}
+                                {item.product_name}
                               </Text>
                               <Text>${item.price}</Text>
-                              <Text style={{color: 'gray'}}>{item.note}</Text>
+                              <Text numberOfLines={5} style={{color: 'gray'}}>
+                                {item.description}
+                              </Text>
                             </View>
                             <ImageBackground
                               style={styles.foodImage}
-                              source={item.image}></ImageBackground>
+                              source={{uri: item.product_image}}></ImageBackground>
                           </TouchableOpacity>
                         );
                       })}
                     </View>
                   </View>
                 );
-              })}
-            </View>
-          </Animated.ScrollView>
+              })} */}
+                </View>
+              </>
+            )}
+          />
+
           {state.userCart.cart.length > 0 ? (
             <TouchableOpacity
               style={{
@@ -494,8 +616,8 @@ export const DetailProvider = props => {
                   mapref.current.fitToCoordinates(
                     [
                       {
-                        latitude: data.location.latitude,
-                        longitude: data.location.longitude,
+                        latitude: Number(data.latitude),
+                        longitude: Number(data.longitude),
                       },
                       {
                         // latitude: 10.766575409142378,
@@ -512,14 +634,15 @@ export const DetailProvider = props => {
                 }}
                 // showsUserLocation
                 initialRegion={{
-                  latitude: data.location.latitude,
-                  longitude: data.location.longitude,
+                  latitude: Number(data.latitude),
+                  longitude: Number(data.longitude),
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }}
                 provider={PROVIDER_GOOGLE}
                 style={styles.map}>
-                <Marker coordinate={data.location}>
+                <Marker
+                  coordinate={{latitude: Number(data.latitude), longitude: Number(data.longitude)}}>
                   <Image
                     source={require('../../../assets/image/providerMarker.png')}
                     style={{width: 40, height: 40}}
@@ -538,7 +661,7 @@ export const DetailProvider = props => {
               <ScrollView style={{width: FULL_WIDTH}}>
                 <View style={{width: FULL_WIDTH}}>
                   <View style={styles.providerName}>
-                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>{data.title}</Text>
+                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>{data.provider_name}</Text>
                   </View>
                   <View style={styles.sectionWrapper}>
                     <View>
@@ -575,7 +698,7 @@ export const DetailProvider = props => {
                         borderBottomWidth: 2,
                         paddingVertical: 25,
                       }}>
-                      <View>
+                      {/* <View>
                         <Text
                           style={{
                             fontSize: 17,
@@ -592,12 +715,12 @@ export const DetailProvider = props => {
                             </Text>
                           </>
                         ) : null}
-                      </View>
+                      </View> */}
 
                       <Feather name={openAddress ? 'minus' : 'plus'} size={22} color={'gray'} />
                     </View>
                   </TouchableOpacity>
-                  <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
+                  {/* <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
                     <View style={{paddingVertical: 25}}>
                       <Feather name="star" size={22} color={'black'} />
                     </View>
@@ -641,13 +764,22 @@ export const DetailProvider = props => {
                         <Feather name={openRating ? 'minus' : 'plus'} size={22} color={'gray'} />
                       </TouchableOpacity>
                     </View>
-                  </View>
+                  </View> */}
                 </View>
               </ScrollView>
             </View>
           </View>
         </Modal>
-        <UpcomingProduct visible={openUpcoming} onCancel={() => setOpenUpcoming(false)} />
+        <Modalize
+          ref={modalizeRef}
+          // HeaderComponent={() => (
+          //   <View style={{padding: 10, alignSelf: 'center'}}>
+          //     <View style={{padding: 5, backgroundColor: 'gray'}}></View>
+          //   </View>
+          // )}
+        >
+          <UpcomingProduct />
+        </Modalize>
       </View>
     );
   }
@@ -769,8 +901,8 @@ const styles = StyleSheet.create({
   },
   foodInfo: {},
   foodImage: {
-    width: 100,
-    height: 100,
+    width: 90,
+    height: 90,
     position: 'relative',
   },
   addtocartButton: {

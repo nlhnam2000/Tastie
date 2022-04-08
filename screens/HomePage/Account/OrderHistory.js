@@ -11,6 +11,7 @@ import {
   SafeAreaView,
   Dimensions,
   Button,
+  RefreshControl,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector, useDispatch} from 'react-redux';
@@ -25,6 +26,7 @@ export const OrderHistory = props => {
   const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
   const [orderHistory, setOrderHistory] = useState([]);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   const totalCartPrice = cart => {
     let price = 0.0;
@@ -35,14 +37,17 @@ export const OrderHistory = props => {
     return price.toFixed(2);
   };
 
+  const LoadOrderHistory = async () => {
+    let _orderHistory = await AsyncStorage.getItem('@orderHistory');
+    if (_orderHistory) {
+      setOrderHistory(JSON.parse(_orderHistory));
+    } else {
+      setOrderHistory([]);
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
-    const LoadOrderHistory = async () => {
-      let _orderHistory = await AsyncStorage.getItem('@orderHistory');
-      if (_orderHistory) {
-        setOrderHistory(JSON.parse(_orderHistory));
-      }
-      setLoading(false);
-    };
     LoadOrderHistory();
   }, []);
 
@@ -90,7 +95,23 @@ export const OrderHistory = props => {
             </TouchableOpacity>
           </View>
         ) : (
-          <ScrollView style={{width: '100%', height}} showsVerticalScrollIndicator={false}>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                tintColor={colors.red}
+                refreshing={isRefreshing}
+                onRefresh={() => {
+                  setIsRefreshing(true);
+                  setTimeout(async () => {
+                    setIsRefreshing(false);
+                    await LoadOrderHistory();
+                  }, 2000);
+                }}
+              />
+            }
+            style={{width: '100%'}}
+            // contentContainerStyle={{height}}
+            showsVerticalScrollIndicator={false}>
             {orderHistory?.map((order, index) => (
               <View
                 key={index}

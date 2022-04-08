@@ -21,12 +21,15 @@ import {SimpleAlertDialog, SingleDialog} from '../components/Error/AlertDialog';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
 import {ScrollView} from 'react-native-gesture-handler';
+import {OrderCompleted} from '../store/action/cart';
+import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
 
 let socket;
 const {width, height} = Dimensions.get('window');
 
 export const OrderStatus = props => {
   const state = useSelector(state => state.UserReducer);
+  const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const {order} = props.route.params;
   const [location, setLocation] = useState({latitude: 0, longitude: 0});
@@ -249,6 +252,15 @@ export const OrderStatus = props => {
     }
   }, [shipperLocation]);
 
+  useEffect(() => {
+    if (completedStatus) {
+      dispatch(OrderCompleted());
+      setTimeout(() => {
+        props.navigation.navigate('RatingShipper', {shipperName: shipperLocation.shipperName});
+      }, 3000);
+    }
+  }, [completedStatus]);
+
   if (loading) {
     return (
       <View style={styles.container}>
@@ -354,7 +366,7 @@ export const OrderStatus = props => {
         /> */}
       </View>
 
-      <View style={[styles.shipperInfo, {height: openDetail ? '80%' : '40%'}]}>
+      <View style={[styles.shipperInfo, {height: openDetail ? '90%' : '50%'}]}>
         <TouchableOpacity
           style={{
             padding: 5,
@@ -382,7 +394,7 @@ export const OrderStatus = props => {
           </Text>
           <Text style={{textAlign: 'center'}}>{trackingMessage.message}</Text>
         </View>
-        {shipperLocation.provider_name ? (
+        {shipperLocation.shipperName ? (
           <View style={[styles.flexRowBetween, {paddingHorizontal: 20, marginTop: 15}]}>
             <View style={styles.flexRow}>
               <Image
@@ -413,121 +425,14 @@ export const OrderStatus = props => {
           </View>
         ) : null}
 
-        <View style={styles.progress}>
-          <View style={{alignItems: 'center', position: 'relative'}}>
-            <View
-              style={{
-                padding: 10,
-                backgroundColor: submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                borderRadius: 40,
-                position: 'absolute',
-                left: '2%',
-              }}>
-              <Feather name={submittedStatus ? 'check' : 'loader'} size={10} color="white" />
-            </View>
-            <View
-              style={{
-                padding: 10,
-                backgroundColor: confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                borderRadius: 40,
-                position: 'absolute',
-                left: '23%',
-              }}>
-              <Feather name={confirmedStatus ? 'check' : 'loader'} size={10} color="white" />
-            </View>
-            <View
-              style={{
-                padding: 10,
-                backgroundColor: assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                borderRadius: 40,
-                position: 'absolute',
-                left: '45%',
-              }}>
-              <Feather name={assignedStatus ? 'check' : 'loader'} size={10} color="white" />
-            </View>
-            <View
-              style={{
-                padding: 10,
-                backgroundColor: pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                borderRadius: 40,
-                position: 'absolute',
-                left: '68%',
-              }}>
-              <Feather name={pickedStatus ? 'check' : 'loader'} size={10} color="white" />
-            </View>
-            <View
-              style={{
-                padding: 10,
-                backgroundColor: completedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                borderRadius: 40,
-                position: 'absolute',
-                left: '90%',
-              }}>
-              <Feather name={completedStatus ? 'check' : 'loader'} size={10} color="white" />
-            </View>
-            <View
-              style={{
-                width: '18%',
-                padding: 2,
-                position: 'absolute',
-                top: 13,
-                left: '8%',
-                backgroundColor: submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                zIndex: -10,
-              }}></View>
-            <View
-              style={{
-                width: '18%',
-                padding: 2,
-                position: 'absolute',
-                top: 13,
-                left: '28%',
-                backgroundColor: confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                zIndex: -10,
-              }}></View>
-            <View
-              style={{
-                width: '18%',
-                padding: 2,
-                position: 'absolute',
-                top: 13,
-                left: '51%',
-                backgroundColor: assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                zIndex: -10,
-              }}></View>
-            <View
-              style={{
-                width: '18%',
-                padding: 2,
-                position: 'absolute',
-                top: 13,
-                left: '75%',
-                backgroundColor: pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-                zIndex: -10,
-              }}></View>
+        <OrderProgressBar
+          submittedStatus={submittedStatus}
+          confirmedStatus={confirmedStatus}
+          assignedStatus={assignedStatus}
+          pickedStatus={pickedStatus}
+          completedStatus={completedStatus}
+        />
 
-            <Text
-              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: -2}}>
-              Submitted
-            </Text>
-            <Text
-              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '18%'}}>
-              Confirming
-            </Text>
-            <Text
-              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '42%'}}>
-              Assigned
-            </Text>
-            <Text
-              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '67%'}}>
-              Picked
-            </Text>
-            <Text
-              style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '84%'}}>
-              Completed
-            </Text>
-          </View>
-        </View>
         <View
           style={{
             alignItems: 'center',
