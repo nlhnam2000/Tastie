@@ -19,7 +19,13 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {NavigateToHome} from '../../store/action/navigation';
 import {popularData} from '../../assets/dummy/popularData';
-import {RemoveCart, IncreaseQuantity, DecreaseQuantity, SubmitOrder} from '../../store/action/cart';
+import {
+  RemoveCart,
+  IncreaseQuantity,
+  DecreaseQuantity,
+  SubmitOrder,
+  UpdateQuantity,
+} from '../../store/action/cart';
 import {DuoAlertDialog} from '../../components/Error/AlertDialog';
 import io from 'socket.io-client';
 
@@ -33,26 +39,26 @@ export const Cart = props => {
   const [additionalOptions, setAdditionalOptions] = useState([]);
 
   useEffect(() => {
-    if (state.userCart.provider_name !== null) {
-      let list = [];
-      state.userCart.cart.forEach(cart => {
-        let optionItemName = [];
-        cart.additionalOptions.forEach(additionalOption => {
-          additionalOption.options.forEach(option => {
-            optionItemName.push(option.optionItemName);
-          });
-        });
-        list.push(optionItemName.toString().split(',').join(', '));
-      });
-      setAdditionalOptions(list);
-    }
-
+    // if (state.userCart.provider_name !== null) {
+    //   let list = [];
+    //   state.userCart.cart.forEach(cart => {
+    //     let optionItemName = [];
+    //     cart.additionalOptions.forEach(additionalOption => {
+    //       additionalOption.options.forEach(option => {
+    //         optionItemName.push(option.optionItemName);
+    //       });
+    //     });
+    //     list.push(optionItemName.toString().split(',').join(', '));
+    //   });
+    //   setAdditionalOptions(list);
+    // }
+    console.log(state.userCart.cart);
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    console.log(additionalOptions);
-  }, [additionalOptions]);
+  // useEffect(() => {
+  //   console.log(additionalOptions);
+  // }, [additionalOptions]);
 
   const totalCartPrice = cart => {
     let price = 0.0;
@@ -157,7 +163,9 @@ export const Cart = props => {
                   )}
                 </View>
                 <View style={styles.cartItemRight}>
-                  <Text style={{fontWeight: '500', fontSize: 18}}>${item.totalProductPrice}</Text>
+                  <Text style={{fontWeight: '500', fontSize: 18}}>
+                    ${parseFloat(item.totalProductPrice).toFixed(2)}
+                  </Text>
 
                   <View style={styles.quantityWrapper}>
                     <TouchableOpacity style={{marginRight: 10}}>
@@ -167,13 +175,33 @@ export const Cart = props => {
                         color={'black'}
                         onPress={() =>
                           item.quantity > 1
-                            ? dispatch(DecreaseQuantity(item))
-                            : dispatch(RemoveCart(item))
+                            ? dispatch(
+                                UpdateQuantity(
+                                  state.user_id,
+                                  item.product_id,
+                                  item.specialInstruction,
+                                  item.quantity - 1,
+                                  item.item_code,
+                                ),
+                              )
+                            : dispatch(RemoveCart(state.user_id, item.product_id, item.item_code))
                         }
                       />
                     </TouchableOpacity>
                     <Text style={{marginRight: 10, fontSize: 18}}>{item.quantity}</Text>
-                    <TouchableOpacity style={{}} onPress={() => dispatch(IncreaseQuantity(item))}>
+                    <TouchableOpacity
+                      style={{}}
+                      onPress={() =>
+                        dispatch(
+                          UpdateQuantity(
+                            state.user_id,
+                            item.product_id,
+                            item.specialInstruction,
+                            item.quantity + 1,
+                            item.item_code,
+                          ),
+                        )
+                      }>
                       <Feather name="plus-circle" size={21} color={'black'} />
                     </TouchableOpacity>
                   </View>

@@ -103,7 +103,7 @@ export default function App(props) {
       } else {
         dispatch(TokenNotFound());
       }
-      console.log(state);
+      console.log(state.user_id);
     }, 1000);
   }, []);
 

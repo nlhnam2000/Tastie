@@ -30,6 +30,9 @@ import {
   SAVE_TO_HISTORY_CART,
   ORDER_COMPLETED,
   AUTO_SET_LOCATION,
+  RETRIEVE_CART,
+  UPDATE_QUANTITY,
+  CART_IS_EMPTY,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -245,21 +248,51 @@ export const UserReducer = (state = initialState, action) => {
         ...payload,
       };
     }
-    case ADD_TO_CART: {
+    case RETRIEVE_CART: {
       return {
         ...state,
         userCart: {
-          provider_id: payload.userCart.provider_id,
-          provider_name: payload.userCart.provider_name,
-          date: payload.userCart.date,
-          cart: [...state.userCart.cart, payload.userCart.cartItem],
-          status: payload.userCart.status,
+          provider_id: payload.userCart.providerID,
+          provider_name: payload.userCart.providerName,
+          cart: payload.userCart.items,
+          // status: 'ADDED',
+        },
+      };
+    }
+    case CART_IS_EMPTY: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case ADD_TO_CART: {
+      // return {
+      //   ...state,
+      //   userCart: {
+      //     provider_id: payload.userCart.provider_id,
+      //     provider_name: payload.userCart.provider_name,
+      //     date: payload.userCart.date,
+      //     cart: [...state.userCart.cart, payload.userCart.cartItem],
+      //     status: payload.userCart.status,
+      //   },
+      // };
+
+      return {
+        ...state,
+        // status: payload.status,
+        userCart: {
+          provider_id: payload.cartForm.provider_id,
+          // provider_name: null,
+          // date: null,
+          cart: [...state.userCart.cart, payload.cartForm.cartItem],
+          // status: null,
         },
       };
     }
     case REMOVE_CART: {
       let copy = {...state};
-      let removedPosition = state.userCart.cart.indexOf(payload.cartRemoved);
+      let removedCart = copy.userCart.cart.find(cart => cart.item_code === payload.item_code);
+      let removedPosition = state.userCart.cart.indexOf(removedCart);
       copy.userCart.cart.splice(removedPosition, 1);
 
       // if the cart is empty
@@ -278,6 +311,20 @@ export const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         ...copy,
+      };
+    }
+    case UPDATE_QUANTITY: {
+      let prevCart = [...state.userCart.cart];
+      let updatedCart = prevCart.find(cart => cart.item_code === payload.item_code);
+      let cartIndex = prevCart.indexOf(updatedCart);
+
+      prevCart[cartIndex].quantity = payload.quantity;
+      return {
+        ...state,
+        userCart: {
+          ...state.userCart,
+          cart: prevCart,
+        },
       };
     }
     case INCREASE_QUANTITY: {

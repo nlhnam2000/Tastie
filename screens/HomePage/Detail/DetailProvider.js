@@ -54,6 +54,11 @@ export const DetailProvider = props => {
   const [info, setInfo] = useState({});
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const providerInfoModal = useRef();
+  const openProviderInfoModal = () => {
+    providerInfoModal.current?.open();
+  };
+
   const getListProduct = async provider_id => {
     let res = await axios.get(
       `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
@@ -285,10 +290,11 @@ export const DetailProvider = props => {
               <RefreshControl
                 tintColor={colors.boldred}
                 refreshing={isRefreshing}
-                onRefresh={async () => {
+                onRefresh={() => {
                   setIsRefreshing(true);
-                  await loadDetailProvider(data.provider_id);
-                  setTimeout(() => {
+
+                  setTimeout(async () => {
+                    await loadDetailProvider(data.provider_id);
                     setIsRefreshing(false);
                   }, 500);
                 }}
@@ -306,6 +312,7 @@ export const DetailProvider = props => {
                     onPress={() =>
                       props.navigation.navigate('ProductOptions', {
                         data: item,
+                        provider_id: info.data.provider_id,
                       })
                     }
                     style={styles.foodWrapper}>
@@ -399,7 +406,7 @@ export const DetailProvider = props => {
                       <Text style={{color: 'gray', marginTop: 10}}>Open until {data.openHour}</Text>
                       <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setOpenInfo(true)}>
+                    <TouchableOpacity onPress={() => openProviderInfoModal()}>
                       <Feather name="chevron-right" size={24} color={'#000'} />
                     </TouchableOpacity>
                   </View>
@@ -626,99 +633,103 @@ export const DetailProvider = props => {
           ) : null}
         </SafeAreaView>
         {/* Modal */}
-        <Modal animationType="slide" transparent={true} visible={openInfo}>
+        <Modalize ref={providerInfoModal} modalHeight={Dimensions.get('window').height - 100}>
           <View style={styles.modalContainer}>
-            <View style={styles.modalView}>
-              <MapView
-                ref={mapref}
-                scrollEnabled
-                onLayout={() => {
-                  mapref.current.fitToCoordinates(
-                    [
-                      {
-                        latitude: Number(data.latitude),
-                        longitude: Number(data.longitude),
-                      },
-                      {
-                        // latitude: 10.766575409142378,
-                        // longitude: 106.69510799782778,
-                        latitude: state.userLocation.latitude,
-                        longitude: state.userLocation.longitude,
-                      },
-                    ],
+            <MapView
+              ref={mapref}
+              scrollEnabled
+              onLayout={() => {
+                mapref.current.fitToCoordinates(
+                  [
                     {
-                      edgePadding: {top: 30, right: 30, bottom: 20, left: 20},
-                      animated: true,
+                      latitude: Number(data.latitude),
+                      longitude: Number(data.longitude),
                     },
-                  );
-                }}
-                // showsUserLocation
-                initialRegion={{
-                  latitude: Number(data.latitude),
-                  longitude: Number(data.longitude),
-                  latitudeDelta: 0.015,
-                  longitudeDelta: 0.0121,
-                }}
-                provider={PROVIDER_GOOGLE}
-                style={styles.map}>
-                <Marker
-                  coordinate={{latitude: Number(data.latitude), longitude: Number(data.longitude)}}>
-                  <Image
-                    source={require('../../../assets/image/providerMarker.png')}
-                    style={{width: 40, height: 40}}
-                  />
-                </Marker>
-                <Marker
-                  coordinate={{
-                    latitude: state.userLocation.latitude,
-                    longitude: state.userLocation.longitude,
-                  }}
+                    {
+                      // latitude: 10.766575409142378,
+                      // longitude: 106.69510799782778,
+                      latitude: state.userLocation.latitude,
+                      longitude: state.userLocation.longitude,
+                    },
+                  ],
+                  {
+                    edgePadding: {top: 30, right: 30, bottom: 20, left: 20},
+                    animated: true,
+                  },
+                );
+              }}
+              initialRegion={{
+                latitude: Number(data.latitude),
+                longitude: Number(data.longitude),
+                latitudeDelta: 0.015,
+                longitudeDelta: 0.0121,
+              }}
+              provider={PROVIDER_GOOGLE}
+              style={styles.map}>
+              <Marker
+                tracksViewChanges={false}
+                coordinate={{latitude: Number(data.latitude), longitude: Number(data.longitude)}}>
+                <Image
+                  source={require('../../../assets/image/providerMarker.png')}
+                  style={{width: 40, height: 40}}
                 />
-              </MapView>
-              <TouchableOpacity style={styles.modalHeader} onPress={() => setOpenInfo(false)}>
-                <Feather name="x" size={20} color={'black'} />
-              </TouchableOpacity>
-              <ScrollView style={{width: FULL_WIDTH}}>
-                <View style={{width: FULL_WIDTH}}>
-                  <View style={styles.providerName}>
-                    <Text style={{fontSize: 20, fontWeight: 'bold'}}>{data.provider_name}</Text>
+              </Marker>
+              <Marker
+                coordinate={{
+                  latitude: state.userLocation.latitude,
+                  longitude: state.userLocation.longitude,
+                }}
+                tracksViewChanges={false}
+              />
+            </MapView>
+            <TouchableOpacity
+              style={styles.modalHeader}
+              onPress={() => providerInfoModal.current.close()}>
+              <Feather name="x" size={20} color={'black'} />
+            </TouchableOpacity>
+            <ScrollView style={{width: FULL_WIDTH}}>
+              <View style={{width: FULL_WIDTH}}>
+                <View style={styles.providerName}>
+                  <Text style={{fontSize: 20, fontWeight: 'bold'}}>{data.provider_name}</Text>
+                </View>
+                <View style={styles.sectionWrapper}>
+                  <View>
+                    <Feather name="map-pin" size={22} color={'black'} />
                   </View>
-                  <View style={styles.sectionWrapper}>
-                    <View>
-                      <Feather name="map-pin" size={22} color={'black'} />
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        paddingHorizontal: 15,
-                        borderBottomColor: 'rgba(230,230,230,1)',
-                        borderBottomWidth: 2,
-                        paddingVertical: 25,
-                      }}>
-                      <Text style={{fontSize: 17, fontWeight: '600'}}>{data.address}</Text>
-                    </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 15,
+                      borderBottomColor: 'rgba(230,230,230,1)',
+                      borderBottomWidth: 2,
+                      paddingVertical: 25,
+                    }}>
+                    <Text style={{fontSize: 17, fontWeight: '600'}}>
+                      {info.data.address} {info.data.road}
+                    </Text>
                   </View>
-                  <TouchableOpacity
-                    onPress={() => setOpenAddress(prev => !prev)}
-                    style={styles.sectionWrapper}>
-                    <View>
-                      <Feather name="clock" size={22} color={'black'} />
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        paddingHorizontal: 15,
-                        borderBottomColor: 'rgba(230,230,230,1)',
-                        borderBottomWidth: 2,
-                        paddingVertical: 25,
-                      }}>
-                      {/* <View>
+                </View>
+                <TouchableOpacity
+                  onPress={() => setOpenAddress(prev => !prev)}
+                  style={styles.sectionWrapper}>
+                  <View>
+                    <Feather name="clock" size={22} color={'black'} />
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 15,
+                      borderBottomColor: 'rgba(230,230,230,1)',
+                      borderBottomWidth: 2,
+                      paddingVertical: 25,
+                    }}>
+                    {/* <View>
                         <Text
                           style={{
                             fontSize: 17,
@@ -737,10 +748,10 @@ export const DetailProvider = props => {
                         ) : null}
                       </View> */}
 
-                      <Feather name={openAddress ? 'minus' : 'plus'} size={22} color={'gray'} />
-                    </View>
-                  </TouchableOpacity>
-                  {/* <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
+                    <Feather name={openAddress ? 'minus' : 'plus'} size={22} color={'gray'} />
+                  </View>
+                </TouchableOpacity>
+                {/* <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
                     <View style={{paddingVertical: 25}}>
                       <Feather name="star" size={22} color={'black'} />
                     </View>
@@ -785,11 +796,10 @@ export const DetailProvider = props => {
                       </TouchableOpacity>
                     </View>
                   </View> */}
-                </View>
-              </ScrollView>
-            </View>
+              </View>
+            </ScrollView>
           </View>
-        </Modal>
+        </Modalize>
         <Modalize
           ref={modalizeRef}
           // HeaderComponent={() => (

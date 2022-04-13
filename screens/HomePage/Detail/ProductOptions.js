@@ -19,10 +19,9 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
-import {useDispatch} from 'react-redux';
-import {AddToCart} from '../../../store/action/cart';
+import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
-import Geolocation from 'react-native-geolocation-service';
+import {AddToCart} from '../../../store/action/cart';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -31,16 +30,46 @@ export const ProductOptions = props => {
   const [productOptions, setProductOptions] = useState([]);
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const {data} = props.route.params;
+  const {data, provider_id} = props.route.params;
+  const dispatch = useDispatch();
+  const state = useSelector(state => state.UserReducer);
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
+  const [cartForm, setCartForm] = useState({});
+
+  const handleAddToCart = () => {
+    dispatch(AddToCart(cartForm));
+    props.navigation.goBack();
+    // console.log(cartForm);
+  };
 
   useEffect(() => {
-    if (data.product_options[0].option_name) {
+    if (data.product_options[0].option_name !== null) {
       setProductOptions(data.product_options);
     }
-
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    setTotalPrice((parseFloat(data.price) * quantity).toFixed(2));
+  }, [quantity]);
+
+  useEffect(() => {
+    setCartForm(prev => ({
+      ...prev,
+      user_id: state.user_id,
+      provider_id: provider_id,
+      cartItem: {
+        product_id: data.product_id,
+        productName: data.product_name,
+        productPrice: data.price,
+        productImage: data.product_image,
+        quantity: quantity,
+        special_instruction: note,
+        additional_option: [...productOptions],
+        totalProductPrice: totalPrice,
+      },
+    }));
+  }, [productOptions, quantity, totalPrice, note]);
 
   if (loading) {
     return (
@@ -190,7 +219,7 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
     backgroundColor: 'black',
-    marginTop: 10,
+    marginTop: -300,
   },
   quantityWrapper: {
     flexDirection: 'row',

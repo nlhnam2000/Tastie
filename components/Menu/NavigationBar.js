@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -27,12 +27,20 @@ import {
   NavigateToNotification,
 } from '../../store/action/navigation';
 import colors from '../../colors/colors';
+import {RetrieveCart} from '../../store/action/cart';
 
 // FontAwesome5.loadFont();
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
   const cart = useSelector(state => state.UserReducer.userCart.cart);
+  const state = useSelector(state => state.UserReducer);
+
+  useEffect(() => {
+    console.log(state.userCart);
+    dispatch(RetrieveCart(state.user_id));
+  }, []);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToHome())}>
