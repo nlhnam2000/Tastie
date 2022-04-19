@@ -282,7 +282,7 @@ export const UserReducer = (state = initialState, action) => {
         // status: payload.status,
         userCart: {
           provider_id: payload.cartForm.provider_id,
-          // provider_name: null,
+          provider_name: payload.cartForm.provider_name,
           // date: null,
           cart: [...state.userCart.cart, payload.cartForm.cartItem],
           // status: null,

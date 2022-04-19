@@ -101,6 +101,7 @@ export const HomeContent = props => {
   };
 
   useEffect(() => {
+    console.log(state.userLocation);
     setLoading(false);
   }, []);
 
@@ -309,8 +310,14 @@ export const HomeContent = props => {
           <View style={styles.modalContainer}>
             <MapView
               initialRegion={{
-                latitude: state.userLocation.latitude ?? 12.203214000000004,
-                longitude: state.userLocation.longitude ?? 109.19345021534353,
+                latitude:
+                  state.userLocation.latitude === 0
+                    ? 12.203214000000004
+                    : state.userLocation.latitude,
+                longitude:
+                  state.userLocation.longitude === 0
+                    ? 109.19345021534353
+                    : state.userLocation.longitude,
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
               }}

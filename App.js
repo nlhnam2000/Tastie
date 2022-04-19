@@ -55,6 +55,7 @@ import {DetailOrder} from './screens/HomePage/Detail/DetailOrder';
 import {RatingProvider} from './screens/HomePage/Account/Rating/RatingProvider';
 import {RatingShipper} from './screens/HomePage/Account/Rating/RatingShipper';
 import {ProductOptions} from './screens/HomePage/Detail/ProductOptions';
+import {PromotionsList} from './screens/HomePage/Detail/Promotion/PromotionList';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -90,7 +91,7 @@ export default function App(props) {
       let userLocation = await AsyncStorage.getItem('@userLocation');
       if (userLocation !== null) {
         dispatch(SetUserLocation(JSON.parse(userLocation)));
-      } else if (userLocation === undefined) {
+      } else if (userLocation === undefined || userLocation === null) {
         // set the current coordinate
         dispatch(AutoSetLocation());
       }
@@ -103,7 +104,6 @@ export default function App(props) {
       } else {
         dispatch(TokenNotFound());
       }
-      console.log(state.user_id);
     }, 1000);
   }, []);
 
@@ -175,6 +175,11 @@ export default function App(props) {
             <Stack.Screen
               name="ProductOptions"
               component={ProductOptions}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="PromotionList"
+              component={PromotionsList}
               options={{headerShown: false}}
             />
           </Stack.Navigator>

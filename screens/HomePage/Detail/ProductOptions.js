@@ -30,7 +30,7 @@ export const ProductOptions = props => {
   const [productOptions, setProductOptions] = useState([]);
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const {data, provider_id} = props.route.params;
+  const {data, provider_id, provider_name} = props.route.params;
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
@@ -38,7 +38,9 @@ export const ProductOptions = props => {
 
   const handleAddToCart = () => {
     dispatch(AddToCart(cartForm));
-    props.navigation.goBack();
+    setTimeout(() => {
+      props.navigation.goBack();
+    }, 800);
     // console.log(cartForm);
   };
 
@@ -58,6 +60,7 @@ export const ProductOptions = props => {
       ...prev,
       user_id: state.user_id,
       provider_id: provider_id,
+      provider_name: provider_name,
       cartItem: {
         product_id: data.product_id,
         productName: data.product_name,

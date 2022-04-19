@@ -18,6 +18,8 @@ import {useSelector, useDispatch} from 'react-redux';
 import colors from '../../../colors/colors';
 import {NavigateToHome} from '../../../store/action/navigation';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
+import {IP_ADDRESS} from '../../../global';
 
 const {width, height} = Dimensions.get('window');
 
@@ -38,12 +40,23 @@ export const OrderHistory = props => {
   };
 
   const LoadOrderHistory = async () => {
-    let _orderHistory = await AsyncStorage.getItem('@orderHistory');
-    if (_orderHistory) {
-      setOrderHistory(JSON.parse(_orderHistory));
-    } else {
-      setOrderHistory([]);
+    // let _orderHistory = await AsyncStorage.getItem('@orderHistory');
+    // if (_orderHistory) {
+    //   setOrderHistory(JSON.parse(_orderHistory));
+    // } else {
+    //   setOrderHistory([]);
+    // }
+    try {
+      let res = await axios.get(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-history/${state.user_id}`,
+      );
+      if (res.data.response) {
+        setOrderHistory(res.data.response);
+      }
+    } catch (error) {
+      console.error('Cannot get order history', error);
     }
+
     setLoading(false);
   };
 
@@ -118,13 +131,15 @@ export const OrderHistory = props => {
                 style={{width: '100%', borderBottomWidth: 1, borderBottomColor: colors.secondary}}>
                 <View style={styles.orderHeader}>
                   <Text style={{color: 'gray'}}>#19032-567101997</Text>
-                  <Text style={{color: 'gray'}}>{order.date}</Text>
+                  <Text style={{color: 'gray'}}>{order.completed_at}</Text>
                 </View>
                 <TouchableOpacity
                   style={styles.orderContent}
-                  onPress={() => props.navigation.navigate('DetailOrder', {order})}>
+                  onPress={() =>
+                    props.navigation.navigate('OrderStatus', {order_code: order.order_code})
+                  }>
                   <ImageBackground
-                    source={require('../../../assets/image/orderhistory.png')}
+                    source={{uri: order.provider_avatar}}
                     style={{width: 150, height: 120, marginRight: 20}}
                   />
                   <View style={styles.orderContentDetail}>
@@ -135,33 +150,54 @@ export const OrderHistory = props => {
                     </Text>
                     <Text style={{color: 'gray', marginBottom: 10}}>135B Tran Hung Dao</Text>
                     <Text>
-                      $ {order.total} ({order.cart.length} items) - {order.paymentMethod}
+                      $ {parseFloat(order.total_amount).toFixed(2)} ( items) -{' '}
+                      {order.payment_method}
                     </Text>
                   </View>
                 </TouchableOpacity>
                 <View style={styles.orderFooter}>
-                  <Text style={{fontSize: 14, fontWeight: '400'}}>Completed</Text>
+                  <Text style={{fontSize: 14, fontWeight: '400'}}>{order.order_status}</Text>
                   <View style={styles.buttons}>
-                    <TouchableOpacity
-                      onPress={() => props.navigation.navigate('RatingProvider')}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        borderWidth: 1,
-                        borderColor: 'black',
-                        marginRight: 10,
-                      }}>
-                      <Text style={{fontWeight: '600'}}>View rating</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: 'black',
-                        borderWidth: 1,
-                      }}>
-                      <Text style={{fontWeight: '600', color: 'white'}}>Re-order</Text>
-                    </TouchableOpacity>
+                    {order.order_status === 'Completed' ? (
+                      <>
+                        <TouchableOpacity
+                          onPress={() => props.navigation.navigate('RatingProvider')}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            borderWidth: 1,
+                            borderColor: 'black',
+                            marginRight: 10,
+                          }}>
+                          <Text style={{fontWeight: '600'}}>View rating</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            backgroundColor: 'black',
+                            borderWidth: 1,
+                          }}>
+                          <Text style={{fontWeight: '600', color: 'white'}}>Re-order</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <TouchableOpacity
+                        onPress={() =>
+                          props.navigation.navigate('OrderStatus', {
+                            order_code: order.order_code,
+                          })
+                        }
+                        style={{
+                          paddingVertical: 10,
+                          paddingHorizontal: 20,
+                          borderWidth: 1,
+                          borderColor: 'black',
+                          marginRight: 10,
+                        }}>
+                        <Text style={{fontWeight: '600'}}>Watch order</Text>
+                      </TouchableOpacity>
+                    )}
                   </View>
                 </View>
               </View>

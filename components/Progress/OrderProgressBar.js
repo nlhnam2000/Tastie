@@ -19,22 +19,22 @@ export const OrderProgressBar = props => {
         <View
           style={{
             padding: 10,
-            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
             borderRadius: 40,
             position: 'absolute',
             left: '23%',
           }}>
-          <Feather name={props.confirmedStatus ? 'check' : 'loader'} size={10} color="white" />
+          <Feather name={props.assignedStatus ? 'check' : 'loader'} size={10} color="white" />
         </View>
         <View
           style={{
             padding: 10,
-            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
             borderRadius: 40,
             position: 'absolute',
             left: '45%',
           }}>
-          <Feather name={props.assignedStatus ? 'check' : 'loader'} size={10} color="white" />
+          <Feather name={props.confirmedStatus ? 'check' : 'loader'} size={10} color="white" />
         </View>
         <View
           style={{
@@ -73,7 +73,7 @@ export const OrderProgressBar = props => {
             position: 'absolute',
             top: 13,
             left: '28%',
-            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
         <View
@@ -83,7 +83,7 @@ export const OrderProgressBar = props => {
             position: 'absolute',
             top: 13,
             left: '51%',
-            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
         <View
@@ -100,11 +100,11 @@ export const OrderProgressBar = props => {
         <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: -2}}>
           Submitted
         </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '18%'}}>
-          Confirming
-        </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '42%'}}>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '20%'}}>
           Assigned
+        </Text>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '41%'}}>
+          Confirmed
         </Text>
         <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '67%'}}>
           Picked

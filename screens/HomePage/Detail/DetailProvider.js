@@ -75,7 +75,7 @@ export const DetailProvider = props => {
     return res.data;
   };
 
-  const loadDetailProvider = provider_id => {
+  const loadDetailProvider = async provider_id => {
     const res1 = getListProduct(provider_id);
     const res2 = getProviderInfo(provider_id);
     Promise.all([res1, res2]).then(data => {
@@ -260,7 +260,7 @@ export const DetailProvider = props => {
                 <Feather name="arrow-left" size={22} color={'#000'} />
               </TouchableOpacity>
               <Text numberOfLines={1} style={{fontWeight: 'bold', fontSize: 20, width: '70%'}}>
-                {data.provider_name}
+                {info.data.merchant_name}
               </Text>
               <TouchableOpacity>
                 <Feather name="info" size={22} color={'#000'} />
@@ -313,6 +313,7 @@ export const DetailProvider = props => {
                       props.navigation.navigate('ProductOptions', {
                         data: item,
                         provider_id: info.data.provider_id,
+                        provider_name: info.data.merchant_name,
                       })
                     }
                     style={styles.foodWrapper}>
@@ -400,8 +401,8 @@ export const DetailProvider = props => {
                     <View style={styles.info}>
                       <Text style={{fontWeight: '600'}}>
                         {' '}
-                        <Feather name="star" size={17} color={'#000'} /> {data.order_totals} (
-                        {data.numberRating} ratings) • {data.mainCategory}
+                        <Feather name="star" size={17} color={'#000'} /> {info.data.order_totals} (
+                        {info.data.rating} ratings) • {data.mainCategory}
                       </Text>
                       <Text style={{color: 'gray', marginTop: 10}}>Open until {data.openHour}</Text>
                       <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
@@ -451,7 +452,13 @@ export const DetailProvider = props => {
                       );
                     })}
                   </View>
-                  <TouchableOpacity style={styles.promotionWrapper}>
+                  <TouchableOpacity
+                    style={styles.promotionWrapper}
+                    onPress={() =>
+                      props.navigation.navigate('PromotionList', {
+                        provider_id: info.data.provider_id,
+                      })
+                    }>
                     <View style={styles.promotion}>
                       <View
                         style={{
@@ -469,7 +476,7 @@ export const DetailProvider = props => {
                           <Feather name="star" size={20} color={'#fff'} />
                         </View>
 
-                        <Text style={{fontWeight: 'bold', fontSize: 18}}>$25 until $100</Text>
+                        <Text style={{fontWeight: 'bold', fontSize: 18}}>Available promotions</Text>
                       </View>
                       <Feather name="chevron-right" size={20} color={'#000'} />
                     </View>
@@ -642,8 +649,8 @@ export const DetailProvider = props => {
                 mapref.current.fitToCoordinates(
                   [
                     {
-                      latitude: Number(data.latitude),
-                      longitude: Number(data.longitude),
+                      latitude: parseFloat(info.data.latitude),
+                      longitude: parseFloat(info.data.longitude),
                     },
                     {
                       // latitude: 10.766575409142378,
@@ -659,8 +666,8 @@ export const DetailProvider = props => {
                 );
               }}
               initialRegion={{
-                latitude: Number(data.latitude),
-                longitude: Number(data.longitude),
+                latitude: parseFloat(info.data.latitude),
+                longitude: parseFloat(info.data.longitude),
                 latitudeDelta: 0.015,
                 longitudeDelta: 0.0121,
               }}
@@ -668,7 +675,10 @@ export const DetailProvider = props => {
               style={styles.map}>
               <Marker
                 tracksViewChanges={false}
-                coordinate={{latitude: Number(data.latitude), longitude: Number(data.longitude)}}>
+                coordinate={{
+                  latitude: parseFloat(info.data.latitude),
+                  longitude: parseFloat(info.data.longitude),
+                }}>
                 <Image
                   source={require('../../../assets/image/providerMarker.png')}
                   style={{width: 40, height: 40}}

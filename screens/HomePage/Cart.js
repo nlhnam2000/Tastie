@@ -113,10 +113,14 @@ export const Cart = props => {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <SafeAreaView style={styles.content}>
-        <ScrollView contentContainerStyle={{height: '80%'}} style={{width: '100%'}}>
+        <ScrollView style={{width: '100%', height: '80%'}}>
           <TouchableOpacity
             style={styles.headerWrapper}
-            onPress={() => getProviderInfo(state.userCart.provider_id)}>
+            onPress={() =>
+              props.navigation.navigate('DetailProvider', {
+                data: {provider_id: state.userCart.provider_id},
+              })
+            }>
             <Text
               style={{
                 fontWeight: '600',
@@ -168,25 +172,22 @@ export const Cart = props => {
                   </Text>
 
                   <View style={styles.quantityWrapper}>
-                    <TouchableOpacity style={{marginRight: 10}}>
-                      <Feather
-                        name="minus-circle"
-                        size={21}
-                        color={'black'}
-                        onPress={() =>
-                          item.quantity > 1
-                            ? dispatch(
-                                UpdateQuantity(
-                                  state.user_id,
-                                  item.product_id,
-                                  item.specialInstruction,
-                                  item.quantity - 1,
-                                  item.item_code,
-                                ),
-                              )
-                            : dispatch(RemoveCart(state.user_id, item.product_id, item.item_code))
-                        }
-                      />
+                    <TouchableOpacity
+                      style={{marginRight: 10}}
+                      onPress={() =>
+                        item.quantity > 1
+                          ? dispatch(
+                              UpdateQuantity(
+                                state.user_id,
+                                item.product_id,
+                                item.specialInstruction,
+                                item.quantity - 1,
+                                item.item_code,
+                              ),
+                            )
+                          : dispatch(RemoveCart(state.user_id, item.product_id, item.item_code))
+                      }>
+                      <Feather name="minus-circle" size={21} color={'black'} />
                     </TouchableOpacity>
                     <Text style={{marginRight: 10, fontSize: 18}}>{item.quantity}</Text>
                     <TouchableOpacity
@@ -244,8 +245,8 @@ export const Cart = props => {
             />
           )} */}
         </ScrollView>
-        <View style={{width, paddingHorizontal: 20}}>
-          {state.userCart.status === null ? (
+        <View style={{width, paddingHorizontal: 20, marginTop: -10}}>
+          {/* {state.userCart.status === null ? (
             <TouchableOpacity
               onPress={() => props.navigation.navigate('GoToCheckout')}
               style={{
@@ -285,7 +286,26 @@ export const Cart = props => {
                 Order tracking
               </Text>
             </TouchableOpacity>
-          )}
+          )} */}
+          <TouchableOpacity
+            onPress={() => props.navigation.navigate('GoToCheckout')}
+            style={{
+              width: '100%',
+              backgroundColor: 'black',
+              paddingVertical: 15,
+              paddingHorizontal: 20,
+            }}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: '600',
+                color: 'white',
+                textTransform: 'uppercase',
+                textAlign: 'center',
+              }}>
+              Go to checkout
+            </Text>
+          </TouchableOpacity>
         </View>
         {/* <TouchableOpacity style={styles.submitOrderButton}>
           <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>

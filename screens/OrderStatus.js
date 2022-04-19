@@ -31,7 +31,7 @@ export const OrderStatus = props => {
   const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const {order} = props.route.params;
+  const {order_code} = props.route.params;
   const [location, setLocation] = useState({latitude: 0, longitude: 0});
   const [shipperLocation, setShipperLocation] = useState({});
   const [notification, setNotification] = useState(null);
@@ -45,10 +45,19 @@ export const OrderStatus = props => {
   const [completedStatus, setCompletedStatus] = useState(false);
   const [openDetail, setOpenDetail] = useState(false);
   const [additionalOptions, setAdditionalOptions] = useState([]);
-  const [trackingMessage, setTrackingMessage] = useState({
-    title: 'Order submitted',
-    message: `Your order from ${state.userCart.provider_name} has been placed.`,
+  const [orderData, setOrderData] = useState({
+    merchant_name: null,
+    items: [],
+    num_items: 0,
+    delivery_fee: 0,
   });
+  const [trackingMessage, setTrackingMessage] = useState({
+    title: '',
+    message: '',
+  });
+
+  // const [providerOrder, setProviderOrder] = useState(null);
+  // const [deliveryfee, setDeliveryfee] = useState(0);
 
   const mapRef = useRef();
   const scrollRef = useRef();
@@ -71,7 +80,7 @@ export const OrderStatus = props => {
   const totalCartPrice = cart => {
     let price = 0.0;
     for (let i = 0; i < cart.length; i++) {
-      price += parseFloat(cart[i].totalProductPrice);
+      price += parseFloat(cart[i].price);
     }
 
     return price.toFixed(2);
@@ -104,10 +113,10 @@ export const OrderStatus = props => {
         }
       }
       socket = io(`http://${IP_ADDRESS}:3015`);
-      if (order !== undefined || order !== null) {
+      if (orderData.items.length > 0) {
         socket.emit(
           'customer-submit-order',
-          order,
+          orderData.items,
           {
             name: state.first_name + ' ' + state.last_name,
             phone: state.phone,
@@ -125,6 +134,7 @@ export const OrderStatus = props => {
               longitude: 106.69433674255707,
             },
           },
+          order_code,
         );
       }
 
@@ -209,19 +219,110 @@ export const OrderStatus = props => {
       //   setOpenModal(true);
       // });
 
-      console.log(order);
+      const fetchOrderItems = async order_code => {
+        let res = await axios.get(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+        );
 
-      let list = [];
-      state.userCart.cart.forEach(cart => {
-        let optionItemName = [];
-        cart.additionalOptions.forEach(additionalOption => {
-          additionalOption.options.forEach(option => {
-            optionItemName.push(option.optionItemName);
+        return res.data;
+      };
+
+      const getOrderStatus = async order_code => {
+        let res = await axios.get(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-summary/${order_code}`,
+        );
+
+        return res.data;
+      };
+
+      const res1 = fetchOrderItems(order_code);
+      const res2 = getOrderStatus(order_code);
+      Promise.all([res1, res2]).then(data => {
+        if (data[0].response && data[1].response) {
+          setOrderData(prev => ({
+            ...prev,
+            merchant_name: data[0].response.merchant_name,
+            items: data[0].response.items,
+            num_items: data[0].response.num_items,
+            delivery_fee: data[0].response.delivery_fee,
+          }));
+          setTrackingMessage({
+            title: 'Order submitted',
+            message: `Your order from ${data[0].response.merchant_name} has been placed.`,
           });
-        });
-        list.push(optionItemName.toString().split(',').join(', '));
+
+          switch (
+            data[1].response.order_status[data[1].response.order_status.length - 1]
+              .order_status_name
+          ) {
+            case 'Submitted':
+              setSubmittedStatus(true);
+              break;
+            case 'Assigned':
+              setSubmittedStatus(true);
+              setAssignedStatus(true);
+              setTrackingMessage(prev => ({...prev, title: 'Order assigned'}));
+              break;
+            case 'Confirmed':
+              setSubmittedStatus(true);
+              setAssignedStatus(true);
+              setConfirmedStatus(true);
+              setTrackingMessage(prev => ({...prev, title: 'Order confirmed'}));
+              break;
+            case 'Picked':
+              setSubmittedStatus(true);
+              setAssignedStatus(true);
+              setConfirmedStatus(true);
+              setPickedStatus(true);
+              setTrackingMessage(prev => ({...prev, title: 'Order picked'}));
+              break;
+            case 'Completed':
+              setSubmittedStatus(true);
+              setAssignedStatus(true);
+              setConfirmedStatus(true);
+              setPickedStatus(true);
+              setCompletedStatus(true);
+              setTrackingMessage(prev => ({...prev, title: 'Order completed'}));
+              break;
+
+            default:
+              break;
+          }
+        }
       });
-      setAdditionalOptions(list);
+
+      // try {
+      //   let fecthOrderItems = await axios.get(
+      //     `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+      //   );
+      //   if (fecthOrderItems.data.response) {
+      //     setOrderData(prev => ({
+      //       ...prev,
+      //       merchant_name: fecthOrderItems.data.response.merchant_name,
+      //       items: fecthOrderItems.data.response.items,
+      //       num_items: fecthOrderItems.data.response.num_items,
+      //       delivery_fee: fecthOrderItems.data.response.delivery_fee,
+      //     }));
+      //     setTrackingMessage({
+      //       title: 'Order submitted',
+      //       message: `Your order from ${fecthOrderItems.data.response.merchant_name} has been placed.`,
+      //     });
+      //   }
+      // } catch (error) {
+      //   console.error('Cannot fetch order item', error);
+      // }
+
+      // let list = [];
+      // state.userCart.cart.forEach(cart => {
+      //   let optionItemName = [];
+      //   cart.additionalOptions.forEach(additionalOption => {
+      //     additionalOption.options.forEach(option => {
+      //       optionItemName.push(option.optionItemName);
+      //     });
+      //   });
+      //   list.push(optionItemName.toString().split(',').join(', '));
+      // });
+      // setAdditionalOptions(list);
 
       setLoading(false);
     };
@@ -442,7 +543,7 @@ export const OrderStatus = props => {
           {openDetail ? (
             <>
               <ScrollView
-                style={{width: '100%', height: 350}}
+                style={{width: '100%', height: '60%'}}
                 ref={scrollRef}
                 onLayout={event => {
                   scrollRef.current.scrollToEnd();
@@ -456,7 +557,7 @@ export const OrderStatus = props => {
                     paddingHorizontal: 20,
                     marginTop: 15,
                   }}>
-                  {state.userCart.cart.map((item, index) => (
+                  {orderData.items.map((item, index) => (
                     <View
                       key={index}
                       style={{
@@ -465,7 +566,7 @@ export const OrderStatus = props => {
                         alignItems: 'center',
                         marginBottom: 15,
                       }}>
-                      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                      <View style={{flexDirection: 'row', alignItems: 'center', width: '80%'}}>
                         <Text style={{fontSize: 16}}>{item.quantity}x</Text>
                         <View>
                           <Text
@@ -474,19 +575,20 @@ export const OrderStatus = props => {
                               marginBottom: 10,
                               fontSize: 17,
                               fontWeight: '600',
+                              width: '80%',
                             }}>
-                            {item.productName}
+                            {item.product_name}
                           </Text>
                           <Text style={{marginLeft: 15, fontStyle: 'italic', color: 'gray'}}>
                             {additionalOptions[index]}
                           </Text>
-                          {item.SpecialInstruction ? (
+                          {item.special_instruction !== '' ? (
                             <Text>Note: {item.SpecialInstruction}</Text>
                           ) : null}
                         </View>
                       </View>
                       <Text style={{fontWeight: '600', fontSize: 17}}>
-                        ${item.totalProductPrice}
+                        ${parseFloat(item.price).toFixed(2)}
                       </Text>
                     </View>
                   ))}
@@ -500,14 +602,18 @@ export const OrderStatus = props => {
                       borderBottomWidth: 1,
                     }}>
                     <View style={styles.flexRowBetween}>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>Subtotal (2 items)</Text>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>
-                        ${totalCartPrice(state.userCart.cart)}
+                        Subtotal ({orderData.items.length} items)
+                      </Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${totalCartPrice(orderData.items)}
                       </Text>
                     </View>
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Delivery fee: 2.8km</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>$0.4</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${parseFloat(orderData.delivery_fee).toFixed(2)}
+                      </Text>
                     </View>
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>
@@ -528,7 +634,7 @@ export const OrderStatus = props => {
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Total</Text>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>
-                        ${totalCartPrice(state.userCart.cart)}
+                        ${totalCartPrice(orderData.items)}
                       </Text>
                     </View>
                   </View>

@@ -13,7 +13,7 @@ import {
 import colors from '../colors/colors';
 import axios from 'axios';
 import {useSelector, useDispatch} from 'react-redux';
-import {SaveToHistoryCart, SubmitOrder} from '../store/action/cart';
+import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {PaymentMethodModal} from '../components/Modal/PaymentMethodModal';
@@ -37,6 +37,7 @@ export const GoToCheckout = props => {
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const [selectedTip, setSelectedTip] = useState(null);
   const [deliveryfee, setDeliveryfee] = useState(0);
+  const [orderForm, setOrderForm] = useState({});
 
   const dispatch = useDispatch();
 
@@ -49,67 +50,135 @@ export const GoToCheckout = props => {
     return price.toFixed(2);
   };
 
+  // const PlaceOrder = async () => {
+  //   dispatch(SubmitOrder());
+  //   let _orderHistory = await AsyncStorage.getItem('@orderHistory');
+  //   if (_orderHistory) {
+  //     let orderHistory = JSON.parse(_orderHistory);
+  //     orderHistory.unshift({
+  //       ...state.userCart,
+  //       total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
+  //         2,
+  //       ),
+  //       paymentMethod: selectedPayment,
+  //     });
+  //     await AsyncStorage.removeItem('@orderHistory');
+  //     await AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory));
+  //   } else {
+  //     let list = [];
+  //     list.unshift({
+  //       ...state.userCart,
+  //       total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
+  //         2,
+  //       ),
+  //       paymentMethod: selectedPayment,
+  //       deliveryfee: deliveryfee,
+  //     });
+  //     await AsyncStorage.removeItem('@orderHistory');
+  //     await AsyncStorage.setItem('@orderHistory', JSON.stringify(list));
+  //   }
+  //   props.navigation.navigate('OrderStatus', {order: state.userCart});
+  // };
+
   const PlaceOrder = async () => {
-    dispatch(SubmitOrder());
-    let _orderHistory = await AsyncStorage.getItem('@orderHistory');
-    if (_orderHistory) {
-      let orderHistory = JSON.parse(_orderHistory);
-      orderHistory.unshift({
-        ...state.userCart,
-        total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
-          2,
-        ),
-        paymentMethod: selectedPayment,
-      });
-      await AsyncStorage.removeItem('@orderHistory');
-      await AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory));
-    } else {
-      let list = [];
-      list.unshift({
-        ...state.userCart,
-        total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
-          2,
-        ),
-        paymentMethod: selectedPayment,
-        deliveryfee: deliveryfee,
-      });
-      await AsyncStorage.removeItem('@orderHistory');
-      await AsyncStorage.setItem('@orderHistory', JSON.stringify(list));
+    try {
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/submit-order-info-delivery`,
+        orderForm,
+      );
+      if (res.data.status && res.data.order_code) {
+        let orderCode = res.data.order_code;
+        try {
+          let submitOrder = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/submit-order-items`,
+            {
+              customer_id: state.user_id,
+              order_code: orderCode,
+            },
+          );
+          if (submitOrder.data.status) {
+            props.navigation.navigate('OrderStatus', {order_code: orderCode});
+          } else {
+            console.error('Cannot submit order items !');
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
-    props.navigation.navigate('OrderStatus', {order: state.userCart});
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      let list = [];
-      state.userCart.cart.forEach(cart => {
-        let optionItemName = [];
-        cart.additionalOptions.forEach(additionalOption => {
-          additionalOption.options.forEach(option => {
-            optionItemName.push(option.optionItemName);
-          });
-        });
-        list.push(optionItemName.toString().split(',').join(', '));
-      });
-      setAdditionalOptions(list);
+    // const loadData = async () => {
+    //   let list = [];
+    //   state.userCart.cart.forEach(cart => {
+    //     let optionItemName = [];
+    //     cart.additionalOptions.forEach(additionalOption => {
+    //       additionalOption.options.forEach(option => {
+    //         optionItemName.push(option.optionItemName);
+    //       });
+    //     });
+    //     list.push(optionItemName.toString().split(',').join(', '));
+    //   });
+    //   setAdditionalOptions(list);
 
+    //   let res = await axios.post(
+    //     `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+    //     {
+    //       longitude: state.userLocation.longitude,
+    //       latitude: state.userLocation.latitude,
+    //       provider_id: 1000005,
+    //     },
+    //   );
+    //   if (res.data.delivery_fee) {
+    //     setDeliveryfee(convertDollar(res.data.delivery_fee));
+    //   }
+
+    //   setLoading(false);
+    // };
+    const loadData = async () => {
+      dispatch(RetrieveCart(state.user_id)); // retrieve the cart data just in case missing data
       let res = await axios.post(
         `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
         {
           longitude: state.userLocation.longitude,
           latitude: state.userLocation.latitude,
-          provider_id: 1000005,
+          provider_id: state.userCart.provider_id,
         },
       );
       if (res.data.delivery_fee) {
         setDeliveryfee(convertDollar(res.data.delivery_fee));
       }
-
       setLoading(false);
     };
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    setOrderForm(prev => ({
+      ...prev,
+      delivery_mode: selectedTab === 'Delivery' ? 1 : 2,
+      customer_id: state.user_id,
+      delivery_address: state.userLocation.address,
+      customer_phone: state.phone,
+      payment_method: selectedPayment === 'Cash' ? 1 : selectedPayment === 'Momo' ? 2 : 3,
+      payment_status: 1,
+      promotion_code: promoCode ?? '',
+      ecoupon_code: '',
+      delivery_method: selectedMethod === 'Standard' ? 1 : 2,
+      schedule_time: null,
+      tips: 0,
+      delivery_fee: deliveryfee,
+      subtotal: parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
+      total:
+        selectedTab === 'Delivery'
+          ? (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(2)
+          : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
+    }));
+  }, [selectedTab, selectedMethod, selectedPayment, selectedTip, deliveryfee, promoCode]);
 
   if (loading) {
     return (
@@ -154,7 +223,9 @@ export const GoToCheckout = props => {
                   alignItems: 'center',
                 }}>
                 <Feather name="map-pin" size={20} color="black" />
-                <Text style={{marginLeft: 15, fontSize: 17}}>{state.userLocation.address}</Text>
+                <Text style={{marginLeft: 15, fontSize: 17, width: '85%'}}>
+                  {state.userLocation.address}
+                </Text>
               </View>
               <Feather name="edit-3" size={20} color="black" />
             </View>
@@ -196,7 +267,7 @@ export const GoToCheckout = props => {
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
                   <Text style={{fontSize: 17}}>{item.quantity}x</Text>
                   <View style={{width: '80%'}}>
-                    <Text style={{marginLeft: 10, fontSize: 17, fontWeight: '500'}}>
+                    <Text style={{marginLeft: 10, fontSize: 17, fontWeight: '500', width: '85%'}}>
                       {item.productName}
                     </Text>
                     <Text
@@ -211,7 +282,7 @@ export const GoToCheckout = props => {
                     </Text>
                   </View>
                 </View>
-                <Text style={{fontSize: 17}}>${item.totalProductPrice}</Text>
+                <Text style={{fontSize: 17}}>${parseFloat(item.totalProductPrice).toFixed(2)}</Text>
               </View>
             ))}
             <TextInput
