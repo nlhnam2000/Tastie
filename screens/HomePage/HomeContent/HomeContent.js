@@ -386,7 +386,7 @@ export const HomeContent = props => {
         </Modalize>
         <Modalize
           ref={filterModalize}
-          modalHeight={Dimensions.get('window').height - 200}
+          modalHeight={Dimensions.get('window').height - 150}
           HeaderComponent={
             <View
               style={{
@@ -634,6 +634,21 @@ export const HomeContent = props => {
                   )}
                 </View>
               )}
+              <View style={{width: '100%', marginTop: 25}}>
+                <TouchableOpacity
+                  style={{padding: 15, backgroundColor: 'black'}}
+                  onPress={() => {
+                    filterModalize.current.close();
+                    setTimeout(() => {
+                      props.navigation.navigate('ResultContent');
+                    }, 200);
+                  }}>
+                  <Text
+                    style={{fontSize: 17, color: 'white', fontWeight: '500', textAlign: 'center'}}>
+                    Submit
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </ScrollView>
           </View>
         </Modalize>

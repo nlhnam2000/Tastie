@@ -87,6 +87,35 @@ export const OrderStatus = props => {
   };
 
   useEffect(() => {
+    if (!assignedStatus && orderData.items.length > 0) {
+      socket = io(`http://${IP_ADDRESS}:3015`);
+      socket.emit('join-room', order_code);
+      socket.emit(
+        'customer-submit-order',
+        orderData.items,
+        {
+          name: state.first_name + ' ' + state.last_name,
+          phone: state.phone,
+          address: state.userLocation.address,
+          location: {
+            latitude: state.userLocation.latitude,
+            longitude: state.userLocation.longitude,
+          },
+        },
+        {
+          name: state.userCart.provider_name,
+          address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+          location: {
+            latitude: 10.770426270078108,
+            longitude: 106.69433674255707,
+          },
+        },
+        order_code,
+      );
+    }
+  }, [assignedStatus, orderData]);
+
+  useEffect(() => {
     const initialMap = async () => {
       if (Platform.OS === 'ios') {
         let permission = await Geolocation.requestAuthorization('whenInUse');
@@ -113,33 +142,40 @@ export const OrderStatus = props => {
         }
       }
       socket = io(`http://${IP_ADDRESS}:3015`);
-      if (orderData.items.length > 0) {
-        socket.emit(
-          'customer-submit-order',
-          orderData.items,
-          {
-            name: state.first_name + ' ' + state.last_name,
-            phone: state.phone,
-            address: state.userLocation.address,
-            location: {
-              latitude: state.userLocation.latitude,
-              longitude: state.userLocation.longitude,
-            },
-          },
-          {
-            name: state.userCart.provider_name,
-            address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
-            location: {
-              latitude: 10.770426270078108,
-              longitude: 106.69433674255707,
-            },
-          },
-          order_code,
-        );
-      }
+      socket.emit('join-room', order_code); // join the room which is also the order_code
+      /* 
+        Check if the order has been registered to db or not
+        If it is not in the db, submit the order through the socket server
+      */
+
+      // if (orderData.items.length > 0) {
+      //   socket.emit(
+      //     'customer-submit-order',
+      //     orderData.items,
+      //     {
+      //       name: state.first_name + ' ' + state.last_name,
+      //       phone: state.phone,
+      //       address: state.userLocation.address,
+      //       location: {
+      //         latitude: state.userLocation.latitude,
+      //         longitude: state.userLocation.longitude,
+      //       },
+      //     },
+      //     {
+      //       name: state.userCart.provider_name,
+      //       address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+      //       location: {
+      //         latitude: 10.770426270078108,
+      //         longitude: 106.69433674255707,
+      //       },
+      //     },
+      //     order_code,
+      //   );
+      // }
 
       socket.on('shipperLocation', data => {
         console.log('Shipper location:', data);
+        setAssignedStatus(true);
         setShipperLocation(prevState => ({
           ...prevState,
           latitude: data.latitude,
@@ -290,27 +326,6 @@ export const OrderStatus = props => {
           }
         }
       });
-
-      // try {
-      //   let fecthOrderItems = await axios.get(
-      //     `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
-      //   );
-      //   if (fecthOrderItems.data.response) {
-      //     setOrderData(prev => ({
-      //       ...prev,
-      //       merchant_name: fecthOrderItems.data.response.merchant_name,
-      //       items: fecthOrderItems.data.response.items,
-      //       num_items: fecthOrderItems.data.response.num_items,
-      //       delivery_fee: fecthOrderItems.data.response.delivery_fee,
-      //     }));
-      //     setTrackingMessage({
-      //       title: 'Order submitted',
-      //       message: `Your order from ${fecthOrderItems.data.response.merchant_name} has been placed.`,
-      //     });
-      //   }
-      // } catch (error) {
-      //   console.error('Cannot fetch order item', error);
-      // }
 
       // let list = [];
       // state.userCart.cart.forEach(cart => {

@@ -56,6 +56,7 @@ import {RatingProvider} from './screens/HomePage/Account/Rating/RatingProvider';
 import {RatingShipper} from './screens/HomePage/Account/Rating/RatingShipper';
 import {ProductOptions} from './screens/HomePage/Detail/ProductOptions';
 import {PromotionsList} from './screens/HomePage/Detail/Promotion/PromotionList';
+import {ResultContent} from './screens/HomePage/HomeContent/ResultContent';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -104,7 +105,7 @@ export default function App(props) {
       } else {
         dispatch(TokenNotFound());
       }
-    }, 1000);
+    }, 500);
   }, []);
 
   if (state.isLoading) {
@@ -180,6 +181,11 @@ export default function App(props) {
             <Stack.Screen
               name="PromotionList"
               component={PromotionsList}
+              options={{headerShown: false}}
+            />
+            <Stack.Screen
+              name="ResultContent"
+              component={ResultContent}
               options={{headerShown: false}}
             />
           </Stack.Navigator>
