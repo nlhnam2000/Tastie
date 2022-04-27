@@ -142,6 +142,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 20,
     backgroundColor: 'white',
+    borderTopColor: 'rgb(230,230,230)',
+    borderTopWidth: 1,
   },
   iconWrapper: {
     flexDirection: 'column',
