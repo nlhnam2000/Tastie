@@ -21,7 +21,9 @@ import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
-import {AddToCart} from '../../../store/action/cart';
+import {AddToCart, ClearCart} from '../../../store/action/cart';
+import {DuoAlertDialog} from '../../../components/Error/AlertDialog';
+import {sleep} from '../../../global';
 
 const {width, height} = Dimensions.get('screen');
 
@@ -35,13 +37,19 @@ export const ProductOptions = props => {
   const state = useSelector(state => state.UserReducer);
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
   const [cartForm, setCartForm] = useState({});
+  const [openModal, setOpenModal] = useState(false);
 
   const handleAddToCart = () => {
-    dispatch(AddToCart(cartForm));
-    setTimeout(() => {
-      props.navigation.goBack();
-    }, 800);
-    // console.log(cartForm);
+    if (state.userCart.provider_id && state.userCart.provider_id !== cartForm.provider_id) {
+      setOpenModal(true);
+      // dispatch(ClearCart(state.user_id));
+    } else {
+      dispatch(AddToCart(cartForm));
+      setTimeout(() => {
+        props.navigation.goBack();
+      }, 800);
+      // console.log(cartForm);
+    }
   };
 
   useEffect(() => {
@@ -158,6 +166,18 @@ export const ProductOptions = props => {
           </Text>
         </TouchableOpacity>
       </View>
+      <DuoAlertDialog
+        visible={openModal}
+        message={'Do you want to clear the previous cart ?'}
+        onCancel={() => setOpenModal(false)}
+        onConfirm={() => {
+          dispatch(ClearCart(state.user_id));
+          dispatch(AddToCart(cartForm));
+          setTimeout(() => {
+            props.navigation.goBack();
+          }, 800);
+        }}
+      />
     </SafeAreaView>
   );
 };

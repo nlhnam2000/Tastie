@@ -56,7 +56,15 @@ export const CategoryList = props => {
     <View style={styles.container}>
       <View style={[styles.flexRowBetween, {paddingHorizontal: 20, width: '100%'}]}>
         <Text style={styles.heading}>{props.categoryTitle}</Text>
-        <Text>View all</Text>
+        <TouchableOpacity
+          onPress={() =>
+            props.navigation.navigate('ResultContent', {
+              groupID: props.groupID,
+              title: props.categoryTitle,
+            })
+          }>
+          <Text>View all</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={providerList}

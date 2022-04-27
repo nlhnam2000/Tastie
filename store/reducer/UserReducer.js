@@ -33,6 +33,7 @@ import {
   RETRIEVE_CART,
   UPDATE_QUANTITY,
   CART_IS_EMPTY,
+  CLEAR_CART,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -263,6 +264,19 @@ export const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         ...payload,
+      };
+    }
+    case CLEAR_CART: {
+      return {
+        ...state,
+        userCart: {
+          ...state.userCart,
+          provider_id: null,
+          provider_name: null,
+          date: null,
+          cart: [],
+          status: null,
+        },
       };
     }
     case ADD_TO_CART: {

@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Image} from 'react-native';
 import colors from '../../colors/colors';
 import {ShortcutImage} from '../../assets/dummy/ShortcutImage';
+import {categoryData} from '../../assets/dummy/categoryData';
 
 export const BrowseCategory = props => {
   const [loading, setLoading] = useState(true);
@@ -21,21 +22,41 @@ export const BrowseCategory = props => {
   return (
     <View style={styles.container}>
       <View style={styles.flexRow}>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            props.navigation.navigate('ResultContent', {
+              categoryFilter: {
+                type: categoryData[0].type,
+                categoryID: categoryData[0].id,
+              },
+              title: categoryData[0].title,
+            });
+          }}>
           <Text style={{fontSize: 16, fontWeight: '500', alignSelf: 'flex-end'}}>
-            {ShortcutImage[0].name}
+            {categoryData[0].title}
           </Text>
           <Image
-            source={{uri: ShortcutImage[0].image}}
+            source={categoryData[0].image}
             style={{width: 70, height: 70, alignSelf: 'flex-start'}}
           />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => {
+            props.navigation.navigate('ResultContent', {
+              categoryFilter: {
+                type: categoryData[1].type,
+                categoryID: categoryData[1].id,
+              },
+              title: categoryData[1].title,
+            });
+          }}>
           <Text style={{fontSize: 16, fontWeight: '500', alignSelf: 'flex-end'}}>
-            {ShortcutImage[1].name}
+            {categoryData[1].title}
           </Text>
           <Image
-            source={{uri: ShortcutImage[1].image}}
+            source={categoryData[1].image}
             style={{width: 70, height: 70, alignSelf: 'flex-start'}}
           />
         </TouchableOpacity>
@@ -43,11 +64,21 @@ export const BrowseCategory = props => {
       <View style={styles.flexRow}>
         {[2, 3, 4, 5].map((item, index) => (
           <View key={item}>
-            <TouchableOpacity style={styles.button2}>
-              <Image source={{uri: ShortcutImage[item].image}} style={{width: 50, height: 50}} />
+            <TouchableOpacity
+              style={styles.button2}
+              onPress={() => {
+                props.navigation.navigate('ResultContent', {
+                  categoryFilter: {
+                    type: categoryData[item].type,
+                    categoryID: categoryData[item].id,
+                  },
+                  title: categoryData[item].title,
+                });
+              }}>
+              <Image source={categoryData[item].image} style={{width: 50, height: 50}} />
             </TouchableOpacity>
             <Text style={{fontSize: 15, fontWeight: '500', textAlign: 'center', marginTop: 5}}>
-              {ShortcutImage[item].name}
+              {categoryData[item].title}
             </Text>
           </View>
         ))}

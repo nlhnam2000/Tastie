@@ -45,7 +45,7 @@ export const HomeContent = props => {
   const [openModal, setOpenModal] = useState(false);
   const [animateModal, setAnimateModal] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
-  const [selectedSort, setSelectedSort] = useState('Picked for you');
+  const [selectedSort, setSelectedSort] = useState('Order near you');
   const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [enableSwitches, setEnableSwitches] = useState({
     deals: false,
@@ -69,6 +69,10 @@ export const HomeContent = props => {
   const [address, setAddress] = useState(state.userLocation.address ?? '');
   const filterModalize = useRef();
   const userLocationModalize = useRef();
+  const [sortOption, setSortOption] = useState({
+    groupID: 1,
+    title: 'Order near you',
+  });
 
   const openFilterModalize = () => {
     filterModalize.current?.open();
@@ -104,6 +108,42 @@ export const HomeContent = props => {
     console.log(state.userLocation);
     setLoading(false);
   }, []);
+
+  useEffect(() => {
+    switch (selectedSort) {
+      case 'Order near you':
+        setSortOption(prev => ({
+          ...prev,
+          groupID: 1,
+          title: selectedSort,
+        }));
+        break;
+      case 'Most rating':
+        setSortOption(prev => ({
+          ...prev,
+          groupID: 3,
+          title: selectedSort,
+        }));
+        break;
+      case 'In a rush':
+        setSortOption(prev => ({
+          ...prev,
+          groupID: 4,
+          title: selectedSort,
+        }));
+        break;
+      case 'New on Tastie':
+        setSortOption(prev => ({
+          ...prev,
+          groupID: 5,
+          title: selectedSort,
+        }));
+        break;
+
+      default:
+        break;
+    }
+  }, [selectedSort]);
 
   if (loading) {
     return (
@@ -213,7 +253,7 @@ export const HomeContent = props => {
               />
             </View> */}
             <View style={{width}}>
-              <BrowseCategory />
+              <BrowseCategory {...props} />
             </View>
             {/* <View
               style={styles.contentWrapper}
@@ -430,8 +470,11 @@ export const HomeContent = props => {
                 </TouchableOpacity>
               </View>
               {filterToogled.sort && (
-                <View style={{marginBottom: 20}}>
-                  {['Picked for you', 'Most popular', 'Rating', 'Delivery time'].map(
+                <View
+                  style={{
+                    marginBottom: 20,
+                  }}>
+                  {['Order near you', 'Most rating', 'In a rush', 'New on Tastie'].map(
                     (item, index) => (
                       <View
                         style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}
@@ -640,12 +683,15 @@ export const HomeContent = props => {
                   onPress={() => {
                     filterModalize.current.close();
                     setTimeout(() => {
-                      props.navigation.navigate('ResultContent');
+                      props.navigation.navigate('ResultContent', {
+                        groupID: sortOption.groupID,
+                        title: sortOption.title,
+                      });
                     }, 200);
                   }}>
                   <Text
                     style={{fontSize: 17, color: 'white', fontWeight: '500', textAlign: 'center'}}>
-                    Submit
+                    Done
                   </Text>
                 </TouchableOpacity>
               </View>

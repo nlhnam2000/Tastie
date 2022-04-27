@@ -21,7 +21,7 @@ const {width} = Dimensions.get('window');
 
 export const ResultContent = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
-  // const {group_id} = route.params;
+  const {groupID, title, keyword, categoryFilter} = route.params;
   const [data, setData] = useState([]);
   const [offset, setOffset] = useState(1);
   const state = useSelector(state => state.UserReducer);
@@ -48,43 +48,81 @@ export const ResultContent = ({navigation, route}) => {
     }
   };
 
+  const LoadMoreProvider = async () => {
+    try {
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+        {
+          group_provider_id: groupID,
+          limit: 20,
+          offset: offset + 1,
+          latitude: state.userLocation.latitude,
+          longitude: state.userLocation.longitude,
+        },
+      );
+      if (res.data.response) {
+        setData(prev => [...prev, ...res.data.response]);
+        setOffset(offset + 1);
+      }
+    } catch (error) {
+      console.error('Cannot get group provider', error);
+    }
+  };
+
+  const LoadSearchResult = async keyword => {
+    try {
+      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
+        q: keyword,
+        type: '1',
+      });
+      if (res.data.status) {
+        setData(res.data.data.items);
+      }
+    } catch (error) {
+      console.error('Cannot get group provider', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const LoadCategoryResult = async filter => {
+    try {
+      console.log(filter.type.toString());
+      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
+        type: '3',
+        category_infor: {
+          category_type: filter.type.toString(),
+          category_id: filter.categoryID,
+        },
+      });
+      if (res.data.status) {
+        setData(res.data.data.items);
+      }
+    } catch (error) {
+      console.error('Cannot filter category', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    LoadProvider(4, offset);
+    if (keyword) {
+      LoadSearchResult(keyword);
+    } else if (categoryFilter) {
+      LoadCategoryResult(categoryFilter);
+      // console.log(categoryFilter);
+    } else {
+      LoadProvider(groupID, offset);
+    }
   }, []);
-
-  //   useEffect(() => {
-  //     const LoadMoreProvider = async (group_id, offset) => {
-  //       try {
-  //         let res = await axios.post(
-  //           `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
-  //           {
-  //             group_provider_id: group_id,
-  //             limit: 20,
-  //             offset: offset,
-  //             latitude: state.userLocation.latitude,
-  //             longitude: state.userLocation.longitude,
-  //           },
-  //         );
-  //         if (res.data.response) {
-  //           setData(prev => [...prev, ...res.data.response]);
-  //         }
-  //       } catch (error) {
-  //         console.error('Cannot get group provider', error);
-  //       }
-  //     };
-
-  //     if (offset > 1) {
-  //       LoadMoreProvider(4, offset);
-  //     }
-  //   }, [offset]);
 
   const renderItem = ({item}) => {
     return (
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
+        onPress={() => navigation.navigate('DetailProvider', {data: item})}
         style={styles.providerWrapper}>
         <ImageBackground
-          source={{uri: item.profile_pic}}
+          source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
           style={{height: 200, width: width}}
         />
@@ -92,7 +130,7 @@ export const ResultContent = ({navigation, route}) => {
           <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
             <View style={{width: width - 200, marginBottom: 5}}>
               <Text numberOfLines={1} style={[styles.subheading]}>
-                {item.provider_name}
+                {item.provider_name ?? item.name}
               </Text>
             </View>
             <Text>{item.estimated_cooking_time} minutes</Text>
@@ -119,7 +157,7 @@ export const ResultContent = ({navigation, route}) => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={[styles.heading, {textAlign: 'center'}]}>Picked for you</Text>
+        <Text style={[styles.heading, {textAlign: 'center'}]}>{title}</Text>
       </View>
       <View
         style={{
@@ -131,24 +169,8 @@ export const ResultContent = ({navigation, route}) => {
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={2}
           onEndReached={async () => {
-            // setOffset(offset + 20);
-            try {
-              let res = await axios.post(
-                `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
-                {
-                  group_provider_id: 4,
-                  limit: 20,
-                  offset: offset + 1,
-                  latitude: state.userLocation.latitude,
-                  longitude: state.userLocation.longitude,
-                },
-              );
-              if (res.data.response) {
-                setData(prev => [...prev, ...res.data.response]);
-                setOffset(offset + 1);
-              }
-            } catch (error) {
-              console.error('Cannot get group provider', error);
+            if (keyword) {
+              await LoadMoreProvider();
             }
           }}
           renderItem={renderItem}

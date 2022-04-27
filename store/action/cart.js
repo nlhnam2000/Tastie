@@ -10,6 +10,7 @@ import {
   RETRIEVE_CART,
   UPDATE_QUANTITY,
   CART_IS_EMPTY,
+  CLEAR_CART,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -41,6 +42,22 @@ export const RetrieveCart = user_id => async dispatch => {
     }
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const ClearCart = user_id => async dispatch => {
+  try {
+    let res = await axios.delete(
+      `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/clear-cart/${user_id}`,
+    );
+    if (res.data.status) {
+      dispatch({
+        type: CLEAR_CART,
+        payload: {},
+      });
+    }
+  } catch (error) {
+    console.error('Cannot clear cart', error);
   }
 };
 

@@ -2,7 +2,6 @@ import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
-  Flatlist,
   Image,
   StyleSheet,
   ScrollView,
@@ -12,20 +11,48 @@ import {
   Platform,
   ActivityIndicator,
   StatusBar,
+  FlatList,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 
 import {ShortcutImage} from '../../assets/dummy/ShortcutImage';
+import {categoryData} from '../../assets/dummy/categoryData';
 import colors from '../../colors/colors';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
 import io from 'socket.io-client';
 import {IP_ADDRESS} from '../../global';
+import axios from 'axios';
 
 let socket;
 const {width, height} = Dimensions.get('window');
 
 export const Browse = props => {
   const [loading, setLoading] = useState(true);
+  const [searchKey, setSearchKey] = useState(null);
+
+  const getCategoryProvider = async () => {
+    try {
+    } catch (error) {}
+  };
+
+  const renderCategory = ({item, index}) => {
+    return (
+      <TouchableOpacity
+        style={styles.categoryWrapper}
+        onPress={() =>
+          props.navigation.navigate('ResultContent', {
+            categoryFilter: {
+              type: item.type,
+              categoryID: item.id,
+            },
+            title: item.title,
+          })
+        }>
+        <Text style={{fontWeight: '600'}}>{item.title}</Text>
+        <Image source={item.image} style={{width: 70, height: 70, alignSelf: 'flex-end'}} />
+      </TouchableOpacity>
+    );
+  };
 
   useEffect(() => {
     socket = io(`http://${IP_ADDRESS}:3007`);
@@ -56,27 +83,48 @@ export const Browse = props => {
             <Feather name="search" size={20} color={'black'} />
             <TextInput
               placeholder="Search"
-              style={{marginLeft: 10}}
-              maxLength={25}
+              placeholderTextColor={'gray'}
+              style={{marginLeft: 15, width: '80%'}}
               clearButtonMode="always"
+              onSubmitEditing={event => {
+                if (searchKey && searchKey !== '') {
+                  props.navigation.navigate('ResultContent', {
+                    keyword: searchKey,
+                    title: `Search result for ${searchKey}`,
+                  });
+                }
+              }}
+              returnKeyType="search"
+              // autoFocus
+              onChangeText={text => setSearchKey(text)}
             />
           </View>
         </View>
-        <ScrollView>
+        {/* <ScrollView>
           <View style={styles.content}>
-            {ShortcutImage.map((item, index) => {
+            {categoryData.map((item, index) => {
               return (
-                <TouchableOpacity style={styles.categoryWrapper} key={item.id}>
-                  <Text style={{fontWeight: '600'}}>{item.name}</Text>
+                <TouchableOpacity style={styles.categoryWrapper} key={index}>
+                  <Text style={{fontWeight: '600'}}>{item.title}</Text>
                   <Image
-                    source={{uri: item.image}}
+                    source={item.image}
                     style={{width: 70, height: 70, alignSelf: 'flex-end'}}
                   />
                 </TouchableOpacity>
               );
             })}
           </View>
-        </ScrollView>
+        </ScrollView> */}
+        <View style={{width: '100%', paddingHorizontal: 20}}>
+          <FlatList
+            data={categoryData}
+            keyExtractor={(item, index) => item.id + index}
+            numColumns={2}
+            renderItem={renderCategory}
+            style={{height: '70%'}}
+          />
+        </View>
+
         <NavigationBar active={props.tabname} />
       </View>
     );
@@ -86,7 +134,7 @@ export const Browse = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: 'white',
   },
@@ -108,7 +156,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     paddingTop: 10,
-    marginTop: 20,
+    margin: 10,
   },
   searchWrapper: {
     flexDirection: 'row',
