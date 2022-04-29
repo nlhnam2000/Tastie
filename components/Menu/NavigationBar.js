@@ -29,8 +29,6 @@ import {
 import colors from '../../colors/colors';
 import {RetrieveCart} from '../../store/action/cart';
 
-// FontAwesome5.loadFont();
-
 export const NavigationBar = props => {
   const dispatch = useDispatch();
   const cart = useSelector(state => state.UserReducer.userCart.cart);
@@ -44,8 +42,8 @@ export const NavigationBar = props => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToHome())}>
-        {(props.active === 'Home' && <Feather name="home" size={25} color={'red'} />) || (
-          <Feather name="home" size={25} color="black" />
+        {(props.active === 'Home' && <MaterialCommunity name="home" size={30} color={'red'} />) || (
+          <MaterialCommunity name="home" size={30} color="black" />
         )}
         <Text
           style={
@@ -57,9 +55,9 @@ export const NavigationBar = props => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToBrowse())}>
-        {(props.active === 'Browse' && <Feather name="search" size={25} color={'red'} />) || (
-          <Feather name="search" size={25} color="black" />
-        )}
+        {(props.active === 'Browse' && (
+          <MaterialCommunity name="magnify" size={30} color={'red'} />
+        )) || <MaterialCommunity name="magnify" size={30} color="black" />}
         <Text
           style={
             props.active === 'Browse'
@@ -72,9 +70,9 @@ export const NavigationBar = props => {
       <TouchableOpacity
         style={styles.iconWrapper}
         onPress={() => dispatch(NavigateToNotification())}>
-        {(props.active === 'Notification' && <Feather name="mail" size={25} color={'red'} />) || (
-          <Feather name="mail" size={25} color="black" />
-        )}
+        {(props.active === 'Notification' && (
+          <MaterialCommunity name="email" size={30} color={'red'} />
+        )) || <MaterialCommunity name="email" size={30} color="black" />}
         <Text
           style={
             props.active === 'Notification'
@@ -85,8 +83,8 @@ export const NavigationBar = props => {
         </Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToCart())}>
-        {(props.active === 'Cart' && <Feather name="shopping-bag" size={25} color={'red'} />) || (
-          <Feather name="shopping-bag" size={25} color="black" />
+        {(props.active === 'Cart' && <MaterialCommunity name="cart" size={30} color={'red'} />) || (
+          <MaterialCommunity name="cart" size={30} color="black" />
         )}
         <Text
           style={
@@ -117,9 +115,9 @@ export const NavigationBar = props => {
         ) : null}
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToAccount())}>
-        {(props.active === 'Account' && <Feather name="user" size={25} color={'red'} />) || (
-          <Feather name="user" size={25} color="black" />
-        )}
+        {(props.active === 'Account' && (
+          <MaterialCommunity name="account" size={30} color={'red'} />
+        )) || <MaterialCommunity name="account" size={30} color="black" />}
         <Text
           style={
             props.active === 'Account'

@@ -14,26 +14,16 @@ import {
   FlatList,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
-
-import {ShortcutImage} from '../../assets/dummy/ShortcutImage';
 import {categoryData} from '../../assets/dummy/categoryData';
 import colors from '../../colors/colors';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
-import io from 'socket.io-client';
 import {IP_ADDRESS} from '../../global';
-import axios from 'axios';
 
-let socket;
 const {width, height} = Dimensions.get('window');
 
 export const Browse = props => {
   const [loading, setLoading] = useState(true);
   const [searchKey, setSearchKey] = useState(null);
-
-  const getCategoryProvider = async () => {
-    try {
-    } catch (error) {}
-  };
 
   const renderCategory = ({item, index}) => {
     return (
@@ -55,10 +45,6 @@ export const Browse = props => {
   };
 
   useEffect(() => {
-    socket = io(`http://${IP_ADDRESS}:3007`);
-    socket.on('shipperLocation', data => {
-      console.log('Shipper location', data);
-    });
     setLoading(false);
   }, []);
 

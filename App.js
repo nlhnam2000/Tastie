@@ -70,7 +70,6 @@ import {
   AutoSetLocation,
 } from './store/action/auth';
 import colors from './colors/colors';
-import axios from 'axios';
 import {IP_ADDRESS, getAccessToken} from './global';
 
 const Stack = createNativeStackNavigator();

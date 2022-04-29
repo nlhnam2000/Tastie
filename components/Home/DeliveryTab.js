@@ -21,7 +21,6 @@ import {
   Switch,
   TouchableWithoutFeedback,
   RefreshControl,
-  NativeModules,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
@@ -323,7 +322,7 @@ export const DeliveryTab = props => {
               }}>
               <TouchableOpacity
                 style={[styles.modalHeader, {position: 'absolute', left: '5%'}]}
-                onPress={() => setOpenModal(false)}>
+                onPress={() => userLocationModalize.current.close()}>
                 <Feather name="x" size={20} color={'black'} />
               </TouchableOpacity>
               <Text style={{fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>
@@ -426,7 +425,7 @@ export const DeliveryTab = props => {
                 marginTop: 10,
               }}>
               <TouchableOpacity
-                style={{position: 'absolute', left: '5%', top: '2%'}}
+                style={{position: 'absolute', left: '8%', top: '2%'}}
                 onPress={() => filterModalize.current.close()}>
                 <Feather name="x" size={20} color={'black'} />
               </TouchableOpacity>

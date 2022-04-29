@@ -643,6 +643,7 @@ export const DetailProvider = props => {
         <Modalize ref={providerInfoModal} modalHeight={Dimensions.get('window').height - 100}>
           <View style={styles.modalContainer}>
             <MapView
+              mapType="terrain"
               ref={mapref}
               scrollEnabled
               onLayout={() => {

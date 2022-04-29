@@ -23,18 +23,8 @@ import {
   RefreshControl,
   NativeModules,
 } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
-import {categoryData} from '../../../assets/dummy/categoryData';
-import {popularData} from '../../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
-import {SetUserLocation, AutoSetLocation} from '../../../store/action/auth';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-import {BrowseCategory} from '../../../components/Menu/BrowseCatergory';
-import {CategoryList} from '../../../components/Provider/CategoryList';
-import {ProviderList} from '../../../components/Provider/ProviderList';
-import {Modalize} from 'react-native-modalize';
-import axios from 'axios';
 import {DeliveryTab} from '../../../components/Home/DeliveryTab';
 import {PickupTab} from '../../../components/Home/PickupTab';
 

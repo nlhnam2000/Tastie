@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   SafeAreaView,
   TextInput,
   KeyboardAvoidingView,
+  FlatList,
 } from 'react-native';
 import colors from '../colors/colors';
 import axios from 'axios';
@@ -18,8 +19,10 @@ import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {PaymentMethodModal} from '../components/Modal/PaymentMethodModal';
 import {AddPromoModal} from '../components/Modal/AddPromoModal';
+import {PromotionList} from '../components/BottomSheet/PromotionList';
 import {IP_ADDRESS, convertDollar} from '../global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,7 @@ export const GoToCheckout = props => {
   const [selectedTip, setSelectedTip] = useState(null);
   const [deliveryfee, setDeliveryfee] = useState(0);
   const [orderForm, setOrderForm] = useState({});
+  const promoBottomSheetRef = useRef();
 
   const dispatch = useDispatch();
 
@@ -49,36 +53,6 @@ export const GoToCheckout = props => {
 
     return price.toFixed(2);
   };
-
-  // const PlaceOrder = async () => {
-  //   dispatch(SubmitOrder());
-  //   let _orderHistory = await AsyncStorage.getItem('@orderHistory');
-  //   if (_orderHistory) {
-  //     let orderHistory = JSON.parse(_orderHistory);
-  //     orderHistory.unshift({
-  //       ...state.userCart,
-  //       total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
-  //         2,
-  //       ),
-  //       paymentMethod: selectedPayment,
-  //     });
-  //     await AsyncStorage.removeItem('@orderHistory');
-  //     await AsyncStorage.setItem('@orderHistory', JSON.stringify(orderHistory));
-  //   } else {
-  //     let list = [];
-  //     list.unshift({
-  //       ...state.userCart,
-  //       total: (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(
-  //         2,
-  //       ),
-  //       paymentMethod: selectedPayment,
-  //       deliveryfee: deliveryfee,
-  //     });
-  //     await AsyncStorage.removeItem('@orderHistory');
-  //     await AsyncStorage.setItem('@orderHistory', JSON.stringify(list));
-  //   }
-  //   props.navigation.navigate('OrderStatus', {order: state.userCart});
-  // };
 
   const PlaceOrder = async () => {
     try {
@@ -405,7 +379,7 @@ export const GoToCheckout = props => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{alignItems: 'flex-end', padding: 15, width: '50%'}}
-            onPress={() => setOpenPromo(true)}>
+            onPress={() => promoBottomSheetRef.current?.snapToIndex(0)}>
             <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 18, fontWeight: '500'}}>
               {promoCode || 'Add a promo'}
             </Text>
@@ -451,11 +425,16 @@ export const GoToCheckout = props => {
         }}
         onCancel={() => setOpenPayment(false)}
       />
-      <AddPromoModal
-        show={openPromo}
-        onCancel={() => setOpenPromo(false)}
-        onChange={item => setPromoCode(item)}
-      />
+      <BottomSheet ref={promoBottomSheetRef} index={-1} snapPoints={['90%']} enablePanDownToClose>
+        <PromotionList
+          providerId={state.userCart.provider_id}
+          onSelect={promo => {
+            setPromoCode(promo);
+            promoBottomSheetRef.current?.close();
+          }}
+          currentSubtotal={totalCartPrice(state.userCart.cart)}
+        />
+      </BottomSheet>
     </SafeAreaView>
   );
 };

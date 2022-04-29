@@ -116,11 +116,11 @@ export const ResultContent = ({navigation, route}) => {
     }
   }, []);
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('DetailProvider', {data: item})}
-        style={styles.providerWrapper}>
+        style={[styles.providerWrapper, {marginTop: index % 2 !== 0 ? 20 : 0}]}>
         <ImageBackground
           source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
@@ -162,18 +162,20 @@ export const ResultContent = ({navigation, route}) => {
       <View
         style={{
           width: '100%',
+          height: '100%',
         }}>
         <FlatList
           data={data}
           keyExtractor={item => item.provider_id}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={2}
-          onEndReached={async () => {
+          onEndReached={() => {
             if (keyword) {
-              await LoadMoreProvider();
+              LoadMoreProvider();
             }
           }}
           renderItem={renderItem}
+          style={{backgroundColor: 'rgba(230,230,230, 0.6)'}}
         />
       </View>
     </SafeAreaView>
@@ -210,10 +212,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   providerWrapper: {
     // paddingHorizontal: 15,
+    backgroundColor: 'white',
   },
   subheading: {
     fontWeight: '600',

@@ -45,6 +45,7 @@ export const PickupTab = props => {
   const state = useSelector(state => state.UserReducer);
   const [providerList, setProviderList] = useState([]);
   const bottomSheetRef = useRef();
+  const mapRef = useRef();
 
   const renderCategoryIcon = ({item}) => {
     return (
@@ -55,11 +56,14 @@ export const PickupTab = props => {
     );
   };
 
-  const renderItem = ({item}) => {
+  const renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
         onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
-        style={styles.providerWrapper}>
+        style={[
+          styles.providerWrapper,
+          {marginBottom: index === providerList.length - 1 ? 60 : 0},
+        ]}>
         <ImageBackground
           source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
@@ -89,7 +93,7 @@ export const PickupTab = props => {
         {
           latitude: location.latitude,
           longitude: location.longitude,
-          limit: 20,
+          limit: 5,
           offset: 1,
         },
       );
@@ -106,6 +110,28 @@ export const PickupTab = props => {
   useEffect(() => {
     LoadNearByProvider(state.userLocation);
   }, []);
+
+  useEffect(() => {
+    if (providerList.length > 0) {
+      let coordinates = providerList.map((provider, index) => ({
+        latitude: parseFloat(provider.latitude),
+        longitude: parseFloat(provider.longitude),
+      }));
+      mapRef.current?.fitToCoordinates(
+        [
+          ...coordinates,
+          {
+            latitude: state.userLocation.latitude,
+            longitude: state.userLocation.longitude,
+          },
+        ],
+        {
+          edgePadding: {top: 30, right: 30, bottom: 20, left: 20},
+          animated: true,
+        },
+      );
+    }
+  }, [providerList]);
 
   if (loading) {
     return (
@@ -139,6 +165,7 @@ export const PickupTab = props => {
       </View>
 
       <MapView
+        ref={mapRef}
         initialRegion={{
           latitude:
             state.userLocation.latitude === 0 ? 12.203214000000004 : state.userLocation.latitude,
@@ -154,7 +181,7 @@ export const PickupTab = props => {
         // onMapReady={() => {
         //   LoadNearByProvider(state.userLocation);
         // }}
-        minZoomLevel={15}
+        // minZoomLevel={15}
         provider={PROVIDER_GOOGLE}
         style={styles.map}>
         {providerList.map((provider, index) => (
@@ -163,7 +190,8 @@ export const PickupTab = props => {
             coordinate={{
               latitude: parseFloat(provider.latitude),
               longitude: parseFloat(provider.longitude),
-            }}>
+            }}
+            title={provider.provider_name}>
             <Image
               source={require('../../assets/image/providerMarker.png')}
               style={{width: 40, height: 40}}
@@ -171,7 +199,7 @@ export const PickupTab = props => {
           </Marker>
         ))}
       </MapView>
-      <BottomSheet ref={bottomSheetRef} index={1} snapPoints={['18%', '45%', '95%']}>
+      <BottomSheet ref={bottomSheetRef} index={0} snapPoints={['18%', '45%', '95%']}>
         <View style={styles.contentContainer}>
           <FlatList
             data={categoryData}
@@ -179,7 +207,7 @@ export const PickupTab = props => {
             renderItem={renderCategoryIcon}
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={{paddingVertical: 10, paddingStart: 30}}
+            style={{paddingVertical: 10, paddingHorizontal: 30, paddingEnd: 30}}
           />
           <FlatList
             data={providerList}
@@ -229,5 +257,13 @@ const styles = StyleSheet.create({
   providerWrapper: {
     // paddingHorizontal: 15,
     paddingVertical: 10,
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  subheading: {
+    fontWeight: '600',
+    fontSize: 17,
   },
 });
