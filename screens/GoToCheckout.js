@@ -22,7 +22,7 @@ import {AddPromoModal} from '../components/Modal/AddPromoModal';
 import {PromotionList} from '../components/BottomSheet/PromotionList';
 import {IP_ADDRESS, convertDollar} from '../global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetModal} from '@gorhom/bottom-sheet';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -379,7 +379,9 @@ export const GoToCheckout = props => {
           </TouchableOpacity>
           <TouchableOpacity
             style={{alignItems: 'flex-end', padding: 15, width: '50%'}}
-            onPress={() => promoBottomSheetRef.current?.snapToIndex(0)}>
+            onPress={() => {
+              promoBottomSheetRef.current?.snapToIndex(0);
+            }}>
             <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 18, fontWeight: '500'}}>
               {promoCode || 'Add a promo'}
             </Text>

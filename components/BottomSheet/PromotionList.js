@@ -32,11 +32,9 @@ export const PromotionList = props => {
           shadowRadius: 3,
         }}>
         <TouchableOpacity style={styles.promotionName}>
-          <Text style={{fontSize: 17, fontWeight: '500', marginBottom: 10}}>
-            {item.promotion_code}
-          </Text>
+          <Text style={{fontSize: 17, fontWeight: '500'}}>{item.promotion_code}</Text>
           {!item.isAvailable ? (
-            <Text style={{color: 'red'}} numberOfLines={2}>{`You need to pay more ${(
+            <Text style={{color: 'red', marginTop: 10}} numberOfLines={2}>{`You need to pay more ${(
               item.min_order_value - props.currentSubtotal
             ).toFixed(2)}$ to apply this promotion`}</Text>
           ) : null}

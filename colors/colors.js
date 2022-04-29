@@ -4,4 +4,5 @@ export default colors = {
   red: '#aa0033',
   yellow: '#eab200',
   boldred: '#AB2E15',
+  lightoff: 'rgba(0,0,0,0.7)',
 };
