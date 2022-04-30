@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {View, Text, TouchableOpacity, FlatList, StyleSheet, ActivityIndicator} from 'react-native';
-import BottomSheet from '@gorhom/bottom-sheet';
 import axios from 'axios';
 
 import colors from '../../colors/colors';

@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useMemo} from 'react';
 import {
   View,
   Text,
@@ -10,6 +10,8 @@ import {
   TextInput,
   KeyboardAvoidingView,
   FlatList,
+  Dimensions,
+  Image,
 } from 'react-native';
 import colors from '../colors/colors';
 import axios from 'axios';
@@ -23,6 +25,8 @@ import {PromotionList} from '../components/BottomSheet/PromotionList';
 import {IP_ADDRESS, convertDollar} from '../global';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import BottomSheet, {BottomSheetModal} from '@gorhom/bottom-sheet';
+import {paymentMethod} from '../assets/dummy/paymentMethod';
+import {PaymentMethodList} from '../components/BottomSheet/PaymentMethodList';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -31,8 +35,8 @@ export const GoToCheckout = props => {
   const [selectedTab, setSelectedTab] = useState(tabs[0]);
   const methods = ['Standard', 'Schedule'];
   const [selectedMethod, setSelectedMethod] = useState(methods[0]);
-  const payments = ['Cash', 'Momo', 'Credit or debit card'];
-  const [selectedPayment, setSelectedPayment] = useState(payments[0]);
+  // const payments = ['Cash', 'Momo', 'Credit or debit card'];
+  const [selectedPayment, setSelectedPayment] = useState(paymentMethod[0].name);
   const [openTip, setOpenTip] = useState(false);
   const [openPayment, setOpenPayment] = useState(false);
   const [openPromo, setOpenPromo] = useState(false);
@@ -41,7 +45,11 @@ export const GoToCheckout = props => {
   const [selectedTip, setSelectedTip] = useState(null);
   const [deliveryfee, setDeliveryfee] = useState(0);
   const [orderForm, setOrderForm] = useState({});
+
   const promoBottomSheetRef = useRef();
+  const paymentBottomSheetRef = useRef();
+  const promoSnapPoint = useMemo(() => ['90%'], []);
+  const paymentSnapPoint = useMemo(() => ['45%'], []);
 
   const dispatch = useDispatch();
 
@@ -362,7 +370,10 @@ export const GoToCheckout = props => {
             paddingTop: 10,
           }}>
           <TouchableOpacity
-            onPress={() => setOpenPayment(true)}
+            onPress={() => {
+              setOpenPayment(true);
+              paymentBottomSheetRef.current?.snapToIndex(0);
+            }}
             style={{
               flexDirection: 'row',
               alignItems: 'center',
@@ -370,7 +381,18 @@ export const GoToCheckout = props => {
               borderRightWidth: 1,
               width: '50%',
             }}>
-            <MaterialCommunityIcon name="cash" size={20} color="black" />
+            {(() => {
+              switch (selectedPayment) {
+                case 'Cash':
+                  return <Image source={paymentMethod[0].logo} style={{width: 20, height: 20}} />;
+                case 'Momo':
+                  return <Image source={paymentMethod[1].logo} style={{width: 20, height: 20}} />;
+                case 'Credit or debit card':
+                  return <Image source={paymentMethod[2].logo} style={{width: 20, height: 20}} />;
+                default:
+                  return <Image source={paymentMethod[0].logo} style={{width: 20, height: 20}} />;
+              }
+            })()}
             <Text
               numberOfLines={1}
               style={{marginLeft: 10, fontSize: 17, fontWeight: '500', width: '80%'}}>
@@ -380,6 +402,7 @@ export const GoToCheckout = props => {
           <TouchableOpacity
             style={{alignItems: 'flex-end', padding: 15, width: '50%'}}
             onPress={() => {
+              setOpenPromo(true);
               promoBottomSheetRef.current?.snapToIndex(0);
             }}>
             <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 18, fontWeight: '500'}}>
@@ -417,7 +440,7 @@ export const GoToCheckout = props => {
           </TouchableOpacity>
         </View>
       </View>
-      <PaymentMethodModal
+      {/* <PaymentMethodModal
         show={openPayment}
         data={payments}
         selectedPayment={selectedPayment}
@@ -426,15 +449,54 @@ export const GoToCheckout = props => {
           setOpenPayment(false);
         }}
         onCancel={() => setOpenPayment(false)}
-      />
-      <BottomSheet ref={promoBottomSheetRef} index={-1} snapPoints={['90%']} enablePanDownToClose>
+      /> */}
+      <BottomSheet
+        ref={promoBottomSheetRef}
+        index={-1}
+        snapPoints={promoSnapPoint}
+        enablePanDownToClose
+        backgroundStyle={{
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 1,
+            height: openPromo ? -Dimensions.get('window').height : 0, // to lightoff the background
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 0,
+        }}
+        onChange={index => (index === -1 ? setOpenPromo(false) : null)}>
         <PromotionList
           providerId={state.userCart.provider_id}
           onSelect={promo => {
             setPromoCode(promo);
+            setOpenPromo(false);
             promoBottomSheetRef.current?.close();
           }}
           currentSubtotal={totalCartPrice(state.userCart.cart)}
+        />
+      </BottomSheet>
+      <BottomSheet
+        ref={paymentBottomSheetRef}
+        index={-1}
+        snapPoints={paymentSnapPoint}
+        enablePanDownToClose
+        onChange={index => (index === -1 ? setOpenPayment(false) : null)}
+        backgroundStyle={{
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 1,
+            height: openPayment ? -Dimensions.get('window').height : 0, // to lightoff the background
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 0,
+        }}>
+        <PaymentMethodList
+          data={paymentMethod}
+          selected={selectedPayment}
+          onSelect={item => {
+            setSelectedPayment(item);
+            paymentBottomSheetRef.current.close();
+          }}
         />
       </BottomSheet>
     </SafeAreaView>
