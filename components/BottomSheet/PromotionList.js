@@ -41,7 +41,9 @@ export const PromotionList = props => {
         <TouchableOpacity
           disabled={!item.isAvailable}
           style={styles.applyButton}
-          onPress={() => props.onSelect(item.promotion_code)}>
+          onPress={() => {
+            props.onSelect(item);
+          }}>
           <Text style={{textAlign: 'center'}}>Apply</Text>
         </TouchableOpacity>
       </View>
@@ -86,7 +88,7 @@ export const PromotionList = props => {
       renderItem={renderPromotion}
       ListHeaderComponent={
         <View style={{width: '100%'}}>
-          <Text style={{fontSize: 16, fontWeight: '500', textAlign: 'center'}}>
+          <Text style={{fontSize: 16, fontWeight: '500', textAlign: 'center', marginBottom: 10}}>
             These are the available promotions
           </Text>
         </View>

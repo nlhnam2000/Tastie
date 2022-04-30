@@ -58,7 +58,6 @@ export const HomeContent = props => {
               return (
                 <TouchableOpacity
                   onPress={() => setSelectedTab(tab)}
-                  // onPress={() => dispatch(signout())}
                   style={tab === selectedTab ? styles.tabButtonClicked : styles.tabButton}
                   key={index}>
                   <Text

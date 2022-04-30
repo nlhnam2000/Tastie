@@ -40,7 +40,7 @@ export const GoToCheckout = props => {
   const [openTip, setOpenTip] = useState(false);
   const [openPayment, setOpenPayment] = useState(false);
   const [openPromo, setOpenPromo] = useState(false);
-  const [promoCode, setPromoCode] = useState(null);
+  const [promoCode, setPromoCode] = useState({});
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const [selectedTip, setSelectedTip] = useState(null);
   const [deliveryfee, setDeliveryfee] = useState(0);
@@ -400,14 +400,25 @@ export const GoToCheckout = props => {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={{alignItems: 'flex-end', padding: 15, width: '50%'}}
+            style={{
+              alignItems: 'center',
+              padding: 15,
+              width: '50%',
+              flexDirection: 'row',
+              justifyContent: 'flex-end',
+            }}
             onPress={() => {
               setOpenPromo(true);
               promoBottomSheetRef.current?.snapToIndex(0);
             }}>
             <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 18, fontWeight: '500'}}>
-              {promoCode || 'Add a promo'}
+              {promoCode.promotion_code ?? 'Add a promo'}
             </Text>
+            {promoCode.promotion_code ? (
+              <TouchableOpacity style={{marginLeft: 10}} onPress={() => setPromoCode({})}>
+                <MaterialCommunityIcon name="close-circle" size={20} color={colors.secondary} />
+              </TouchableOpacity>
+            ) : null}
           </TouchableOpacity>
         </View>
         <View
@@ -419,15 +430,50 @@ export const GoToCheckout = props => {
             paddingVertical: 10,
           }}>
           <View>
-            <Text style={styles.heading}>Total</Text>
-            <Text style={{marginTop: 10, fontSize: 17, fontWeight: '500'}}>
-              $
-              {selectedTab === 'Delivery'
-                ? (
-                    parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
-                  ).toFixed(2)
-                : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
-            </Text>
+            {promoCode.promotion_code ? (
+              <>
+                <Text
+                  style={{
+                    marginTop: 10,
+                    fontSize: 17,
+                    fontWeight: '500',
+                    textDecorationLine: 'line-through',
+                    color: colors.secondary,
+                    marginBottom: 10,
+                  }}>
+                  $
+                  {selectedTab === 'Delivery'
+                    ? (
+                        parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
+                      ).toFixed(2)
+                    : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
+                </Text>
+                <Text style={styles.heading}>
+                  $
+                  {selectedTab === 'Delivery'
+                    ? (
+                        parseFloat(totalCartPrice(state.userCart.cart)) +
+                        parseFloat(deliveryfee) -
+                        parseFloat(promoCode.promotion_value)
+                      ).toFixed(2)
+                    : parseFloat(
+                        totalCartPrice(state.userCart.cart) - parseFloat(promoCode.promotion_value),
+                      ).toFixed(2)}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text style={styles.heading}>Total</Text>
+                <Text style={{marginTop: 10, fontSize: 17, fontWeight: '500'}}>
+                  $
+                  {selectedTab === 'Delivery'
+                    ? (
+                        parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
+                      ).toFixed(2)
+                    : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
+                </Text>
+              </>
+            )}
           </View>
           <TouchableOpacity
             onPress={() => {
