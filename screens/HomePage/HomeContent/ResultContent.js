@@ -10,11 +10,18 @@ import {
   SafeAreaView,
   ImageBackground,
   Dimensions,
+  Platform,
 } from 'react-native';
+
+// components
 import colors from '../../../colors/colors';
+import {IP_ADDRESS} from '../../../global';
+import {SimpleSkeleton} from '../../../components/Skeleton/SimpleSkeleton';
+
+// libraries
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
-import {IP_ADDRESS} from '../../../global';
+
 import {useSelector} from 'react-redux';
 
 const {width} = Dimensions.get('window');
@@ -74,6 +81,8 @@ export const ResultContent = ({navigation, route}) => {
       let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
         q: keyword,
         type: '1',
+        longitude: state.userLocation.longitude,
+        latitude: state.userLocation.latitude,
       });
       if (res.data.status) {
         setData(res.data.data.items);
@@ -87,9 +96,10 @@ export const ResultContent = ({navigation, route}) => {
 
   const LoadCategoryResult = async filter => {
     try {
-      console.log(filter.type.toString());
       let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
         type: '3',
+        longitude: state.userLocation.longitude,
+        latitude: state.userLocation.latitude,
         category_infor: {
           category_type: filter.type.toString(),
           category_id: filter.categoryID,
@@ -146,7 +156,9 @@ export const ResultContent = ({navigation, route}) => {
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, {justifyContent: 'center'}]}>
-        <ActivityIndicator size={'large'} color={colors.red} />
+        {[0, 1, 2, 3, 4].map((_, index) => (
+          <SimpleSkeleton key={index} />
+        ))}
       </SafeAreaView>
     );
   }
@@ -166,7 +178,7 @@ export const ResultContent = ({navigation, route}) => {
         }}>
         <FlatList
           data={data}
-          keyExtractor={item => item.provider_id}
+          keyExtractor={(item, index) => item.provider_id + index}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={2}
           onEndReached={() => {
@@ -175,7 +187,12 @@ export const ResultContent = ({navigation, route}) => {
             }
           }}
           renderItem={renderItem}
-          style={{backgroundColor: 'rgba(230,230,230, 0.6)'}}
+          style={{
+            backgroundColor: 'rgba(230,230,230, 0.6)',
+          }}
+          contentContainerStyle={{
+            paddingBottom: Platform.OS === 'android' ? 60 : 0,
+          }}
         />
       </View>
     </SafeAreaView>

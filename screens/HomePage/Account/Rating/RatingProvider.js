@@ -9,9 +9,15 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+
+// assets
+import colors from '../../../../colors/colors';
+import {IP_ADDRESS, formatDate} from '../../../../global';
+
+// libraries
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import colors from '../../../../colors/colors';
+import axios from 'axios';
 
 export const RatingProvider = props => {
   const [loading, setLoading] = useState(true);
@@ -20,6 +26,28 @@ export const RatingProvider = props => {
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
+  const {order_id} = props.route.params;
+
+  const SubmitRating = async () => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-order-review`,
+        {
+          order_id: order_id,
+          create_at: formatDate(new Date()),
+          content: comment,
+          image: null,
+          stars: selectedRating,
+        },
+      );
+
+      if (res.data.status) {
+        props.navigation.navigate('Home Page');
+      }
+    } catch (error) {
+      console.error('Cannot submit review provider', error);
+    }
+  };
 
   useEffect(() => {
     setLoading(false);
@@ -36,7 +64,7 @@ export const RatingProvider = props => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
-        <Text style={styles.heading}>Rate shop</Text>
+        <Text style={styles.heading}>Rate shop </Text>
         <TouchableOpacity onPress={() => props.navigation.goBack()}>
           <Feather name="x" size={20} color="black" />
         </TouchableOpacity>
@@ -184,7 +212,7 @@ export const RatingProvider = props => {
       </View>
       <View style={styles.flexRowCenter}>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('Home Page')}
+          onPress={() => SubmitRating()}
           style={{paddingVertical: 10, width: '50%', backgroundColor: 'black'}}>
           <Text style={{textAlign: 'center', fontSize: 18, fontWeight: '600', color: 'white'}}>
             Submit

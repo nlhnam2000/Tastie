@@ -39,6 +39,7 @@ export const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
 export const UPDATE_CART = 'UPDATE_CART';
 export const SAVE_TO_HISTORY_CART = 'SAVE_TO_HISTORY_CART';
 export const CLEAR_CART = 'CLEAR_CART';
+export const RE_ORDER = 'RE_ORDER';
 
 // order status
 export const ORDER_CONFIRMED = 'ORDER_CONFIRMED';

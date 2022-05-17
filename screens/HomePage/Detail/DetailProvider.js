@@ -21,17 +21,22 @@ import {
   SectionList,
   RefreshControl,
 } from 'react-native';
+// components
+import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
+import {IP_ADDRESS} from '../../../global';
+import {DetailProviderSkeleton} from '../../../components/Skeleton/DetailProviderSkeleton';
+
+// actions
+import {NavigateToCart} from '../../../store/action/navigation';
+
+// libraries
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
-import {NavigateToCart} from '../../../store/action/navigation';
-import {Rating} from '../../../components/Rating/Rating';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
-import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
-import {IP_ADDRESS} from '../../../global';
-import {popularData} from '../../../assets/dummy/popularData';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -237,11 +242,7 @@ export const DetailProvider = props => {
   });
 
   if (loading) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <ActivityIndicator size={'large'} color={colors.red} />
-      </SafeAreaView>
-    );
+    return <DetailProviderSkeleton />;
   } else {
     return (
       <View style={styles.container}>
@@ -304,6 +305,7 @@ export const DetailProvider = props => {
               useNativeDriver: false,
             })}
             removeClippedSubviews={true}
+            initialNumToRender={5}
             ref={ref}
             renderItem={({item}) => (
               <View style={styles.menuContentWrapper}>

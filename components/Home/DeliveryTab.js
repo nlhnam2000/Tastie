@@ -22,16 +22,20 @@ import {
   TouchableWithoutFeedback,
   RefreshControl,
 } from 'react-native';
+
+// components
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../colors/colors';
-import {categoryData} from '../../assets/dummy/categoryData';
-import {popularData} from '../../assets/dummy/popularData';
-import {useDispatch, useSelector} from 'react-redux';
-import {SetUserLocation, AutoSetLocation} from '../../store/action/auth';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {BrowseCategory} from '../../components/Menu/BrowseCatergory';
 import {CategoryList} from '../../components/Provider/CategoryList';
-import {ProviderList} from '../../components/Provider/ProviderList';
+
+// reducer
+import {SetUserLocation, AutoSetLocation} from '../../store/action/auth';
+
+// libraries
+import {useDispatch, useSelector} from 'react-redux';
+import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
 
@@ -156,7 +160,7 @@ export const DeliveryTab = props => {
             <View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
               <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
               <TouchableOpacity
-                onPress={() => openUserLocationModalize()}
+                onPress={() => props.navigation.navigate('CustomerAddress')}
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'center',
@@ -263,13 +267,16 @@ export const DeliveryTab = props => {
                 })}
               </View> */}
             <View style={{width}}>
-              <CategoryList {...props} groupID={1} categoryTitle="Order near you" />
+              <CategoryList {...props} groupID={1} offset={6} categoryTitle="Order near you" />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={3} categoryTitle="Most rating" />
+              <CategoryList {...props} groupID={2} offset={1} categoryTitle="Today offer" />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={4} categoryTitle="In a rush" />
+              <CategoryList {...props} groupID={3} offset={12} categoryTitle="Most rating" />
+            </View>
+            <View style={{width}}>
+              <CategoryList {...props} groupID={4} offset={18} categoryTitle="In a rush" />
             </View>
             {/* <View style={styles.contentWrapper}>
                 {popularData.map((item, index) => {
@@ -408,11 +415,41 @@ export const DeliveryTab = props => {
                 <Text style={{fontWeight: '500', color: 'white'}}>Done</Text>
               </TouchableOpacity>
             </View>
+            <View style={styles.providerName}>
+              <Text style={{fontSize: 15, fontWeight: '500'}}>Your recent address</Text>
+            </View>
+            <View style={{width, paddingHorizontal: 10}}>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                <MaterialCommunityIcon name="map-marker" size={30} color="black" />
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    width: '88%',
+                  }}>
+                  <Text style={{fontWeight: '600', fontSize: 17}}>135B Tran Hung Dao</Text>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 20,
+                      backgroundColor: 'rgba(230,230,230,0.7)',
+                    }}>
+                    <Feather name="edit-2" size={17} color="black" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </View>
         </Modalize>
         <Modalize
           ref={filterModalize}
-          modalHeight={Dimensions.get('window').height - 120}
+          modalHeight={Dimensions.get('window').height - 115}
           HeaderComponent={
             <View
               style={{

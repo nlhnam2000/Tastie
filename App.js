@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import 'react-native-gesture-handler';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
@@ -57,6 +57,8 @@ import {RatingShipper} from './screens/HomePage/Account/Rating/RatingShipper';
 import {ProductOptions} from './screens/HomePage/Detail/ProductOptions';
 import {PromotionsList} from './screens/HomePage/Detail/Promotion/PromotionList';
 import {ResultContent} from './screens/HomePage/HomeContent/ResultContent';
+import {CustomerAddress} from './screens/CustomerAddress';
+import {CustomerAddressForm} from './screens/CustomerAddressForm';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -115,126 +117,150 @@ export default function App(props) {
     );
   } else {
     return (
-      <NavigationContainer>
-        {state.user_token !== null ? (
-          <Stack.Navigator initialRouteName="Home Page">
-            <Stack.Screen name="Home Page" component={HomeScreen} options={{headerShown: false}} />
-            <Stack.Screen
-              name="DetailProvider"
-              component={DetailProvider}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen name="DetailFood" component={DetailFood} options={{headerShown: false}} />
-            {/* <Stack.Screen name="Cart" component={Cart} /> */}
-            <Stack.Screen name="Account" component={Account} options={{headerShown: false}} />
-            <Stack.Screen
-              name="DetailAccount"
-              component={DetailAccount}
-              options={{
-                // headerTitle: 'Profile',
-                // headerStyle: {backgroundColor: 'white'},
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen name="Chat" component={Chat} options={{headerShown: false}} />
-            <Stack.Screen
-              name="OrderStatus"
-              component={OrderStatus}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="GoToCheckout"
-              component={GoToCheckout}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="OrderHistory"
-              component={OrderHistory}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="YourFavorites"
-              component={YourFavorites}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="DetailOrder"
-              component={DetailOrder}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="RatingProvider"
-              component={RatingProvider}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="RatingShipper"
-              component={RatingShipper}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="ProductOptions"
-              component={ProductOptions}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="PromotionList"
-              component={PromotionsList}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="ResultContent"
-              component={ResultContent}
-              options={{headerShown: false}}
-            />
-          </Stack.Navigator>
-        ) : (
-          <Stack.Navigator initialRouteName="Begin">
-            <Stack.Screen
-              name="Begin"
-              component={Begin}
-              options={{headerShown: false, animationTypeForReplace: 'pop'}}
-            />
-            <Stack.Screen
-              name="Login"
-              component={LoginForm}
-              options={{headerShown: false, animationTypeForReplace: 'pop'}}
-            />
-            <Stack.Screen
-              name="PhoneInputForm"
-              component={PhoneInputForm}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="EmailVerification"
-              component={SignupScreen2}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="EmailInputForm"
-              component={EmailInputForm}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="NameInputForm"
-              component={NameInputForm}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen
-              name="PasswordInputForm"
-              component={PasswordInputForm}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen name="ForgotForm" component={ForgotForm} options={{headerShown: false}} />
-            <Stack.Screen
-              name="ChangePasswordForm"
-              component={ChangePasswordForm}
-              options={{headerShown: false}}
-            />
-            <Stack.Screen name="ResetPasswordDone" component={ResetPasswordDone} />
-          </Stack.Navigator>
-        )}
-      </NavigationContainer>
+      <GestureHandlerRootView style={{flex: 1}}>
+        <NavigationContainer>
+          {state.user_token !== null ? (
+            <Stack.Navigator initialRouteName="Home Page">
+              <Stack.Screen
+                name="Home Page"
+                component={HomeScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="DetailProvider"
+                component={DetailProvider}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="DetailFood"
+                component={DetailFood}
+                options={{headerShown: false}}
+              />
+              {/* <Stack.Screen name="Cart" component={Cart} /> */}
+              <Stack.Screen name="Account" component={Account} options={{headerShown: false}} />
+              <Stack.Screen
+                name="DetailAccount"
+                component={DetailAccount}
+                options={{
+                  // headerTitle: 'Profile',
+                  // headerStyle: {backgroundColor: 'white'},
+                  headerShown: false,
+                }}
+              />
+              <Stack.Screen name="Chat" component={Chat} options={{headerShown: false}} />
+              <Stack.Screen
+                name="OrderStatus"
+                component={OrderStatus}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="GoToCheckout"
+                component={GoToCheckout}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="OrderHistory"
+                component={OrderHistory}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="YourFavorites"
+                component={YourFavorites}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="DetailOrder"
+                component={DetailOrder}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="RatingProvider"
+                component={RatingProvider}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="RatingShipper"
+                component={RatingShipper}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ProductOptions"
+                component={ProductOptions}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="PromotionList"
+                component={PromotionsList}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ResultContent"
+                component={ResultContent}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="CustomerAddress"
+                component={CustomerAddress}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="CustomerAddressForm"
+                component={CustomerAddressForm}
+                options={{headerShown: false}}
+              />
+            </Stack.Navigator>
+          ) : (
+            <Stack.Navigator initialRouteName="Begin">
+              <Stack.Screen
+                name="Begin"
+                component={Begin}
+                options={{headerShown: false, animationTypeForReplace: 'pop'}}
+              />
+              <Stack.Screen
+                name="Login"
+                component={LoginForm}
+                options={{headerShown: false, animationTypeForReplace: 'pop'}}
+              />
+              <Stack.Screen
+                name="PhoneInputForm"
+                component={PhoneInputForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="EmailVerification"
+                component={SignupScreen2}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="EmailInputForm"
+                component={EmailInputForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="NameInputForm"
+                component={NameInputForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="PasswordInputForm"
+                component={PasswordInputForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ForgotForm"
+                component={ForgotForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ChangePasswordForm"
+                component={ChangePasswordForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen name="ResetPasswordDone" component={ResetPasswordDone} />
+            </Stack.Navigator>
+          )}
+        </NavigationContainer>
+      </GestureHandlerRootView>
     );
   }
 }

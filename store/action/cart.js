@@ -11,6 +11,7 @@ import {
   UPDATE_QUANTITY,
   CART_IS_EMPTY,
   CLEAR_CART,
+  RE_ORDER,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
@@ -174,4 +175,44 @@ export const SaveToHistoryCart = cart => async dispatch => {
       cart,
     },
   });
+};
+
+export const ReOrder = (order_code, user_id) => async dispatch => {
+  try {
+    let fecthProductsFromOder = await axios.get(
+      `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+    );
+
+    if (fecthProductsFromOder.data.status) {
+      const insertProductToCart = async product => {
+        const res = await axios.post(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+          {
+            user_id: user_id,
+            product_id: product.product_id,
+            quantity: product.quantity,
+            special_instruction: product.special_instruction,
+            additional_option: [],
+          },
+        );
+
+        return res.data;
+      };
+      const queryList = [];
+      fecthProductsFromOder.response.items.forEach(item => {
+        queryList.push(insertProductToCart(item));
+      });
+
+      Promise.all(queryList)
+        .then(values => {
+          console.log(values);
+          dispatch({
+            type: RE_ORDER,
+          });
+        })
+        .catch(error => console.log(error));
+    }
+  } catch (error) {
+    console.error('cannot re-order', error);
+  }
 };

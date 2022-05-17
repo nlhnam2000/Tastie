@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
-  FlatList,
+  // FlatList,
   Image,
   ImageBackground,
   Animated,
@@ -26,30 +26,35 @@ import {
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {categoryData} from '../../assets/dummy/categoryData';
-import {popularData} from '../../assets/dummy/popularData';
 import {useDispatch, useSelector} from 'react-redux';
-import {SetUserLocation, AutoSetLocation} from '../../store/action/auth';
-import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
-import {BrowseCategory} from '../../components/Menu/BrowseCatergory';
-import {CategoryList} from '../../components/Provider/CategoryList';
-import {ProviderList} from '../../components/Provider/ProviderList';
-import {Modalize} from 'react-native-modalize';
+import MapView, {PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 import axios from 'axios';
 import {IP_ADDRESS} from '../../global';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
+import {gestureHandlerRootHOC, FlatList} from 'react-native-gesture-handler';
 
 const {width, height} = Dimensions.get('window');
 
-export const PickupTab = props => {
+export const PickupTab = gestureHandlerRootHOC(props => {
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
   const [providerList, setProviderList] = useState([]);
   const bottomSheetRef = useRef();
   const mapRef = useRef();
+  const filterModalize = useRef();
+
+  const openFilterModalize = () => {
+    filterModalize.current?.open();
+  };
 
   const renderCategoryIcon = ({item}) => {
     return (
-      <TouchableOpacity style={{marginRight: 20, alignItems: 'center'}}>
+      <TouchableOpacity
+        style={{
+          marginRight: 20,
+          alignItems: 'center',
+          paddingBottom: Platform.OS === 'android' ? 20 : 0,
+        }}>
         <Image source={item.image} style={{width: 60, height: 60}} />
         <Text>{item.title}</Text>
       </TouchableOpacity>
@@ -148,7 +153,7 @@ export const PickupTab = props => {
         <View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
           <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
           <TouchableOpacity
-            onPress={() => openUserLocationModalize()}
+            onPress={() => props.navigation.navigate('CustomerAddress')}
             style={{
               flexDirection: 'row',
               justifyContent: 'center',
@@ -177,7 +182,6 @@ export const PickupTab = props => {
         showsUserLocation
         showsMyLocationButton
         mapType="terrain"
-        loadingEnabled
         // onMapReady={() => {
         //   LoadNearByProvider(state.userLocation);
         // }}
@@ -199,7 +203,12 @@ export const PickupTab = props => {
           </Marker>
         ))}
       </MapView>
-      <BottomSheet ref={bottomSheetRef} index={0} snapPoints={['18%', '45%', '95%']}>
+      <BottomSheet
+        ref={bottomSheetRef}
+        index={0}
+        snapPoints={['18%', '45%', '95%']}
+        enableContentPanningGesture
+        enableHandlePanningGesture>
         <View style={styles.contentContainer}>
           <FlatList
             data={categoryData}
@@ -207,19 +216,26 @@ export const PickupTab = props => {
             renderItem={renderCategoryIcon}
             horizontal
             showsHorizontalScrollIndicator={false}
-            style={{paddingVertical: 10, paddingHorizontal: 30, paddingEnd: 30}}
+            // contentContainerStyle={{
+            //   paddingVertical: 10,
+            //   paddingHorizontal: 30,
+            //   paddingEnd: 30,
+            //   backgroundColor: 'white',
+            // }}
+            style={{paddingHorizontal: 30, paddingVertical: 10}}
           />
           <FlatList
             data={providerList}
             keyExtractor={item => item.provider_id}
             renderItem={renderItem}
+            // contentContainerStyle={{marginTop: 20}}
             style={{marginTop: 20}}
           />
         </View>
       </BottomSheet>
     </SafeAreaView>
   );
-};
+});
 
 const styles = StyleSheet.create({
   container: {

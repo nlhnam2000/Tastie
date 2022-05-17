@@ -13,20 +13,28 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
-import colors from '../colors/colors';
-import axios from 'axios';
-import {useSelector, useDispatch} from 'react-redux';
-import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
-import Feather from 'react-native-vector-icons/Feather';
-import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {PaymentMethodModal} from '../components/Modal/PaymentMethodModal';
-import {AddPromoModal} from '../components/Modal/AddPromoModal';
-import {PromotionList} from '../components/BottomSheet/PromotionList';
-import {IP_ADDRESS, convertDollar} from '../global';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomSheet, {BottomSheetModal} from '@gorhom/bottom-sheet';
+
+// components
 import {paymentMethod} from '../assets/dummy/paymentMethod';
 import {PaymentMethodList} from '../components/BottomSheet/PaymentMethodList';
+import {PromotionList} from '../components/BottomSheet/PromotionList';
+import {SchedulePickerModal} from '../components/Modal/SchedulePicker';
+import colors from '../colors/colors';
+
+// actions
+import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
+import {IP_ADDRESS, convertDollar, currentDateString} from '../global';
+
+// libraries
+import axios from 'axios';
+import {useSelector, useDispatch} from 'react-redux';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import DatePicker from 'react-native-date-picker';
+import moment from 'moment';
+import SelectDropdown from 'react-native-select-dropdown';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -45,11 +53,13 @@ export const GoToCheckout = props => {
   const [selectedTip, setSelectedTip] = useState(null);
   const [deliveryfee, setDeliveryfee] = useState(0);
   const [orderForm, setOrderForm] = useState({});
+  const [openSchedule, setOpenSchedule] = useState(false);
+  const [scheduleTime, setScheduleTime] = useState(null);
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
   const promoSnapPoint = useMemo(() => ['90%'], []);
-  const paymentSnapPoint = useMemo(() => ['45%'], []);
+  const paymentSnapPoint = useMemo(() => ['50%', '90%'], []);
 
   const dispatch = useDispatch();
 
@@ -65,14 +75,14 @@ export const GoToCheckout = props => {
   const PlaceOrder = async () => {
     try {
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/submit-order-info-delivery`,
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-delivery`,
         orderForm,
       );
       if (res.data.status && res.data.order_code) {
         let orderCode = res.data.order_code;
         try {
           let submitOrder = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/submit-order-items`,
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
             {
               customer_id: state.user_id,
               order_code: orderCode,
@@ -151,7 +161,7 @@ export const GoToCheckout = props => {
       promotion_code: promoCode ?? '',
       ecoupon_code: '',
       delivery_method: selectedMethod === 'Standard' ? 1 : 2,
-      schedule_time: null,
+      schedule_time: scheduleTime ?? '',
       tips: 0,
       delivery_fee: deliveryfee,
       subtotal: parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
@@ -161,6 +171,14 @@ export const GoToCheckout = props => {
           : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
     }));
   }, [selectedTab, selectedMethod, selectedPayment, selectedTip, deliveryfee, promoCode]);
+
+  useEffect(() => {
+    if (selectedMethod === 'Schedule') {
+      setOpenSchedule(true);
+    } else {
+      setScheduleTime(null);
+    }
+  }, [selectedMethod]);
 
   if (loading) {
     return (
@@ -220,7 +238,12 @@ export const GoToCheckout = props => {
                 <View key={index} style={styles.options}>
                   <TouchableOpacity
                     style={styles.radioButton}
-                    onPress={() => setSelectedMethod(method)}>
+                    onPress={() => {
+                      setSelectedMethod(method);
+                      if (method === 'Schedule') {
+                        setOpenSchedule(true);
+                      }
+                    }}>
                     <View
                       style={{
                         borderRadius: 40,
@@ -233,6 +256,9 @@ export const GoToCheckout = props => {
                 </View>
               ))}
             </View>
+            {scheduleTime && (
+              <Text style={{marginTop: 5}}>The order will be scheduled at {scheduleTime}</Text>
+            )}
           </View>
 
           <View style={{marginTop: 20}}>
@@ -252,16 +278,18 @@ export const GoToCheckout = props => {
                     <Text style={{marginLeft: 10, fontSize: 17, fontWeight: '500', width: '85%'}}>
                       {item.productName}
                     </Text>
-                    <Text
-                      style={{
-                        marginLeft: 10,
-                        fontSize: 16,
-                        fontStyle: 'italic',
-                        color: 'gray',
-                        marginTop: 5,
-                      }}>
-                      {additionalOptions[index]}
-                    </Text>
+                    {additionalOptions[index] && (
+                      <Text
+                        style={{
+                          marginLeft: 10,
+                          fontSize: 16,
+                          fontStyle: 'italic',
+                          color: 'gray',
+                          marginTop: 5,
+                        }}>
+                        {additionalOptions[index]}
+                      </Text>
+                    )}
                   </View>
                 </View>
                 <Text style={{fontSize: 17}}>${parseFloat(item.totalProductPrice).toFixed(2)}</Text>
@@ -344,7 +372,7 @@ export const GoToCheckout = props => {
                 alignItems: 'center',
                 marginBottom: 15,
               }}>
-              <Text style={{fontSize: 19, fontWeight: '500'}}>Subtotal</Text>
+              <Text style={{fontSize: 17, fontWeight: '500'}}>Subtotal</Text>
               <Text style={styles.heading}>${totalCartPrice(state.userCart.cart)}</Text>
             </View>
             {selectedTab === 'Delivery' ? (
@@ -354,8 +382,22 @@ export const GoToCheckout = props => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                 }}>
-                <Text style={{fontSize: 19, fontWeight: '500'}}>Delivery fee</Text>
+                <Text style={{fontSize: 17, fontWeight: '500'}}>Delivery fee</Text>
                 <Text style={styles.heading}>${deliveryfee}</Text>
+              </View>
+            ) : null}
+            {promoCode.code ? (
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginTop: 10,
+                }}>
+                <Text style={{fontSize: 17, fontWeight: '500'}}>Promotion</Text>
+                <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
+                  ${promoCode.value}
+                </Text>
               </View>
             ) : null}
           </View>
@@ -411,10 +453,10 @@ export const GoToCheckout = props => {
               setOpenPromo(true);
               promoBottomSheetRef.current?.snapToIndex(0);
             }}>
-            <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 18, fontWeight: '500'}}>
-              {promoCode.promotion_code ?? 'Add a promo'}
+            <Text numberOfLines={1} style={{marginLeft: 10, fontSize: 17, fontWeight: '500'}}>
+              {promoCode.code ?? 'Add a promo'}
             </Text>
-            {promoCode.promotion_code ? (
+            {promoCode.code ? (
               <TouchableOpacity style={{marginLeft: 10}} onPress={() => setPromoCode({})}>
                 <MaterialCommunityIcon name="close-circle" size={20} color={colors.secondary} />
               </TouchableOpacity>
@@ -430,7 +472,7 @@ export const GoToCheckout = props => {
             paddingVertical: 10,
           }}>
           <View>
-            {promoCode.promotion_code ? (
+            {promoCode.code ? (
               <>
                 <Text
                   style={{
@@ -454,10 +496,10 @@ export const GoToCheckout = props => {
                     ? (
                         parseFloat(totalCartPrice(state.userCart.cart)) +
                         parseFloat(deliveryfee) -
-                        parseFloat(promoCode.promotion_value)
+                        parseFloat(promoCode.value)
                       ).toFixed(2)
                     : parseFloat(
-                        totalCartPrice(state.userCart.cart) - parseFloat(promoCode.promotion_value),
+                        totalCartPrice(state.userCart.cart) - parseFloat(promoCode.value),
                       ).toFixed(2)}
                 </Text>
               </>
@@ -486,16 +528,6 @@ export const GoToCheckout = props => {
           </TouchableOpacity>
         </View>
       </View>
-      {/* <PaymentMethodModal
-        show={openPayment}
-        data={payments}
-        selectedPayment={selectedPayment}
-        onChange={item => {
-          setSelectedPayment(item);
-          setOpenPayment(false);
-        }}
-        onCancel={() => setOpenPayment(false)}
-      /> */}
       <BottomSheet
         ref={promoBottomSheetRef}
         index={-1}
@@ -545,6 +577,16 @@ export const GoToCheckout = props => {
           }}
         />
       </BottomSheet>
+      <SchedulePickerModal
+        visible={openSchedule}
+        provider_id={state.userCart.provider_id}
+        onClose={() => setOpenSchedule(false)}
+        onConfirm={time => {
+          console.log(time.day + ' ' + time.time);
+          setScheduleTime(time.day + ' ' + time.time);
+          setOpenSchedule(false);
+        }}
+      />
     </SafeAreaView>
   );
 };
@@ -569,7 +611,7 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
   },
   heading: {
-    fontSize: 19,
+    fontSize: 17,
     fontWeight: '600',
   },
   tabWrapper: {
@@ -613,5 +655,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopWidth: 1,
     borderTopColor: 'rgb(230,230,230)',
+  },
+  bottomSheetContainer: {
+    backgroundColor: 'white',
+    paddingBottom: 15,
   },
 });

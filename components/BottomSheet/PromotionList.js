@@ -25,13 +25,14 @@ export const PromotionList = props => {
           shadowColor: '#000',
           shadowOffset: {
             width: 0,
-            height: 1,
+            height: 0,
           },
-          shadowOpacity: 0.25,
-          shadowRadius: 3,
+          // shadowRadius: 8,
+          shadowOpacity: 0.5,
+          elevation: 3,
         }}>
         <TouchableOpacity style={styles.promotionName}>
-          <Text style={{fontSize: 17, fontWeight: '500'}}>{item.promotion_code}</Text>
+          <Text style={{fontSize: 17, fontWeight: '500'}}>{item.code}</Text>
           {!item.isAvailable ? (
             <Text style={{color: 'red', marginTop: 10}} numberOfLines={2}>{`You need to pay more ${(
               item.min_order_value - props.currentSubtotal
@@ -53,7 +54,7 @@ export const PromotionList = props => {
   const LoadPromotionList = async provider_id => {
     try {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get_promotion/${provider_id}`,
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
       );
       if (res.data.status) {
         res.data.response.promotion.map(
@@ -71,7 +72,7 @@ export const PromotionList = props => {
 
   useEffect(() => {
     LoadPromotionList(props.providerId);
-  });
+  }, []);
 
   if (loading) {
     return (
@@ -84,7 +85,7 @@ export const PromotionList = props => {
   return (
     <FlatList
       data={promos}
-      keyExtractor={item => item.promotion_code}
+      keyExtractor={item => item.id}
       renderItem={renderPromotion}
       ListHeaderComponent={
         <View style={{width: '100%'}}>

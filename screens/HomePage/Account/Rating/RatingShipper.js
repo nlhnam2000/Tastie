@@ -9,9 +9,14 @@ import {
   Image,
   TextInput,
 } from 'react-native';
+// libraries
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import axios from 'axios';
+
+// assets
 import colors from '../../../../colors/colors';
+import {IP_ADDRESS, formatDate} from '../../../../global';
 
 export const RatingShipper = props => {
   const [loading, setLoading] = useState(true);
@@ -19,7 +24,27 @@ export const RatingShipper = props => {
   const [selectedRating, setSelectedRating] = useState(0);
   const [comment, setComment] = useState('');
   const [selectedTags, setSelectedTags] = useState([]);
-  const {shipperName} = props.route.params;
+  const {shipperName, order_id} = props.route.params;
+
+  const SubmitRating = async () => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-shipper-review`,
+        {
+          order_id: order_id,
+          create_at: formatDate(new Date()),
+          content: comment,
+          stars: selectedRating,
+        },
+      );
+
+      if (res.data.status) {
+        props.navigation.navigate('RatingProvider');
+      }
+    } catch (error) {
+      console.error('Cannot submit rating shipper', error);
+    }
+  };
 
   useEffect(() => {
     setLoading(false);
@@ -165,7 +190,7 @@ export const RatingShipper = props => {
       </View>
       <View style={styles.flexRowCenter}>
         <TouchableOpacity
-          onPress={() => props.navigation.navigate('RatingProvider')}
+          onPress={() => SubmitRating()}
           style={{paddingVertical: 10, width: '50%', backgroundColor: 'black'}}>
           <Text style={{textAlign: 'center', fontSize: 18, fontWeight: '600', color: 'white'}}>
             Submit

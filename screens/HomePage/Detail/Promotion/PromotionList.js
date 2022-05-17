@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
   View,
   Text,
@@ -7,21 +7,33 @@ import {
   ScrollView,
   StyleSheet,
   ActivityIndicator,
+  Dimensions,
 } from 'react-native';
 import colors from '../../../../colors/colors';
 import {IP_ADDRESS} from '../../../../global';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import {PromotionDetail} from '../../../../components/BottomSheet/PromotionDetail';
 
 export const PromotionsList = props => {
   const [loading, setLoading] = useState(true);
   const {provider_id} = props.route.params;
   const [promotionList, setPromotionList] = useState([]);
+  const [selectedPromotionCode, setSelectedPromotionCode] = useState({
+    code: 'P_FREESHIP',
+    value: 10,
+    min_order_value: 20,
+    start_at: '2022-03-31T05:00:00.000Z',
+    expire_at: '2023-04-30T05:00:00.000Z',
+  });
+  const [openBottomSheet, setOpenBottomSheet] = useState(false);
+  const promotionBottomSheetRef = useRef();
 
   useEffect(() => {
     const LoadPromotionList = async provider_id => {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get_promotion/${provider_id}`,
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
       );
       if (res.data.status) {
         setPromotionList(res.data.response.promotion);
@@ -52,26 +64,73 @@ export const PromotionsList = props => {
       </View>
       <ScrollView style={styles.contentWrapper}>
         <Text style={styles.subheading}>Available promotion list</Text>
-        <Text style={styles.smallheading}>Limit one per order</Text>
         {promotionList.map((item, index) => (
           <View key={index} style={styles.promotionItem}>
-            <Text style={styles.subheading}>{item.promotion_code}</Text>
-            <Text style={styles.smallheading}>Minimun: {item.min_order_value}$</Text>
-            <Text style={styles.smallheading}>
-              Expiration date: {new Date(item.expire_at).toLocaleDateString('vi-VI')}
+            <Text style={styles.smallheading}>Unlimited until {item.expire_at}</Text>
+            <Text style={[styles.subheading, {marginTop: 10}]}>{item.code}</Text>
+            <Text style={styles.smallheading}>{item.name}</Text>
+            <Text style={[styles.smallheading, {marginTop: 10}]}>
+              ${item.min_order_value} minimun order
             </Text>
+
             <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 15}}>
               <TouchableOpacity
-                style={{padding: 10, borderRadius: 20, backgroundColor: 'green', marginRight: 20}}>
+                style={{padding: 10, borderRadius: 20, backgroundColor: 'black', marginRight: 20}}>
                 <Text style={{fontSize: 17, fontWeight: '500', color: 'white'}}>Selected</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{padding: 10, borderRadius: 10}}>
+              <TouchableOpacity
+                style={{padding: 10, borderRadius: 10}}
+                onPress={() => {
+                  setSelectedPromotionCode(prev => ({
+                    ...prev,
+                    code: item.code,
+                    value: item.value,
+                    min_order_value: item.min_order_value,
+                    start_at: item.start_at,
+                    expire_at: item.expire_at,
+                  }));
+                  setOpenBottomSheet(true);
+                  promotionBottomSheetRef.current?.snapToIndex(0);
+                }}>
                 <Text style={{fontSize: 17, fontWeight: '500'}}>Detail</Text>
               </TouchableOpacity>
             </View>
           </View>
         ))}
       </ScrollView>
+      <BottomSheet
+        ref={promotionBottomSheetRef}
+        index={-1}
+        snapPoints={['75%']}
+        enablePanDownToClose={true}
+        onChange={index => {
+          index === -1 ? setOpenBottomSheet(false) : null;
+        }}
+        backgroundStyle={{
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 1,
+            height: openBottomSheet ? -Dimensions.get('window').height : 0, // to lightoff the background
+          },
+          shadowOpacity: 0.2,
+          shadowRadius: 0,
+          borderWidth: 1,
+          borderColor: colors.secondary,
+          // elevation: 24,
+        }}>
+        <BottomSheetScrollView
+          contentContainerStyle={{backgroundColor: 'white', paddingVertical: 20}}>
+          <PromotionDetail
+            code={selectedPromotionCode.code ?? 'None'}
+            expiration={selectedPromotionCode.expire_at}
+            onClose={() => {
+              setTimeout(() => {
+                promotionBottomSheetRef.current?.snapToIndex(-1);
+              }, 100);
+            }}
+          />
+        </BottomSheetScrollView>
+      </BottomSheet>
     </SafeAreaView>
   );
 };
@@ -101,6 +160,7 @@ const styles = StyleSheet.create({
     width: '100%',
     paddingHorizontal: 20,
     marginTop: 20,
+    position: 'relative',
   },
   subheading: {
     fontSize: 17,
@@ -113,7 +173,7 @@ const styles = StyleSheet.create({
   },
   promotionItem: {
     paddingHorizontal: 15,
-    borderColor: 'green',
+    borderColor: '#c4c4c4',
     borderWidth: 2,
     paddingVertical: 10,
     marginTop: 20,

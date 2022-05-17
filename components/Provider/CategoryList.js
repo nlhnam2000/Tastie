@@ -11,14 +11,13 @@ import {
 } from 'react-native';
 import {popularData} from '../../assets/dummy/popularData';
 import {shuffle, IP_ADDRESS} from '../../global';
-import colors from '../../colors/colors';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
+import {SimpleSkeleton} from '../Skeleton/SimpleSkeleton';
 
 const {width} = Dimensions.get('window');
 
 export const CategoryList = props => {
-  const data = shuffle([...popularData]);
   const [loading, setLoading] = useState(true);
   const [providerList, setProviderList] = useState([]);
   const state = useSelector(state => state.UserReducer);
@@ -30,7 +29,7 @@ export const CategoryList = props => {
         {
           group_provider_id: group_id,
           limit: 6,
-          offset: 1,
+          offset: props.offset ?? 1,
           latitude: state.userLocation.latitude,
           longitude: state.userLocation.longitude,
         },
@@ -47,7 +46,7 @@ export const CategoryList = props => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={colors.red} />
+        <SimpleSkeleton />
       </View>
     );
   }

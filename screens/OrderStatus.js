@@ -47,6 +47,7 @@ export const OrderStatus = props => {
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const [orderData, setOrderData] = useState({
     merchant_name: null,
+    order_id: 0,
     items: [],
     num_items: 0,
     delivery_fee: 0,
@@ -89,7 +90,7 @@ export const OrderStatus = props => {
   useEffect(() => {
     if (!assignedStatus && orderData.items.length > 0) {
       socket = io(`http://${IP_ADDRESS}:3015`);
-      socket.emit('join-room', order_code);
+      // socket.emit('join-room', order_code);
       socket.emit(
         'customer-submit-order',
         orderData.items,
@@ -105,6 +106,7 @@ export const OrderStatus = props => {
         {
           name: state.userCart.provider_name,
           address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+          provider_id: state.userCart.provider_id,
           location: {
             latitude: 10.770426270078108,
             longitude: 106.69433674255707,
@@ -281,6 +283,7 @@ export const OrderStatus = props => {
             items: data[0].response.items,
             num_items: data[0].response.num_items,
             delivery_fee: data[0].response.delivery_fee,
+            order_id: data[1].response.order_id,
           }));
           setTrackingMessage({
             title: 'Order submitted',
@@ -372,7 +375,10 @@ export const OrderStatus = props => {
     if (completedStatus) {
       dispatch(OrderCompleted());
       setTimeout(() => {
-        props.navigation.navigate('RatingShipper', {shipperName: shipperLocation.shipperName});
+        props.navigation.navigate('RatingShipper', {
+          shipperName: shipperLocation.shipperName,
+          order_id: orderData.order_id,
+        });
       }, 3000);
     }
   }, [completedStatus]);

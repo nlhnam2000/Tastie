@@ -36,9 +36,10 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>This application required your permission</string>
 	<key>NSLocationAlwaysUsageDescription</key>
+	<string>This application required your permission</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-
 	<string/>
 	<key>UIAppFonts</key>
 	<array>

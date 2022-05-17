@@ -10,8 +10,8 @@ buildscript {
 
         // Any of the following will work
         googlePlayServicesVersion      = "17.0.0"
-        // playServicesVersion         = "17.0.0"
-        // playServicesLocationVersion = "17.0.0"
+        playServicesVersion         = "17.0.0"
+        playServicesLocationVersion = "17.0.0"
         supportLibVersion   = "28.0.0"
         playServicesVersion = "17.0.0" // or find latest version
         androidMapsUtilsVersion = "2.3.0"

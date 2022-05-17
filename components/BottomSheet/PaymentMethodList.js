@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
   Image,
 } from 'react-native';
+import Feather from 'react-native-vector-icons/Feather';
 
 export const PaymentMethodList = props => {
   const renderPaymentMethod = ({item}) => {
@@ -16,21 +17,25 @@ export const PaymentMethodList = props => {
         onPress={() => props.onSelect(item.name)}
         style={[
           styles.wrapper,
-          {backgroundColor: item.name === props.selected ? '#07b351' : 'white'},
+          {
+            justifyContent: item.name === props.selected ? 'space-between' : 'flex-start',
+          },
         ]}>
-        <Image
-          source={item.logo}
-          style={{width: 20, height: 20, marginRight: 20}}
-          resizeMode="cover"
-        />
-        <Text
-          style={{
-            fontSize: 17,
-            fontWeight: '500',
-            color: item.name === props.selected ? 'white' : 'black',
-          }}>
-          {item.name}
-        </Text>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <Image
+            source={item.logo}
+            style={{width: 20, height: 20, marginRight: 20}}
+            resizeMode="cover"
+          />
+          <Text
+            style={{
+              fontSize: 17,
+              fontWeight: '500',
+            }}>
+            {item.name}
+          </Text>
+        </View>
+        {item.name === props.selected && <Feather name="check" size={20} color="black" />}
       </TouchableOpacity>
     );
   };
@@ -63,7 +68,6 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'green',
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 20,

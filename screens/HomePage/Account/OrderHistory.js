@@ -60,6 +60,44 @@ export const OrderHistory = props => {
     setLoading(false);
   };
 
+  const ReOrder = async (order_code, user_id) => {
+    try {
+      let fecthProductsFromOder = await axios.get(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+      );
+
+      if (fecthProductsFromOder.data.status) {
+        const insertProductToCart = async product => {
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+            {
+              user_id: user_id,
+              product_id: product.product_id,
+              quantity: product.quantity,
+              special_instruction: product.special_instruction,
+              additional_option: [],
+            },
+          );
+
+          return res.data;
+        };
+        const queryList = [];
+        fecthProductsFromOder.data.response.items.forEach(item => {
+          queryList.push(insertProductToCart(item));
+        });
+
+        Promise.all(queryList)
+          .then(values => {
+            console.log(values);
+            props.navigation.navigate('GoToCheckout');
+          })
+          .catch(error => console.log(error));
+      }
+    } catch (error) {
+      console.error('cannot re-order', error);
+    }
+  };
+
   useEffect(() => {
     LoadOrderHistory();
   }, []);
@@ -130,7 +168,7 @@ export const OrderHistory = props => {
                 key={index}
                 style={{width: '100%', borderBottomWidth: 1, borderBottomColor: colors.secondary}}>
                 <View style={styles.orderHeader}>
-                  <Text style={{color: 'gray'}}>#19032-567101997</Text>
+                  <Text style={{color: 'gray'}}>{order.order_code}</Text>
                   <Text style={{color: 'gray'}}>{order.completed_at}</Text>
                 </View>
                 <TouchableOpacity
@@ -161,7 +199,9 @@ export const OrderHistory = props => {
                     {order.order_status === 'Completed' ? (
                       <>
                         <TouchableOpacity
-                          onPress={() => props.navigation.navigate('RatingProvider')}
+                          onPress={() =>
+                            props.navigation.navigate('RatingProvider', {order_id: order.order_id})
+                          }
                           style={{
                             paddingVertical: 10,
                             paddingHorizontal: 20,
@@ -172,6 +212,7 @@ export const OrderHistory = props => {
                           <Text style={{fontWeight: '600'}}>View rating</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
+                          onPress={() => ReOrder(order.order_code, state.user_id)}
                           style={{
                             paddingVertical: 10,
                             paddingHorizontal: 20,
