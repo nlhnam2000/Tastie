@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const IP_ADDRESS = '192.168.55.3';
+export const IP_ADDRESS = '192.168.55.6';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const MAPBOXGS_ACCESS_TOKEN =
   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g';

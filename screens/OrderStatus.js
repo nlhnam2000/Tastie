@@ -87,6 +87,26 @@ export const OrderStatus = props => {
     return price.toFixed(2);
   };
 
+  const handleCancelOrder = async () => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`,
+        {
+          order_code: order_code,
+          status: 6,
+          shipper_id: null,
+          update_at: '2022-04-21 20:11:11',
+        },
+      );
+      if (res.data.status) {
+        alert('Your order has been canceled !');
+        props.navigation.navigate('Home Page');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!assignedStatus && orderData.items.length > 0) {
       socket = io(`http://${IP_ADDRESS}:3015`);
@@ -233,6 +253,17 @@ export const OrderStatus = props => {
           message: 'The restaurant had confirmed your order and is prepairing your order. ',
         }));
       });
+
+      // provider confirmed order
+      socket.on('order-confirmed-from-provider', () => {
+        setConfirmedStatus(true);
+        setTrackingMessage(prev => ({
+          ...prev,
+          title: 'Order confirmed',
+          message: 'The restaurant had confirmed your order and is prepairing your order. ',
+        }));
+      });
+
       socket.on('order-assigned', () => {
         setAssignedStatus(true);
         setTrackingMessage(prev => ({
@@ -675,7 +706,30 @@ export const OrderStatus = props => {
                   </View>
                 </View>
               </ScrollView>
-              <View style={{marginTop: 20}}>
+              <View
+                style={{
+                  marginTop: 20,
+                  flexDirection: 'row',
+                  width,
+                  paddingHorizontal: 20,
+                  alignItems: 'center',
+                  justifyContent: assignedStatus ? 'center' : 'space-around',
+                }}>
+                {!assignedStatus && (
+                  <TouchableOpacity
+                    onPress={() => handleCancelOrder()}
+                    style={{padding: 20, backgroundColor: '#ffcccc'}}>
+                    <Text
+                      style={{
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        color: 'red',
+                        textTransform: 'uppercase',
+                      }}>
+                      Cancel this order
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   onPress={() => setOpenDetail(prev => !prev)}
                   style={{padding: 20, backgroundColor: 'black'}}>

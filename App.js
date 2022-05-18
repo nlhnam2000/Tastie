@@ -98,7 +98,7 @@ export default function App(props) {
         dispatch(AutoSetLocation());
       }
 
-      // console.log('refresh token', refreshToken);
+      console.log('refresh token', refreshToken);
       if (refreshToken !== null) {
         let accessToken = await getAccessToken(refreshToken);
         // console.log('access token', accessToken);
