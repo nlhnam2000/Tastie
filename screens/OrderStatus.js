@@ -109,9 +109,9 @@ export const OrderStatus = props => {
 
   useEffect(() => {
     if (!assignedStatus && orderData.items.length > 0) {
-      socket = io(`http://${IP_ADDRESS}:3015`);
+      // state.socket = io(`http://${IP_ADDRESS}:3015`);
       // socket.emit('join-room', order_code);
-      socket.emit(
+      state.socket.emit(
         'customer-submit-order',
         orderData.items,
         {
@@ -163,8 +163,8 @@ export const OrderStatus = props => {
           console.warn(err);
         }
       }
-      socket = io(`http://${IP_ADDRESS}:3015`);
-      socket.emit('join-room', order_code); // join the room which is also the order_code
+      // state.socket = io(`http://${IP_ADDRESS}:3015`);
+      state.socket.emit('join-room', order_code); // join the room which is also the order_code
       /* 
         Check if the order has been registered to db or not
         If it is not in the db, submit the order through the socket server
@@ -195,7 +195,7 @@ export const OrderStatus = props => {
       //   );
       // }
 
-      socket.on('shipperLocation', data => {
+      state.socket.on('shipperLocation', data => {
         console.log('Shipper location:', data);
         setAssignedStatus(true);
         setShipperLocation(prevState => ({
@@ -226,7 +226,7 @@ export const OrderStatus = props => {
           },
         );
       });
-      socket.on('shipper-has-arrived', message => {
+      state.socket.on('shipper-has-arrived', message => {
         setNotification(message);
         setOpenModal(true);
         setCompletedStatus(true);
@@ -236,13 +236,13 @@ export const OrderStatus = props => {
           message: 'The shipper has arrived to your place.',
         }));
       });
-      socket.on('order-accepted', message => {
+      state.socket.on('order-accepted', message => {
         setWaiting(false);
         // setNotification(message);
         // setOpenModal(true);
         setSubmittedStatus(true);
       });
-      socket.on('shipper-arrived-provider', message => {
+      state.socket.on('shipper-arrived-provider', message => {
         // setNotification(message);
         // setOpenModal(true);
         // setPrepairingStatus(true);
@@ -255,7 +255,7 @@ export const OrderStatus = props => {
       });
 
       // provider confirmed order
-      socket.on('order-confirmed-from-provider', () => {
+      state.socket.on('order-confirmed-from-provider', () => {
         setConfirmedStatus(true);
         setTrackingMessage(prev => ({
           ...prev,
@@ -264,7 +264,7 @@ export const OrderStatus = props => {
         }));
       });
 
-      socket.on('order-assigned', () => {
+      state.socket.on('order-assigned', () => {
         setAssignedStatus(true);
         setTrackingMessage(prev => ({
           ...prev,
@@ -272,7 +272,7 @@ export const OrderStatus = props => {
           message: 'We have found the shipper for you. Please wait for a moment',
         }));
       });
-      socket.on('shipper-on-the-way', message => {
+      state.socket.on('shipper-on-the-way', message => {
         // setNotification(message);
         // setOpenModal(true);
         // setInDeliveryStatus(true);
@@ -377,9 +377,9 @@ export const OrderStatus = props => {
     };
 
     initialMap();
-    return () => {
-      socket.disconnect();
-    };
+    // return () => {
+    //   socket.disconnect();
+    // };
   }, []);
 
   useEffect(() => {
@@ -571,6 +571,9 @@ export const OrderStatus = props => {
                 <Feather name="phone" size={14} color="black" />
               </TouchableOpacity>
               <TouchableOpacity
+                onPress={() =>
+                  props.navigation.navigate('ChatScreen', {order_code: order_code, socket: socket})
+                }
                 style={{padding: 10, borderRadius: 40, borderWidth: 1, backgroundColor: 'white'}}>
                 <Feather name="message-square" size={14} color="black" />
               </TouchableOpacity>

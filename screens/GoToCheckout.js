@@ -23,6 +23,7 @@ import colors from '../colors/colors';
 
 // actions
 import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
+import {InitSocket} from '../store/action/auth';
 import {IP_ADDRESS, convertDollar, currentDateString} from '../global';
 
 // libraries
@@ -89,7 +90,10 @@ export const GoToCheckout = props => {
             },
           );
           if (submitOrder.data.status) {
-            props.navigation.navigate('OrderStatus', {order_code: orderCode});
+            dispatch(InitSocket());
+            setTimeout(() => {
+              props.navigation.navigate('OrderStatus', {order_code: orderCode});
+            }, 100);
           } else {
             console.error('Cannot submit order items !');
           }

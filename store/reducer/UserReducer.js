@@ -34,8 +34,11 @@ import {
   UPDATE_QUANTITY,
   CART_IS_EMPTY,
   CLEAR_CART,
+  SOCKET_CONNECTION,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {IP_ADDRESS} from '../../global';
+import io from 'socket.io-client';
 
 const initialState = {
   user_id: null,
@@ -58,6 +61,7 @@ const initialState = {
   triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
+  socket: null,
   userLocation: {
     latitude: 0,
     longitude: 0,
@@ -423,6 +427,13 @@ export const UserReducer = (state = initialState, action) => {
         userLocation: {...payload.userLocation},
       };
     }
+    case SOCKET_CONNECTION: {
+      return {
+        ...state,
+        socket: io(`http://${IP_ADDRESS}:3015`),
+      };
+    }
+
     default: {
       return state;
     }

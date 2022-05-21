@@ -48,3 +48,6 @@ export const ORDER_COMPLETED = 'ORDER_COMPLETED';
 // set location
 export const SET_USER_LOCATION = 'SET_USER_LOCATION';
 export const AUTO_SET_LOCATION = 'AUTO_SET_LOCATION';
+
+// initalize socket
+export const SOCKET_CONNECTION = 'SOCKET_CONNECTION';

@@ -59,6 +59,7 @@ import {PromotionsList} from './screens/HomePage/Detail/Promotion/PromotionList'
 import {ResultContent} from './screens/HomePage/HomeContent/ResultContent';
 import {CustomerAddress} from './screens/CustomerAddress';
 import {CustomerAddressForm} from './screens/CustomerAddressForm';
+import {ChatScreen} from './screens/ChatScreen';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -206,6 +207,11 @@ export default function App(props) {
               <Stack.Screen
                 name="CustomerAddressForm"
                 component={CustomerAddressForm}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="ChatScreen"
+                component={ChatScreen}
                 options={{headerShown: false}}
               />
             </Stack.Navigator>

@@ -122,7 +122,9 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuWrapper}>
+            <TouchableOpacity
+              style={styles.menuWrapper}
+              onPress={() => props.navigation.navigate('ChatScreen')}>
               <MaterialCommunity color={'black'} name="ticket-percent" size={26} />
               <Text
                 style={{

@@ -62,7 +62,7 @@ export const RatingShipper = props => {
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
         <Text style={styles.heading}>Rate shipper</Text>
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
+        <TouchableOpacity onPress={() => props.navigation.navigate('Home Page')}>
           <Feather name="x" size={20} color="black" />
         </TouchableOpacity>
       </View>
@@ -190,7 +190,7 @@ export const RatingShipper = props => {
       </View>
       <View style={styles.flexRowCenter}>
         <TouchableOpacity
-          onPress={() => SubmitRating()}
+          onPress={() => props.navigation.navigate('RatingProvider', {order_id: order_id})}
           style={{paddingVertical: 10, width: '50%', backgroundColor: 'black'}}>
           <Text style={{textAlign: 'center', fontSize: 18, fontWeight: '600', color: 'white'}}>
             Submit

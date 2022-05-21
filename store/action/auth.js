@@ -17,6 +17,7 @@ import {
   EMAIL_VERIFICATION_FAILED,
   SET_USER_LOCATION,
   AUTO_SET_LOCATION,
+  SOCKET_CONNECTION,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
@@ -417,4 +418,11 @@ export const AutoSetLocation = () => dispatch => {
     },
     {enableHighAccuracy: true},
   );
+};
+
+export const InitSocket = () => dispatch => {
+  dispatch({
+    type: SOCKET_CONNECTION,
+    payload: {},
+  });
 };
