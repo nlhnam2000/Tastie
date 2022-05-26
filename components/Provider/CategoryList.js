@@ -22,26 +22,33 @@ export const CategoryList = props => {
   const [providerList, setProviderList] = useState([]);
   const state = useSelector(state => state.UserReducer);
 
-  useEffect(() => {
-    const loadProvider = async group_id => {
-      let res = await axios.post(
-        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
-        {
-          group_provider_id: group_id,
-          limit: 6,
-          offset: props.offset ?? 1,
-          latitude: state.userLocation.latitude,
-          longitude: state.userLocation.longitude,
-        },
-      );
-      if (res.data.response) {
-        setProviderList(res.data.response);
-      }
-      setLoading(false);
-    };
+  const loadProvider = async group_id => {
+    let res = await axios.post(
+      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+      {
+        group_provider_id: group_id,
+        limit: 6,
+        offset: props.offset ?? 1,
+        latitude: props.location.latitude,
+        longitude: props.location.longitude,
+      },
+    );
+    if (res.data.response) {
+      setProviderList(res.data.response);
+    }
+    setLoading(false);
+  };
 
+  useEffect(() => {
     loadProvider(props.groupID);
   }, []);
+
+  useEffect(() => {
+    if (props.location !== null) {
+      setLoading(true);
+      loadProvider(props.groupID);
+    }
+  }, [props.location]);
 
   if (loading) {
     return (

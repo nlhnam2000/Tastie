@@ -27,7 +27,11 @@ export const CustomerAddress = props => {
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
-  const [customerAddress, setCustomerAddress] = useState({});
+  const [customerAddress, setCustomerAddress] = useState({
+    user_id: null,
+    user_phone: null,
+    user_address: [],
+  });
 
   useEffect(() => {
     // setLoading(false);
@@ -39,7 +43,7 @@ export const CustomerAddress = props => {
       const res = await axios.get(
         `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get_contact/${user_id}`,
       );
-      if (res.data.status) {
+      if (res.data.status && res.data.response !== null) {
         setCustomerAddress(res.data.response);
       }
     } catch (error) {
@@ -89,55 +93,59 @@ export const CustomerAddress = props => {
         <Text style={{padding: 15, color: 'gray', fontSize: 15, fontWeight: '500'}}>
           Saved address
         </Text>
-        {customerAddress.user_address
-          .sort((a, b) => a.type - b.type)
-          .map((item, index) => (
-            <View key={index} style={styles.sectionWrapper}>
-              <TouchableOpacity
-                onPress={() => {
-                  dispatch(
-                    SetUserLocation({
-                      address: item.address,
-                      latitude: parseFloat(item.latitude),
-                      longitude: parseFloat(item.longitude),
-                    }),
-                  );
-                  props.navigation.goBack();
-                }}
-                style={[styles.flexRow, {paddingBottom: 10, justifyContent: 'space-between'}]}>
-                <MaterialCommunityIcon
-                  name={item.type === 1 ? 'home-outline' : 'briefcase-outline'}
-                  size={20}
-                  color="black"
-                />
-                <View
-                  style={[
-                    styles.flexRow,
-                    {
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      width: '80%',
-                    },
-                  ]}>
-                  <View style={{}}>
-                    <Text style={styles.heading2}>{item.address}</Text>
-                    <Text style={{color: 'gray', fontSize: 12, marginVertical: 5}}>
-                      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro odit ut hic
-                      minima suscipit dicta. Facilis quo eveniet voluptatem numquam?
-                    </Text>
-                    <Text>
-                      {state.first_name + ' ' + state.last_name} {customerAddress.user_phone}
-                    </Text>
-                  </View>
-                </View>
+        {customerAddress.user_address ? (
+          customerAddress.user_address
+            .sort((a, b) => a.type - b.type)
+            .map((item, index) => (
+              <View key={index} style={styles.sectionWrapper}>
                 <TouchableOpacity
-                  style={{paddingEnd: 5}}
-                  onPress={() => props.navigation.navigate('CustomerAddressForm')}>
-                  <Text>Edit</Text>
+                  onPress={() => {
+                    dispatch(
+                      SetUserLocation({
+                        address: item.address,
+                        latitude: parseFloat(item.latitude),
+                        longitude: parseFloat(item.longitude),
+                      }),
+                    );
+                    props.navigation.navigate('Home Page');
+                  }}
+                  style={[styles.flexRow, {paddingBottom: 10, justifyContent: 'space-between'}]}>
+                  <MaterialCommunityIcon
+                    name={item.type === 1 ? 'home-outline' : 'briefcase-outline'}
+                    size={20}
+                    color="black"
+                  />
+                  <View
+                    style={[
+                      styles.flexRow,
+                      {
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        width: '80%',
+                      },
+                    ]}>
+                    <View style={{}}>
+                      <Text style={styles.heading2}>{item.address}</Text>
+                      <Text style={{color: 'gray', fontSize: 12, marginVertical: 5}}>
+                        Lorem ipsum, dolor sit amet consectetur adipisicing elit. Porro odit ut hic
+                        minima suscipit dicta. Facilis quo eveniet voluptatem numquam?
+                      </Text>
+                      <Text>
+                        {state.first_name + ' ' + state.last_name} {customerAddress.user_phone}
+                      </Text>
+                    </View>
+                  </View>
+                  <TouchableOpacity
+                    style={{paddingEnd: 5}}
+                    onPress={() => props.navigation.navigate('CustomerAddressForm')}>
+                    <Text>Edit</Text>
+                  </TouchableOpacity>
                 </TouchableOpacity>
-              </TouchableOpacity>
-            </View>
-          ))}
+              </View>
+            ))
+        ) : (
+          <></>
+        )}
       </ScrollView>
 
       <View

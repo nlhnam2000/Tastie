@@ -1,6 +1,7 @@
 import axios from 'axios';
 
-export const IP_ADDRESS = '192.168.55.7';
+export const IP_ADDRESS = '192.168.55.3';
+// export const IP_ADDRESS = '157.230.243.92';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const MAPBOXGS_ACCESS_TOKEN =
   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g';
@@ -21,7 +22,7 @@ export const getAccessToken = async refreshToken => {
 };
 
 export const convertDollar = vnd => {
-  return (vnd / 22862.0).toFixed(2);
+  return parseFloat((vnd / 22862.0).toFixed(2));
 };
 
 export const shuffle = array => {

@@ -21,6 +21,7 @@ import {
   Switch,
   TouchableWithoutFeedback,
   RefreshControl,
+  TouchableHighlight,
 } from 'react-native';
 
 // components
@@ -39,7 +40,7 @@ import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
 
 export const DeliveryTab = props => {
   const [loading, setLoading] = useState(true);
@@ -106,6 +107,10 @@ export const DeliveryTab = props => {
 
   useEffect(() => {
     console.log(state.userLocation);
+    if (state.userLocation.address === null) {
+      // auto set location
+      dispatch(AutoSetLocation());
+    }
     setLoading(false);
   }, []);
 
@@ -196,119 +201,64 @@ export const DeliveryTab = props => {
                       dispatch(AutoSetLocation());
                     }
                     setIsRefreshing(false);
-                  }, 3000);
+                  }, 1000);
                 }}
               />
             }>
-            {/* <View
-                style={{
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  flexDirection: 'row',
-                }}>
-                <View style={styles.searchWrapper}>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    <Feather name="search" size={20} color={'black'} />
-                    <TextInput
-                      placeholder="Search"
-                      style={{marginLeft: 10}}
-                      maxLength={25}
-                      clearButtonMode="always"
-                    />
-                  </View>
-                </View>
-              </View> */}
-
-            {/* <View style={styles.categoryWrapper}>
-                <FlatList
-                  data={categoryData}
-                  renderItem={renderCategoryList}
-                  keyExtractor={item => item.id}
-                  horizontal={true}
-                  showsHorizontalScrollIndicator={false}
-                />
-              </View> */}
             <View style={{width}}>
               <BrowseCategory {...props} />
             </View>
-            {/* <View
-                style={styles.contentWrapper}
-                // onScroll={handleScroll}
-                // scrollEventThrottle={16}
-              >
-                {popularData.map((item, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => props.navigation.navigate('DetailProvider', {data: item})}>
-                      <View style={styles.popularDataWrapper}>
-                        <ImageBackground
-                          style={styles.popularImage}
-                          resizeMode="cover"
-                          source={item.image}
-                        />
-                        <View style={styles.popularDetail}>
-                          <View style={styles.popularInfo}>
-                            <Text style={{fontWeight: 'bold', color: 'black'}}>{item.title}</Text>
-                            <Text>{item.deliveryTime}</Text>
-                          </View>
-                          <View style={styles.popularRating}>
-                            <Text style={{color: 'black'}}>{item.rating}</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View> */}
             <View style={{width}}>
-              <CategoryList {...props} groupID={1} offset={6} categoryTitle="Order near you" />
+              <CategoryList
+                {...props}
+                groupID={1}
+                location={state.userLocation}
+                offset={6}
+                categoryTitle="Order near you"
+              />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={2} offset={1} categoryTitle="Today offer" />
+              <CategoryList
+                {...props}
+                groupID={2}
+                location={state.userLocation}
+                offset={1}
+                categoryTitle="Today offer"
+              />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={3} offset={12} categoryTitle="Most rating" />
+              <CategoryList
+                {...props}
+                groupID={3}
+                location={state.userLocation}
+                offset={12}
+                categoryTitle="Most rating"
+              />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={4} offset={18} categoryTitle="In a rush" />
-            </View>
-            {/* <View style={styles.contentWrapper}>
-                {popularData.map((item, index) => {
-                  return (
-                    <TouchableOpacity
-                      key={index}
-                      onPress={() => props.navigation.navigate('DetailProvider', {data: item})}>
-                      <View style={styles.popularDataWrapper}>
-                        <ImageBackground
-                          style={styles.popularImage}
-                          resizeMode="cover"
-                          source={item.image}
-                        />
-                        <View style={styles.popularDetail}>
-                          <View style={styles.popularInfo}>
-                            <Text style={{fontWeight: 'bold', color: 'black'}}>{item.title}</Text>
-                            <Text>{item.deliveryTime}</Text>
-                          </View>
-                          <View style={styles.popularRating}>
-                            <Text style={{color: 'black'}}>{item.rating}</Text>
-                          </View>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  );
-                })}
-              </View> */}
-            <View style={{width}}>
-              <CategoryList {...props} groupID={5} categoryTitle="New on Tastie" />
+              <CategoryList
+                {...props}
+                groupID={4}
+                location={state.userLocation}
+                offset={18}
+                categoryTitle="In a rush"
+              />
             </View>
             <View style={{width}}>
-              <CategoryList {...props} groupID={6} categoryTitle="Most popular" />
+              <CategoryList
+                {...props}
+                groupID={5}
+                location={state.userLocation}
+                categoryTitle="New on Tastie"
+              />
+            </View>
+            <View style={{width}}>
+              <CategoryList
+                {...props}
+                groupID={6}
+                location={state.userLocation}
+                categoryTitle="Most popular"
+              />
             </View>
           </ScrollView>
         </View>
@@ -888,5 +838,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     width: '100%',
+  },
+  modal: {
+    height: height,
+    width: width,
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    backgroundColor: '#ededed',
+    justifyContent: 'center',
   },
 });

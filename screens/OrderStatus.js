@@ -23,8 +23,9 @@ import axios from 'axios';
 import {ScrollView} from 'react-native-gesture-handler';
 import {OrderCompleted} from '../store/action/cart';
 import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
+import {DisconnectSocket} from '../store/action/auth';
 
-let socket;
+// let socket;
 const {width, height} = Dimensions.get('window');
 
 export const OrderStatus = props => {
@@ -100,6 +101,7 @@ export const OrderStatus = props => {
       );
       if (res.data.status) {
         alert('Your order has been canceled !');
+        dispatch(DisconnectSocket());
         props.navigation.navigate('Home Page');
       }
     } catch (error) {
@@ -111,7 +113,7 @@ export const OrderStatus = props => {
     if (!assignedStatus && orderData.items.length > 0) {
       // state.socket = io(`http://${IP_ADDRESS}:3015`);
       // socket.emit('join-room', order_code);
-      state.socket.emit(
+      state.socketServer.host.emit(
         'customer-submit-order',
         orderData.items,
         {
@@ -163,8 +165,8 @@ export const OrderStatus = props => {
           console.warn(err);
         }
       }
-      // state.socket = io(`http://${IP_ADDRESS}:3015`);
-      state.socket.emit('join-room', order_code); // join the room which is also the order_code
+      // state.socketServer.host = io(`http://${IP_ADDRESS}:3015`);
+      state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
       /* 
         Check if the order has been registered to db or not
         If it is not in the db, submit the order through the socket server
@@ -195,7 +197,7 @@ export const OrderStatus = props => {
       //   );
       // }
 
-      state.socket.on('shipperLocation', data => {
+      state.socketServer.host.on('shipperLocation', data => {
         console.log('Shipper location:', data);
         setAssignedStatus(true);
         setShipperLocation(prevState => ({
@@ -226,7 +228,7 @@ export const OrderStatus = props => {
           },
         );
       });
-      state.socket.on('shipper-has-arrived', message => {
+      state.socketServer.host.on('shipper-has-arrived', message => {
         setNotification(message);
         setOpenModal(true);
         setCompletedStatus(true);
@@ -236,13 +238,13 @@ export const OrderStatus = props => {
           message: 'The shipper has arrived to your place.',
         }));
       });
-      state.socket.on('order-accepted', message => {
+      state.socketServer.host.on('order-accepted', message => {
         setWaiting(false);
         // setNotification(message);
         // setOpenModal(true);
         setSubmittedStatus(true);
       });
-      state.socket.on('shipper-arrived-provider', message => {
+      state.socketServer.host.on('shipper-arrived-provider', message => {
         // setNotification(message);
         // setOpenModal(true);
         // setPrepairingStatus(true);
@@ -255,7 +257,7 @@ export const OrderStatus = props => {
       });
 
       // provider confirmed order
-      state.socket.on('order-confirmed-from-provider', () => {
+      state.socketServer.host.on('order-confirmed-from-provider', () => {
         setConfirmedStatus(true);
         setTrackingMessage(prev => ({
           ...prev,
@@ -264,7 +266,7 @@ export const OrderStatus = props => {
         }));
       });
 
-      state.socket.on('order-assigned', () => {
+      state.socketServer.host.on('order-assigned', () => {
         setAssignedStatus(true);
         setTrackingMessage(prev => ({
           ...prev,
@@ -272,7 +274,7 @@ export const OrderStatus = props => {
           message: 'We have found the shipper for you. Please wait for a moment',
         }));
       });
-      state.socket.on('shipper-on-the-way', message => {
+      state.socketServer.host.on('shipper-on-the-way', message => {
         // setNotification(message);
         // setOpenModal(true);
         // setInDeliveryStatus(true);
@@ -404,7 +406,7 @@ export const OrderStatus = props => {
 
   useEffect(() => {
     if (completedStatus) {
-      dispatch(OrderCompleted());
+      dispatch(OrderCompleted(order_code));
       setTimeout(() => {
         props.navigation.navigate('RatingShipper', {
           shipperName: shipperLocation.shipperName,
@@ -571,9 +573,7 @@ export const OrderStatus = props => {
                 <Feather name="phone" size={14} color="black" />
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() =>
-                  props.navigation.navigate('ChatScreen', {order_code: order_code, socket: socket})
-                }
+                onPress={() => props.navigation.navigate('ChatScreen', {order_code: order_code})}
                 style={{padding: 10, borderRadius: 40, borderWidth: 1, backgroundColor: 'white'}}>
                 <Feather name="message-square" size={14} color="black" />
               </TouchableOpacity>

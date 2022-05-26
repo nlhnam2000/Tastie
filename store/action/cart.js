@@ -144,20 +144,22 @@ export const DecreaseQuantity = cart => dispatch => {
   });
 };
 
-export const SubmitOrder = () => dispatch => {
+export const SubmitOrder = order_code => dispatch => {
   dispatch({
     type: ORDER_CONFIRMED,
     payload: {
       orderStatus: 'order_confirmed',
+      room: order_code,
     },
   });
 };
 
-export const OrderCompleted = () => dispatch => {
+export const OrderCompleted = order_code => dispatch => {
   dispatch({
     type: ORDER_COMPLETED,
     payload: {
       // orderStatus: 'order_completed'
+      room: order_code,
     },
   });
 };

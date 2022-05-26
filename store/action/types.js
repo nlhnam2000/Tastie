@@ -40,6 +40,7 @@ export const UPDATE_CART = 'UPDATE_CART';
 export const SAVE_TO_HISTORY_CART = 'SAVE_TO_HISTORY_CART';
 export const CLEAR_CART = 'CLEAR_CART';
 export const RE_ORDER = 'RE_ORDER';
+export const PLACED_ORDER = 'PLACED_ORDER';
 
 // order status
 export const ORDER_CONFIRMED = 'ORDER_CONFIRMED';
@@ -49,5 +50,8 @@ export const ORDER_COMPLETED = 'ORDER_COMPLETED';
 export const SET_USER_LOCATION = 'SET_USER_LOCATION';
 export const AUTO_SET_LOCATION = 'AUTO_SET_LOCATION';
 
-// initalize socket
+// socket
 export const SOCKET_CONNECTION = 'SOCKET_CONNECTION';
+export const SOCKET_DISCONNECTION = 'SOCKET_DISCONNECTION';
+export const TOGGLE_NOTIFICATION = 'TOGGLE_NOTIFICATION';
+export const CHECKED_NOTIFICATION = 'CHECKED_NOTIFICATION';

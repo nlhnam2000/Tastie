@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -28,16 +28,55 @@ import {
 } from '../../store/action/navigation';
 import colors from '../../colors/colors';
 import {RetrieveCart} from '../../store/action/cart';
+import {InitSocket, ToggleNotification, CheckedNotification} from '../../store/action/auth';
+import PushNotification from 'react-native-push-notification';
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
   const cart = useSelector(state => state.UserReducer.userCart.cart);
   const state = useSelector(state => state.UserReducer);
+  const [newNoti, setNewNoti] = useState(false);
 
   useEffect(() => {
     console.log(state.userCart);
     dispatch(RetrieveCart(state.user_id));
+    // dispatch(InitSocket());
+    // setTimeout(() => {
+    //   PushNotification.localNotification({
+    //     channelId: 'homescreen-channel',
+    //     title: 'Notification Testing',
+    //     message: 'test123',
+    //   });
+    // }, 4000);
   }, []);
+
+  useEffect(() => {
+    if (state.socketServer.host) {
+      state.socketServer.host.on('customer-receive-notification', number => {
+        // dispatch(ToggleNotification());
+        setNewNoti(true);
+        console.log('customer received from admin');
+      });
+    } else {
+      dispatch(InitSocket());
+    }
+  }, [state.socketServer.host]);
+
+  useEffect(() => {
+    if (props.active === 'Notification') {
+      // dispatch(CheckedNotification());
+      setNewNoti(false);
+    }
+  }, [props.active]);
+
+  // useEffect(() => {
+  //   setNewNoti(state.toggleNotification);
+  // }, [state.toggleNotification]);
+
+  // useEffect(() => {
+  //   // clear the badge when user navigate to Notification screen
+  //   setNewNoti(state.currentTab !== 'Notification');
+  // }, [state.currentTab]);
 
   return (
     <View style={styles.container}>
@@ -81,6 +120,21 @@ export const NavigationBar = props => {
           }>
           Notification
         </Text>
+        {newNoti ? (
+          <View
+            style={{
+              position: 'absolute',
+              padding: 5,
+              borderRadius: 15,
+              backgroundColor: 'red',
+              left: '55%',
+              top: 0,
+              width: 15,
+              height: 15,
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}></View>
+        ) : null}
       </TouchableOpacity>
       <TouchableOpacity style={styles.iconWrapper} onPress={() => dispatch(NavigateToCart())}>
         {(props.active === 'Cart' && <MaterialCommunity name="cart" size={30} color={'red'} />) || (

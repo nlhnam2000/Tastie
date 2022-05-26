@@ -18,6 +18,10 @@ import {
   SET_USER_LOCATION,
   AUTO_SET_LOCATION,
   SOCKET_CONNECTION,
+  SOCKET_DISCONNECTION,
+  TOGGLE_NOTIFICATION,
+  CHECKED_NOTIFICATION,
+  PLACED_ORDER,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
@@ -366,8 +370,8 @@ export const UpdateProfile = body => async dispatch => {
   }
 };
 
-export const SetUserLocation = data => async dispatch => {
-  await AsyncStorage.setItem('@userLocation', JSON.stringify(data));
+export const SetUserLocation = data => dispatch => {
+  // await AsyncStorage.setItem('@userLocation', JSON.stringify(data));
   dispatch({
     type: SET_USER_LOCATION,
     payload: {
@@ -424,5 +428,30 @@ export const InitSocket = () => dispatch => {
   dispatch({
     type: SOCKET_CONNECTION,
     payload: {},
+  });
+};
+
+export const DisconnectSocket = () => dispatch => {
+  dispatch({
+    type: SOCKET_DISCONNECTION,
+    payload: {},
+  });
+};
+
+export const ToggleNotification = () => dispatch => {
+  dispatch({
+    type: TOGGLE_NOTIFICATION,
+    payload: {
+      toggleNotification: true,
+    },
+  });
+};
+
+export const CheckedNotification = () => dispatch => {
+  dispatch({
+    type: CHECKED_NOTIFICATION,
+    payload: {
+      toggleNotification: false,
+    },
   });
 };

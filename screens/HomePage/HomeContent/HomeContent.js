@@ -27,6 +27,7 @@ import colors from '../../../colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import {DeliveryTab} from '../../../components/Home/DeliveryTab';
 import {PickupTab} from '../../../components/Home/PickupTab';
+import PushNotification from 'react-native-push-notification';
 
 const {width} = Dimensions.get('window');
 
@@ -36,8 +37,16 @@ export const HomeContent = props => {
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
 
+  const createChannel = () => {
+    PushNotification.createChannel({
+      channelId: 'homescreen-channel',
+      channelName: 'HomeScreen Channel',
+    });
+  };
+
   useEffect(() => {
     console.log(state.userLocation);
+    // createChannel();
     setLoading(false);
   }, []);
 

@@ -44,6 +44,7 @@
 		13FC7876E2CE46D9BEAE8CEC /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
 		4D7DA80409756C94C2511AD6 /* Pods-Tastie-TastieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.release.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.release.xcconfig"; sourceTree = "<group>"; };
 		5A324DCF2796D52A00A69FFB /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
+		5AFC600B283DBA2C00B5864D /* Tastie.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Tastie.entitlements; path = Tastie/Tastie.entitlements; sourceTree = "<group>"; };
 		76DC8F4C784C3673FEC8E9CD /* libPods-Tastie-TastieTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie-TastieTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7AB8540200CC461398E4A409 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		7BC25C34A5034998B70F43D5 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
@@ -126,6 +127,7 @@
 		13B07FAE1A68108700A75B9A /* Tastie */ = {
 			isa = PBXGroup;
 			children = (
+				5AFC600B283DBA2C00B5864D /* Tastie.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -493,6 +495,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Tastie/Tastie.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				ENABLE_BITCODE = NO;
@@ -521,6 +524,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = Tastie/Tastie.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = W8Q3S4F933;
 				INFOPLIST_FILE = Tastie/Info.plist;

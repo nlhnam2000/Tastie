@@ -35,6 +35,7 @@ import {
   CART_IS_EMPTY,
   CLEAR_CART,
   SOCKET_CONNECTION,
+  SOCKET_DISCONNECTION,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS} from '../../global';
@@ -61,7 +62,11 @@ const initialState = {
   triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
-  socket: null,
+  socketServer: {
+    host: io(`http://${IP_ADDRESS}:3015`),
+    rooms: [],
+  },
+  toggleNotification: false,
   userLocation: {
     latitude: 0,
     longitude: 0,
@@ -75,20 +80,6 @@ const initialState = {
     status: null,
     // totalPrice: 0.0,
   },
-  orderHistory: [
-    // {
-    //   provider_id: null,
-    //   provider_name: null,
-    //   date: null,
-    //   cart: [],
-    //   status: null,
-    //   deliveryfee: 1,
-    //   distance:
-    //   total: $12 (subtotal + deliveryfee),
-    //   paymentMethod: Cash,
-    //   completedTime: 12/03/2022
-    // },
-  ],
   /* 
     userCart: {
       provider_id: 100000, 
@@ -381,6 +372,11 @@ export const UserReducer = (state = initialState, action) => {
           ...state.userCart,
           status: payload.orderStatus,
         },
+        socketServer: {
+          // add new room to the room list
+          ...state.socketServer,
+          rooms: [...state.socketServer.rooms, payload.room],
+        },
       };
     }
     case SET_USER_LOCATION: {
@@ -409,6 +405,9 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case ORDER_COMPLETED: {
+      let roomList = [...state.socketServer.rooms];
+      const roomIndex = roomList.indexOf(payload.room);
+      roomList.splice(roomIndex, 1); // remove the room from the list
       return {
         ...state,
         userCart: {
@@ -418,6 +417,10 @@ export const UserReducer = (state = initialState, action) => {
           cart: [],
           status: null,
           // totalPrice: 0.0,
+        },
+        socketServer: {
+          ...state.socketServer,
+          rooms: roomList,
         },
       };
     }
@@ -430,7 +433,16 @@ export const UserReducer = (state = initialState, action) => {
     case SOCKET_CONNECTION: {
       return {
         ...state,
-        socket: io(`http://${IP_ADDRESS}:3015`),
+        socketServer: {
+          ...state.socketServer,
+          host: io(`http://${IP_ADDRESS}:3015`),
+        },
+      };
+    }
+    case SOCKET_DISCONNECTION: {
+      return {
+        ...state,
+        socket: null,
       };
     }
 

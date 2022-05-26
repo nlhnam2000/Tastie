@@ -20,6 +20,7 @@ import {
   Image,
   Button,
   Platform,
+  Modal,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -60,6 +61,7 @@ import {ResultContent} from './screens/HomePage/HomeContent/ResultContent';
 import {CustomerAddress} from './screens/CustomerAddress';
 import {CustomerAddressForm} from './screens/CustomerAddressForm';
 import {ChatScreen} from './screens/ChatScreen';
+import {DetailEcoupon} from './screens/HomePage/Detail/Ecoupon/DetailEcoupon';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -74,6 +76,7 @@ import {
 } from './store/action/auth';
 import colors from './colors/colors';
 import {IP_ADDRESS, getAccessToken} from './global';
+import PushNotification from 'react-native-push-notification';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -91,15 +94,15 @@ export default function App(props) {
   useEffect(() => {
     setTimeout(async () => {
       let refreshToken = await AsyncStorage.getItem('user_token');
-      let userLocation = await AsyncStorage.getItem('@userLocation');
-      if (userLocation !== null) {
-        dispatch(SetUserLocation(JSON.parse(userLocation)));
-      } else if (userLocation === undefined || userLocation === null) {
-        // set the current coordinate
-        dispatch(AutoSetLocation());
-      }
+      // let userLocation = await AsyncStorage.getItem('@userLocation');
+      // if (userLocation !== null) {
+      //   dispatch(SetUserLocation(JSON.parse(userLocation)));
+      // } else if (userLocation === undefined || userLocation === null) {
+      //   // set the current coordinate
+      //   dispatch(AutoSetLocation());
+      // }
 
-      console.log('refresh token', refreshToken);
+      // console.log('refresh token', refreshToken);
       if (refreshToken !== null) {
         let accessToken = await getAccessToken(refreshToken);
         // console.log('access token', accessToken);
@@ -107,7 +110,42 @@ export default function App(props) {
       } else {
         dispatch(TokenNotFound());
       }
-    }, 500);
+
+      console.log('rooms: ', state.socketServer.rooms);
+      if (state.socketServer.rooms.length > 0) {
+        state.socketServer.rooms.forEach(room => {
+          state.socketServer.host.on('join-room', room);
+        });
+
+        state.socketServer.host.on('receive-shipper-inbox', message => {
+          console.log('shipper inbox: ', message);
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'Message from shipper:',
+            message: message,
+          });
+        });
+
+        state.socketServer.host.on('shipper-on-the-way', message => {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'The shipper is on the way',
+            message: message,
+          });
+        });
+
+        state.socketServer.host.on('shipper-has-arrived', message => {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'The shipper has arrived at your place',
+            message: message,
+          });
+        });
+      }
+    }, 100);
   }, []);
 
   if (state.isLoading) {
@@ -212,6 +250,11 @@ export default function App(props) {
               <Stack.Screen
                 name="ChatScreen"
                 component={ChatScreen}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="DetailEcoupon"
+                component={DetailEcoupon}
                 options={{headerShown: false}}
               />
             </Stack.Navigator>

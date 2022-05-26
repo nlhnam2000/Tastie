@@ -58,6 +58,7 @@ export const ChatScreen = props => {
   const [message, setMessage] = useState('');
   const {order_code} = props.route.params;
   const scrollRef = useRef();
+  const inputRef = useRef();
 
   const sendMessage = text => {
     if (text !== '') {
@@ -73,6 +74,7 @@ export const ChatScreen = props => {
       setMessages(prev => [...prev, {sender: 'shipper', message: message}]);
       console.log('Received: ', message);
     });
+    inputRef.current.focus();
   }, []);
 
   return (
@@ -99,14 +101,22 @@ export const ChatScreen = props => {
             <View
               key={index}
               style={{
-                width: '100%',
-                paddingEnd: (obj.sender === 'shipper') === 0 ? 20 : 0,
-                paddingStart: obj.sender === 'shipper' ? 0 : 20,
+                minWidth: '30%',
+                maxWidth: '90%',
+                paddingEnd: obj.sender === 'shipper' ? 20 : 10,
+                paddingStart: obj.sender === 'shipper' ? 10 : 20,
+                paddingVertical: 5,
+                backgroundColor: obj.sender === 'shipper' ? 'green' : 'blue',
+                borderRadius: 12,
+                marginBottom: 10,
+                alignSelf: obj.sender === 'shipper' ? 'flex-start' : 'flex-end',
               }}>
               <Text
                 style={{
                   marginVertical: 10,
-                  textAlign: obj.sender === 'shipper' ? 'left' : 'right',
+                  // textAlign: obj.sender === 'shipper' ? 'left' : 'right',
+                  color: 'white',
+                  fontWeight: '500',
                   // width: '100%',
                 }}>
                 {obj.message}
@@ -132,6 +142,7 @@ export const ChatScreen = props => {
               setMessage('');
               setTimeout(() => {
                 scrollRef.current.scrollToEnd();
+                inputRef.current.clear();
               }, 100);
             }
           }}

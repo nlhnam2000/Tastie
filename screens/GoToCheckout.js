@@ -90,7 +90,8 @@ export const GoToCheckout = props => {
             },
           );
           if (submitOrder.data.status) {
-            dispatch(InitSocket());
+            // dispatch(InitSocket());
+            dispatch(SubmitOrder(orderCode));
             setTimeout(() => {
               props.navigation.navigate('OrderStatus', {order_code: orderCode});
             }, 100);
@@ -104,6 +105,8 @@ export const GoToCheckout = props => {
     } catch (error) {
       console.error(error);
     }
+
+    // console.log(orderForm);
   };
 
   useEffect(() => {
@@ -162,17 +165,17 @@ export const GoToCheckout = props => {
       customer_phone: state.phone,
       payment_method: selectedPayment === 'Cash' ? 1 : selectedPayment === 'Momo' ? 2 : 3,
       payment_status: 1,
-      promotion_code: promoCode ?? '',
+      promotion_code: promoCode.code ?? '',
       ecoupon_code: '',
       delivery_method: selectedMethod === 'Standard' ? 1 : 2,
       schedule_time: scheduleTime ?? '',
       tips: 0,
       delivery_fee: deliveryfee,
-      subtotal: parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
+      subtotal: parseFloat(totalCartPrice(state.userCart.cart)),
       total:
         selectedTab === 'Delivery'
-          ? (parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)).toFixed(2)
-          : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2),
+          ? parseFloat(totalCartPrice(state.userCart.cart)) + deliveryfee
+          : parseFloat(totalCartPrice(state.userCart.cart)),
     }));
   }, [selectedTab, selectedMethod, selectedPayment, selectedTip, deliveryfee, promoCode]);
 
@@ -212,104 +215,117 @@ export const GoToCheckout = props => {
               </TouchableOpacity>
             ))}
           </View>
-          <View style={{marginTop: 20}}>
-            <Text style={styles.heading}>Delivery to:</Text>
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 10,
-              }}>
+          <View style={styles.sectionWrapper}>
+            <View style={{marginVertical: 10}}>
+              <Text style={styles.heading}>Delivery to:</Text>
               <View
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginTop: 10,
                 }}>
-                <Feather name="map-pin" size={20} color="black" />
-                <Text style={{marginLeft: 15, fontSize: 17, width: '85%'}}>
-                  {state.userLocation.address}
-                </Text>
-              </View>
-              <Feather name="edit-3" size={20} color="black" />
-            </View>
-          </View>
-          <View style={{marginTop: 20}}>
-            <Text style={styles.heading}>Delivery method:</Text>
-            <View
-              style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-              {methods.map((method, index) => (
-                <View key={index} style={styles.options}>
-                  <TouchableOpacity
-                    style={styles.radioButton}
-                    onPress={() => {
-                      setSelectedMethod(method);
-                      if (method === 'Schedule') {
-                        setOpenSchedule(true);
-                      }
-                    }}>
-                    <View
-                      style={{
-                        borderRadius: 40,
-                        backgroundColor: selectedMethod === method ? 'black' : 'white',
-                        width: 15,
-                        height: 15,
-                      }}></View>
-                  </TouchableOpacity>
-                  <Text style={{fontSize: 17, fontWeight: '400'}}>{method}</Text>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}>
+                  <Feather name="map-pin" size={17} color="black" />
+                  <Text style={{marginLeft: 10, width: '85%', fontSize: 15}}>
+                    {state.userLocation.address}
+                  </Text>
                 </View>
-              ))}
+                <Feather name="edit-3" size={17} color="black" />
+              </View>
             </View>
-            {scheduleTime && (
-              <Text style={{marginTop: 5}}>The order will be scheduled at {scheduleTime}</Text>
-            )}
+            <View style={{marginVertical: 10}}>
+              <Text style={styles.heading}>Delivery method:</Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}>
+                {methods.map((method, index) => (
+                  <View key={index} style={styles.options}>
+                    <TouchableOpacity
+                      style={styles.radioButton}
+                      onPress={() => {
+                        setSelectedMethod(method);
+                        if (method === 'Schedule') {
+                          setOpenSchedule(true);
+                        }
+                      }}>
+                      <View
+                        style={{
+                          borderRadius: 40,
+                          backgroundColor: selectedMethod === method ? 'black' : 'white',
+                          width: 10,
+                          height: 10,
+                        }}></View>
+                    </TouchableOpacity>
+                    <Text style={{fontSize: 15, fontWeight: '400'}}>{method}</Text>
+                  </View>
+                ))}
+              </View>
+              {scheduleTime && (
+                <Text style={{marginTop: 5}}>The order will be scheduled at {scheduleTime}</Text>
+              )}
+            </View>
           </View>
 
-          <View style={{marginTop: 20}}>
-            <Text style={styles.heading}>Your items</Text>
-            {state.userCart.cart.map((item, index) => (
-              <View
-                key={index}
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: 15,
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                  <Text style={{fontSize: 17}}>{item.quantity}x</Text>
-                  <View style={{width: '80%'}}>
-                    <Text style={{marginLeft: 10, fontSize: 17, fontWeight: '500', width: '85%'}}>
-                      {item.productName}
-                    </Text>
-                    {additionalOptions[index] && (
-                      <Text
-                        style={{
-                          marginLeft: 10,
-                          fontSize: 16,
-                          fontStyle: 'italic',
-                          color: 'gray',
-                          marginTop: 5,
-                        }}>
-                        {additionalOptions[index]}
+          <View style={styles.sectionWrapper}>
+            <View style={{paddingVertical: 10}}>
+              <Text style={styles.heading}>Your items</Text>
+              {state.userCart.cart.map((item, index) => (
+                <View
+                  key={index}
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: 15,
+                  }}>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text style={{fontSize: 15}}>{item.quantity}x</Text>
+                    <View style={{width: '80%'}}>
+                      <Text style={{marginLeft: 10, fontSize: 15, fontWeight: '500', width: '85%'}}>
+                        {item.productName}
                       </Text>
-                    )}
+                      {additionalOptions[index] && (
+                        <Text
+                          style={{
+                            marginLeft: 10,
+                            fontSize: 16,
+                            fontStyle: 'italic',
+                            color: 'gray',
+                            marginTop: 5,
+                          }}>
+                          {additionalOptions[index]}
+                        </Text>
+                      )}
+                    </View>
                   </View>
+                  <Text style={{fontSize: 15}}>
+                    ${parseFloat(item.totalProductPrice).toFixed(2)}
+                  </Text>
                 </View>
-                <Text style={{fontSize: 17}}>${parseFloat(item.totalProductPrice).toFixed(2)}</Text>
-              </View>
-            ))}
-            <TextInput
-              placeholder="Add a note for the store"
-              placeholderTextColor={'gray'}
-              style={{
-                width: '100%',
-                backgroundColor: 'rgba(230,230,230,0.9)',
-                padding: 15,
-                marginTop: 15,
-              }}
-            />
+              ))}
+              <TextInput
+                placeholder="Add a note for the store"
+                placeholderTextColor={'gray'}
+                style={{
+                  width: '100%',
+                  backgroundColor: '#f2f2f2',
+                  paddingVertical: 15,
+                  paddingHorizontal: 20,
+                  marginTop: 15,
+                  borderRadius: 10,
+                }}
+              />
+            </View>
           </View>
+
           {selectedTab === 'Delivery' ? (
             <View style={{marginTop: 20}}>
               <View
@@ -603,7 +619,7 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
@@ -611,16 +627,24 @@ const styles = StyleSheet.create({
   },
   content: {
     width: '100%',
-    paddingHorizontal: 20,
+    paddingHorizontal: 15,
     paddingVertical: 15,
   },
   heading: {
     fontSize: 17,
     fontWeight: '600',
   },
+  sectionWrapper: {
+    paddingHorizontal: 20,
+    borderWidth: 2,
+    borderRadius: 20,
+    borderColor: '#f2f2f2',
+    marginTop: 10,
+    paddingTop: 5,
+  },
   tabWrapper: {
     width: '100%',
-    backgroundColor: 'rgb(230,230,230)',
+    backgroundColor: '#f2f2f2',
     borderRadius: 15,
     flexDirection: 'row',
     alignItems: 'center',
@@ -640,12 +664,12 @@ const styles = StyleSheet.create({
   },
   radioButton: {
     borderRadius: 40,
-    borderWidth: 2,
+    borderWidth: 1,
     borderColor: '#787878',
-    width: 20,
-    height: 20,
+    width: 17,
+    height: 17,
     marginRight: 10,
-    padding: 10,
+    padding: 7,
     alignItems: 'center',
     justifyContent: 'center',
   },
