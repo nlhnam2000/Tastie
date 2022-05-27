@@ -62,6 +62,7 @@ import {CustomerAddress} from './screens/CustomerAddress';
 import {CustomerAddressForm} from './screens/CustomerAddressForm';
 import {ChatScreen} from './screens/ChatScreen';
 import {DetailEcoupon} from './screens/HomePage/Detail/Ecoupon/DetailEcoupon';
+import {EditCustomerAddress} from './screens/EditCustomerAddress';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -255,6 +256,11 @@ export default function App(props) {
               <Stack.Screen
                 name="DetailEcoupon"
                 component={DetailEcoupon}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen
+                name="EditCustomerAddress"
+                component={EditCustomerAddress}
                 options={{headerShown: false}}
               />
             </Stack.Navigator>

@@ -27,20 +27,23 @@ const {width} = Dimensions.get('window');
 const TOP_SPACING_FROM_NOTCH = 50;
 const MODAL_HEIGHT = Dimensions.get('window').height - 50;
 
-export const CustomerAddressForm = props => {
+export const EditCustomerAddress = props => {
   const state = useSelector(state => state.UserReducer);
+  const {pre_latitude, pre_longitude, type, address} = props.route.params;
   const userLocationModalize = useRef();
   const [markerLocation, setMarkerLocation] = useState({
-    latitude: state.userLocation.latitude ?? null,
-    longitude: state.userLocation.longitude ?? null,
+    latitude: pre_latitude,
+    longitude: pre_longitude,
   });
-  const [address, setAddress] = useState(state.userLocation.address ?? '');
-  const [selectedType, setSelectedType] = useState(1);
+  const [selectedType, setSelectedType] = useState(type);
+  const [addressField, setAddressField] = useState(address);
   const [userLocation, setUserLocation] = useState({
     receiverName: state.first_name + ' ' + state.last_name,
     receiverPhone: state.phone,
-    latitude: null,
+    pre_latitude: pre_latitude,
+    pre_longitude: pre_longitude,
     longitude: null,
+    latitude: null,
     city: null,
     type: 1,
     address: null,
@@ -48,14 +51,19 @@ export const CustomerAddressForm = props => {
 
   const submitNewAddress = async formData => {
     try {
-      const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/add-customer-address`, {
-        customer_id: state.user_id,
-        address: formData.address,
-        city: formData.city,
-        type: formData.type,
-        longtitude: formData.longitude.toString(),
-        latitude: formData.latitude.toString(),
-      });
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/update-customer-address`,
+        {
+          customer_id: state.user_id,
+          address: formData.address,
+          city: formData.city,
+          type: formData.type,
+          pre_longitude: formData.pre_longitude.toString(),
+          pre_latitude: formData.pre_latitude.toString(),
+          longtitude: formData.longitude.toString(),
+          latitude: formData.latitude.toString(),
+        },
+      );
 
       if (res.data.status) {
         props.navigation.navigate('CustomerAddress');
@@ -95,7 +103,7 @@ export const CustomerAddressForm = props => {
           }}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={[styles.heading1, {textAlign: 'center'}]}>Add new address</Text>
+        <Text style={[styles.heading1, {textAlign: 'center'}]}>Edit your address</Text>
       </View>
 
       <ScrollView>
@@ -116,7 +124,7 @@ export const CustomerAddressForm = props => {
             style={[styles.flexRowBetween, {paddingBottom: 10}]}
             onPress={() => userLocationModalize.current?.open()}>
             <Text style={{color: 'gray', paddingStart: 10}}>
-              {userLocation.address ?? 'Enter your address'}
+              {userLocation.address ?? addressField}
             </Text>
             <Feather name="chevron-right" size={20} color={'gray'} />
           </TouchableOpacity>
@@ -236,14 +244,8 @@ export const CustomerAddressForm = props => {
           <MapView
             cacheEnabled
             initialRegion={{
-              latitude:
-                state.userLocation.latitude === 0
-                  ? 12.203214000000004
-                  : state.userLocation.latitude,
-              longitude:
-                state.userLocation.longitude === 0
-                  ? 109.19345021534353
-                  : state.userLocation.longitude,
+              latitude: pre_latitude,
+              longitude: pre_longitude,
               latitudeDelta: 0.015,
               longitudeDelta: 0.0121,
             }}

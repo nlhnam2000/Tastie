@@ -53,6 +53,19 @@ export const CustomerAddress = props => {
     }
   };
 
+  const AddressTypeIcon = type => {
+    switch (type) {
+      case 1:
+        return <MaterialCommunityIcon name="home-outline" size={20} color="black" />;
+      case 2: {
+        return <MaterialCommunityIcon name={'briefcase-outline'} size={20} color="black" />;
+      }
+
+      default:
+        return <MaterialCommunityIcon name={'bookmark-outline'} size={20} color="black" />;
+    }
+  };
+
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, {justifyContent: 'center'}]}>
@@ -74,7 +87,7 @@ export const CustomerAddress = props => {
           }}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={[styles.heading1, {textAlign: 'center'}]}>Customer address</Text>
+        <Text style={[styles.heading1, {textAlign: 'center'}]}>Your address</Text>
       </View>
 
       <ScrollView>
@@ -110,11 +123,7 @@ export const CustomerAddress = props => {
                     props.navigation.navigate('Home Page');
                   }}
                   style={[styles.flexRow, {paddingBottom: 10, justifyContent: 'space-between'}]}>
-                  <MaterialCommunityIcon
-                    name={item.type === 1 ? 'home-outline' : 'briefcase-outline'}
-                    size={20}
-                    color="black"
-                  />
+                  {AddressTypeIcon(item.type)}
                   <View
                     style={[
                       styles.flexRow,
@@ -137,7 +146,14 @@ export const CustomerAddress = props => {
                   </View>
                   <TouchableOpacity
                     style={{paddingEnd: 5}}
-                    onPress={() => props.navigation.navigate('CustomerAddressForm')}>
+                    onPress={() =>
+                      props.navigation.navigate('EditCustomerAddress', {
+                        pre_latitude: parseFloat(item.latitude),
+                        pre_longitude: parseFloat(item.longitude),
+                        type: item.type,
+                        address: item.address,
+                      })
+                    }>
                     <Text>Edit</Text>
                   </TouchableOpacity>
                 </TouchableOpacity>
