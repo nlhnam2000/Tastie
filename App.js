@@ -78,6 +78,7 @@ import {
 import colors from './colors/colors';
 import {IP_ADDRESS, getAccessToken} from './global';
 import PushNotification from 'react-native-push-notification';
+import notifee, {AuthorizationStatus} from '@notifee/react-native';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -91,17 +92,33 @@ export default function App(props) {
   const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
 
+  const onDisplayNotification = async (title, message) => {
+    // Create a channel
+    // const channelId = await notifee.createChannel({
+    //   id: 'tastie-channel',
+    //   name: 'Tastie Channel',
+    // });
+
+    await notifee.cancelAllNotifications();
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: title,
+      body: message,
+      ios: {
+        foregroundPresentationOptions: {
+          alert: true,
+          badge: true,
+          sound: true,
+        },
+      },
+    });
+  };
+
   // Get user profile for each time the app is rendered
   useEffect(() => {
     setTimeout(async () => {
       let refreshToken = await AsyncStorage.getItem('user_token');
-      // let userLocation = await AsyncStorage.getItem('@userLocation');
-      // if (userLocation !== null) {
-      //   dispatch(SetUserLocation(JSON.parse(userLocation)));
-      // } else if (userLocation === undefined || userLocation === null) {
-      //   // set the current coordinate
-      //   dispatch(AutoSetLocation());
-      // }
 
       // console.log('refresh token', refreshToken);
       if (refreshToken !== null) {
@@ -112,40 +129,51 @@ export default function App(props) {
         dispatch(TokenNotFound());
       }
 
-      console.log('rooms: ', state.socketServer.rooms);
-      if (state.socketServer.rooms.length > 0) {
-        state.socketServer.rooms.forEach(room => {
-          state.socketServer.host.on('join-room', room);
-        });
+      // const settings = await notifee.requestPermission();
+      // if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
+      //   console.log('rooms: ', state.socketServer.rooms);
+      //   if (state.socketServer.rooms.length > 0) {
+      //     state.socketServer.rooms.forEach(room => {
+      //       state.socketServer.host.on('join-room', room);
+      //     });
 
-        state.socketServer.host.on('receive-shipper-inbox', message => {
-          console.log('shipper inbox: ', message);
-          PushNotification.cancelAllLocalNotifications();
-          PushNotification.localNotification({
-            channelId: 'homescreen-channel',
-            title: 'Message from shipper:',
-            message: message,
-          });
-        });
+      //     state.socketServer.host.on('receive-shipper-inbox', async message => {
+      //       console.log('shipper inbox: ', message);
+      //       if (Platform.OS === 'android') {
+      //         PushNotification.cancelAllLocalNotifications();
+      //         PushNotification.localNotification({
+      //           channelId: 'homescreen-channel',
+      //           title: 'Message from shipper:',
+      //           message: message,
+      //         });
+      //       } else {
+      //         onDisplayNotification('Message from shipper', message);
+      //       }
+      //     });
 
-        state.socketServer.host.on('shipper-on-the-way', message => {
-          PushNotification.cancelAllLocalNotifications();
-          PushNotification.localNotification({
-            channelId: 'homescreen-channel',
-            title: 'The shipper is on the way',
-            message: message,
-          });
-        });
+      //     state.socketServer.host.on('shipper-on-the-way', message => {
+      //       PushNotification.cancelAllLocalNotifications();
+      //       PushNotification.localNotification({
+      //         channelId: 'homescreen-channel',
+      //         title: 'The shipper is on the way',
+      //         message: message,
+      //       });
+      //     });
 
-        state.socketServer.host.on('shipper-has-arrived', message => {
-          PushNotification.cancelAllLocalNotifications();
-          PushNotification.localNotification({
-            channelId: 'homescreen-channel',
-            title: 'The shipper has arrived at your place',
-            message: message,
-          });
-        });
-      }
+      //     state.socketServer.host.on('shipper-has-arrived', async message => {
+      //       if (Platform.OS === 'android') {
+      //         PushNotification.cancelAllLocalNotifications();
+      //         PushNotification.localNotification({
+      //           channelId: 'homescreen-channel',
+      //           title: 'The shipper has arrived at your place',
+      //           message: message,
+      //         });
+      //       } else {
+      //         onDisplayNotification('Shipper has arrived !!!', message);
+      //       }
+      //     });
+      //   }
+      // }
     }, 100);
   }, []);
 

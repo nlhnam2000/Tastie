@@ -14,6 +14,7 @@ import {
   FlatList,
   Image,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,12 +31,32 @@ import colors from '../../colors/colors';
 import {RetrieveCart} from '../../store/action/cart';
 import {InitSocket, ToggleNotification, CheckedNotification} from '../../store/action/auth';
 import PushNotification from 'react-native-push-notification';
+import notifee from '@notifee/react-native';
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
   const cart = useSelector(state => state.UserReducer.userCart.cart);
   const state = useSelector(state => state.UserReducer);
   const [newNoti, setNewNoti] = useState(false);
+
+  async function onDisplayNotification(title, message) {
+    // Create a channel
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
+
+    await notifee.cancelAllNotifications();
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: title,
+      body: message,
+      ios: {
+        channelId,
+      },
+    });
+  }
 
   useEffect(() => {
     console.log(state.userCart);
@@ -57,6 +78,53 @@ export const NavigationBar = props => {
         setNewNoti(true);
         console.log('customer received from admin');
       });
+
+      if (state.socketServer.rooms.length > 0) {
+        console.log('rooms: ', state.socketServer.rooms);
+        state.socketServer.rooms.forEach(room => {
+          state.socketServer.host.on('join-room', room);
+        });
+
+        state.socketServer.host.on('receive-shipper-inbox', async message => {
+          console.log('shipper inbox: ', message);
+          if (Platform.OS === 'android') {
+            PushNotification.cancelAllLocalNotifications();
+            PushNotification.localNotification({
+              channelId: 'homescreen-channel',
+              title: 'Message from shipper:',
+              message: message,
+            });
+          } else {
+            onDisplayNotification('Message from shipper', message);
+          }
+        });
+
+        state.socketServer.host.on('shipper-on-the-way', message => {
+          if (Platform.OS === 'android') {
+            PushNotification.cancelAllLocalNotifications();
+            PushNotification.localNotification({
+              channelId: 'homescreen-channel',
+              title: 'The shipper is on the way',
+              message: message,
+            });
+          } else {
+            onDisplayNotification('The shipper is on the way', message);
+          }
+        });
+
+        state.socketServer.host.on('shipper-has-arrived', async message => {
+          if (Platform.OS === 'android') {
+            PushNotification.cancelAllLocalNotifications();
+            PushNotification.localNotification({
+              channelId: 'homescreen-channel',
+              title: 'The shipper has arrived at your place',
+              message: message,
+            });
+          } else {
+            onDisplayNotification('Shipper has arrived !!!', message);
+          }
+        });
+      }
     } else {
       dispatch(InitSocket());
     }

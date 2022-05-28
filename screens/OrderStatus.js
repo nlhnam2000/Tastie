@@ -527,7 +527,7 @@ export const OrderStatus = props => {
             padding: 5,
             alignSelf: 'flex-start',
           }}
-          onPress={() => props.navigation.goBack()}>
+          onPress={() => props.navigation.navigate('Home Page')}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
         <View

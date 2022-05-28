@@ -1011,6 +1011,11 @@
     "@types/yargs" "^16.0.0"
     "chalk" "^4.0.0"
 
+"@notifee/react-native@^5.2.2":
+  "integrity" "sha512-v58t7Q6DXOAoDQuxqPTYu1Zw0dsCGWq5o55jDYE6WlIsDVm3mwWcmotNqM1itbqd4mNxTdePEABkbs+S1GoZMQ=="
+  "resolved" "https://registry.npmjs.org/@notifee/react-native/-/react-native-5.2.2.tgz"
+  "version" "5.2.2"
+
 "@react-native-async-storage/async-storage@^1.15.14":
   "integrity" "sha512-eJF2horabXazwszCyyXDe4w7sBSWlB0WPA8akKXuN2n7WXKHYeQJPN41lS9OahrhSZuZwqftNFE9VWgPXA8wyA=="
   "resolved" "https://registry.npmjs.org/@react-native-async-storage/async-storage/-/async-storage-1.15.14.tgz"
