@@ -10,10 +10,11 @@ import {
   Dimensions,
 } from 'react-native';
 import {popularData} from '../../assets/dummy/popularData';
-import {shuffle, IP_ADDRESS} from '../../global';
+import {shuffle, IP_ADDRESS, OpenStatus} from '../../global';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {SimpleSkeleton} from '../Skeleton/SimpleSkeleton';
+import Feather from 'react-native-vector-icons/Feather';
 
 const {width} = Dimensions.get('window');
 
@@ -34,7 +35,7 @@ export const CategoryList = props => {
       },
     );
     if (res.data.response) {
-      setProviderList(res.data.response);
+      setProviderList(res.data.response.filter(r => OpenStatus(r.operation_time) !== 'OFF'));
     }
     setLoading(false);
   };
@@ -85,8 +86,28 @@ export const CategoryList = props => {
               <ImageBackground
                 source={{uri: item.profile_pic}}
                 resizeMode="cover"
-                style={{height: 150, width: width - 80}}
-              />
+                style={{
+                  height: 150,
+                  width: width - 80,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}>
+                {OpenStatus(item.operation_time) === 'CLOSED' && (
+                  <View
+                    style={{
+                      backgroundColor: 'rgba(0,0,0,0.5)',
+                      width: '100%',
+                      height: 150,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <Feather name="moon" size={20} color="white" />
+                    <Text style={{color: 'white', fontWeight: 'bold', marginTop: 10}}>
+                      Currently unavaible
+                    </Text>
+                  </View>
+                )}
+              </ImageBackground>
               <View style={[styles.flexRowBetween]}>
                 <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
                   <View style={{width: width - 200, marginBottom: 5}}>

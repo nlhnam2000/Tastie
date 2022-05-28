@@ -1,6 +1,7 @@
 import axios from 'axios';
+import moment from 'moment';
 
-export const IP_ADDRESS = '192.168.55.6';
+export const IP_ADDRESS = '192.168.1.40';
 // export const IP_ADDRESS = '157.230.243.92';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const MAPBOXGS_ACCESS_TOKEN =
@@ -91,4 +92,22 @@ export const formatDate = date => {
   if (day.length < 2) day = `0${day}`;
 
   return [year, month, day].join('-'); // 2022-05-04
+};
+
+export const OpenStatus = operation_time => {
+  /*
+    OFF: the restaurant is off today -> do not show 
+    CLOSED: the restaurant is closed at the moment -> show but low opacity
+    OPEN: the restaurant is available -> show as normal
+  */
+  const currentDay = moment().format('dddd').toLowerCase();
+  const currentTime = new Date().toLocaleTimeString();
+
+  if (operation_time[currentDay].is_day_off) {
+    return 'OFF';
+  } else if (operation_time[currentDay].close_time <= currentTime) {
+    return 'CLOSED';
+  }
+
+  return 'OPEN';
 };
