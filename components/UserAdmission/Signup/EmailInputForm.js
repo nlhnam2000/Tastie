@@ -84,9 +84,7 @@ export const EmailInputForm = props => {
           }}
           onChangeText={text => setEmail(text)}
         />
-        <Text style={{marginTop: 20}}>
-          By clicking Next, we will send OTP code to your email
-        </Text>
+        <Text style={{marginTop: 20}}>By clicking Next, we will send OTP code to your email</Text>
       </View>
       <View style={styles.buttonWrapper}>
         <TouchableOpacity
@@ -101,23 +99,23 @@ export const EmailInputForm = props => {
         <TouchableOpacity
           onPress={() => handleSubmit(email)}
           style={{
-            borderRadius: 25,
+            borderRadius: 5,
             padding: 10,
-            backgroundColor: colors.yellow,
+            backgroundColor: 'black',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
           <Text
             style={{
-              color: 'black',
+              color: 'white',
               fontSize: 18,
               marginRight: 5,
               fontWeight: '500',
             }}>
             Next
           </Text>
-          <Feather name="arrow-right" size={20} color={'black'} />
+          <Feather name="arrow-right" size={20} color={'white'} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -15,13 +15,13 @@ export const categoryData = [
   },
   {
     id: 1000012,
-    title: 'bakery',
+    title: 'Bakery',
     image: require('../image/Category/bakery.png'),
     type: 1,
   },
   {
     id: 1000023,
-    title: 'bubble tea',
+    title: 'Bubble Tea',
     image: require('../image/Category/bubble-tea.png'),
     type: 1,
   },

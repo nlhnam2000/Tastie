@@ -72,9 +72,7 @@ export const PasswordInputForm = props => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
-        <Text style={{fontWeight: '600', fontSize: 19}}>
-          Set up your password
-        </Text>
+        <Text style={{fontWeight: '600', fontSize: 19}}>Set up your password</Text>
         <View
           ref={password1InputRef}
           style={{
@@ -174,8 +172,7 @@ export const PasswordInputForm = props => {
         </View>
 
         <Text style={{marginTop: 20}}>
-          The password must contains at least 8 characters, 1 capitalized
-          character and 1 number
+          The password must contains at least 8 characters, 1 capitalized character and 1 number
         </Text>
       </View>
       <View style={styles.buttonWrapper}>
@@ -191,23 +188,23 @@ export const PasswordInputForm = props => {
         <TouchableOpacity
           onPress={() => handleSubmitPassword(password1, password2)}
           style={{
-            borderRadius: 25,
+            borderRadius: 5,
             padding: 10,
-            backgroundColor: colors.yellow,
+            backgroundColor: 'black',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
           <Text
             style={{
-              color: 'black',
+              color: 'white',
               fontSize: 18,
               marginRight: 5,
               fontWeight: '500',
             }}>
             Next
           </Text>
-          <Feather name="arrow-right" size={20} color={'black'} />
+          <Feather name="arrow-right" size={20} color={'white'} />
         </TouchableOpacity>
       </View>
       {/* Alert Dialog here */}

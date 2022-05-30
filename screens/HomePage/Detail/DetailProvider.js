@@ -351,7 +351,7 @@ export const DetailProvider = props => {
             ListHeaderComponent={() => (
               <>
                 <Animated.Image
-                  source={{uri: info.data.cover_picture}}
+                  source={{uri: info.data.avatar}}
                   resizeMode="cover"
                   style={[styles.providerCover, {opacity}]}
                 />

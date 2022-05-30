@@ -1,3 +1,4 @@
+import {PermissionsAndroid} from 'react-native';
 import {
   SIGN_IN,
   SIGN_OUT,
@@ -384,44 +385,71 @@ export const SetUserLocation = data => dispatch => {
   });
 };
 
-export const AutoSetLocation = () => dispatch => {
-  Geolocation.getCurrentPosition(
-    position => {
-      let address = '';
-      axios
-        .get(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude},${position.coords.latitude}.json?access_token=${MAPBOXGS_ACCESS_TOKEN}`,
-        )
-        .then(res => {
-          address = res.data.features[0].place_name;
-          return {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
-            address: address,
-          };
-        })
-        .then(data => {
-          dispatch({
-            type: AUTO_SET_LOCATION,
-            payload: {
-              userLocation: {
-                latitude: data.latitude,
-                longitude: data.longitude,
-                address: data.address,
+export const AutoSetLocation = () => async dispatch => {
+  const getGeolocation = () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        let address = '';
+        axios
+          .get(
+            `https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude},${position.coords.latitude}.json?access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+          )
+          .then(res => {
+            address = res.data.features[0].place_name;
+            return {
+              latitude: position.coords.latitude,
+              longitude: position.coords.longitude,
+              address: address,
+            };
+          })
+          .then(data => {
+            dispatch({
+              type: AUTO_SET_LOCATION,
+              payload: {
+                userLocation: {
+                  latitude: data.latitude,
+                  longitude: data.longitude,
+                  address: data.address,
+                },
               },
-            },
+            });
+            return data;
+          })
+          .then(data => {
+            AsyncStorage.setItem('@userLocation', JSON.stringify(data));
           });
-          return data;
-        })
-        .then(data => {
-          AsyncStorage.setItem('@userLocation', JSON.stringify(data));
-        });
-    },
-    err => {
-      alert(err.message);
-    },
-    {enableHighAccuracy: true},
-  );
+      },
+      err => {
+        alert(err.message);
+      },
+      {enableHighAccuracy: true},
+    );
+  };
+
+  if (Platform.OS === 'ios') {
+    let permission = await Geolocation.requestAuthorization('whenInUse');
+    if (permission === 'granted') {
+      getGeolocation();
+    }
+  } else {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Tastie App',
+          message: 'Tastie need to access to your location ',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        getGeolocation();
+      } else {
+        console.log('location permission denied');
+        alert('Location permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
 };
 
 export const InitSocket = () => dispatch => {

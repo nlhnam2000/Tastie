@@ -53,8 +53,7 @@ export const SignupScreen = ({navigation}) => {
           validationSchema={AccountRegistrationValidation}
           onSubmit={values => submitForm(values)}>
           {formikProps => {
-            const {errors, values, handleChange, handleBlur, handleSubmit} =
-              formikProps;
+            const {errors, values, handleChange, handleBlur, handleSubmit} = formikProps;
             return (
               <View style={styles.formWrapper}>
                 <View>
@@ -110,7 +109,6 @@ export const SignupScreen = ({navigation}) => {
                             },
                           })
                         }
-                        style={styles.inputField}
                       />
                       <Text style={{color: 'red', marginTop: 5}}>
                         {errors.lastname ? errors.lastname : null}
@@ -255,7 +253,7 @@ export const SignupScreen = ({navigation}) => {
                     style={{
                       borderRadius: 25,
                       padding: 10,
-                      backgroundColor: colors.yellow,
+                      backgroundColor: 'black',
                       flexDirection: 'row',
                       alignItems: 'center',
                       justifyContent: 'space-between',

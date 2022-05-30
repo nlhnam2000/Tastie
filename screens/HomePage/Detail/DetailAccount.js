@@ -92,7 +92,7 @@ export const DetailAccount = props => {
               Profile
             </Text>
             <TouchableOpacity disabled={!edit} onPress={() => submitForm(updateForm)}>
-              <Text style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>Update</Text>
+              <Text style={{color: 'black', fontWeight: '600', fontSize: 17}}>Update</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.accountContent}>
@@ -114,7 +114,7 @@ export const DetailAccount = props => {
                 />
                 <Button
                   title="EDIT"
-                  color={colors.yellow}
+                  color={'black'}
                   onPress={() => {
                     setEdit(true);
                     setTimeout(() => {
@@ -197,10 +197,10 @@ export const DetailAccount = props => {
                 alignItems: 'center',
               }}>
               {Platform.OS === 'ios' ? (
-                <Button color={colors.yellow} title="Logout" onPress={() => setOpenModal(true)} />
+                <Button color={'black'} title="Logout" onPress={() => setOpenModal(true)} />
               ) : (
                 <View style={{width: '30%'}}>
-                  <Button color={colors.yellow} title="Logout" onPress={() => setOpenModal(true)} />
+                  <Button color={'black'} title="Logout" onPress={() => setOpenModal(true)} />
                 </View>
               )}
             </View>
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   confirmModal: {
-    backgroundColor: colors.yellow,
+    backgroundColor: 'black',
     borderRadius: 20,
     padding: 10,
     width: '30%',

@@ -67,12 +67,12 @@ export const PickupTab = gestureHandlerRootHOC(props => {
         onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
         style={[
           styles.providerWrapper,
-          {marginBottom: index === providerList.length - 1 ? 60 : 0},
+          {marginBottom: index === providerList.length - 1 ? 100 : 0, marginTop: 10},
         ]}>
         <ImageBackground
           source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
-          style={{height: 200, width: width}}
+          style={{height: 200, width: width - 20}}
         />
         <View style={[styles.flexRowBetween]}>
           <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
@@ -222,13 +222,13 @@ export const PickupTab = gestureHandlerRootHOC(props => {
             //   paddingEnd: 30,
             //   backgroundColor: 'white',
             // }}
-            style={{paddingHorizontal: 30, paddingVertical: 10}}
+            contentContainerStyle={{paddingHorizontal: 30, paddingVertical: 10}}
           />
           <FlatList
             data={providerList}
             keyExtractor={item => item.provider_id}
+            contentContainerStyle={{backgroundColor: '#f2f2f2'}}
             renderItem={renderItem}
-            // contentContainerStyle={{marginTop: 20}}
             style={{marginTop: 20}}
           />
         </View>
@@ -271,8 +271,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   providerWrapper: {
-    // paddingHorizontal: 15,
+    paddingHorizontal: 20,
     paddingVertical: 10,
+    backgroundColor: 'white',
   },
   heading: {
     fontSize: 20,

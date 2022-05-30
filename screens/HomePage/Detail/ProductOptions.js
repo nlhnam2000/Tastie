@@ -18,6 +18,7 @@ import {
   Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../../colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
 import moment from 'moment';
@@ -25,7 +26,7 @@ import {AddToCart, ClearCart} from '../../../store/action/cart';
 import {DuoAlertDialog} from '../../../components/Error/AlertDialog';
 import {sleep} from '../../../global';
 
-const {width, height} = Dimensions.get('screen');
+const {width, height} = Dimensions.get('window');
 
 export const ProductOptions = props => {
   const [loading, setLoading] = useState(true);
@@ -89,7 +90,6 @@ export const ProductOptions = props => {
       </View>
     );
   }
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.headerWrapper}>
@@ -100,33 +100,67 @@ export const ProductOptions = props => {
           {data.product_name}
         </Text>
       </View>
-      <ScrollView>
-        <View style={{paddingBottom: 20}}>
-          {/* Image */}
-          <View style={styles.foodImageWrapper}>
-            <Image
-              source={{uri: data.product_image}}
-              resizeMode="cover"
-              style={{width, height: 200}}
+      <ScrollView
+        // style={{backgroundColor: '#f2f2f2'}}
+        contentContainerStyle={{backgroundColor: '#f2f2f2'}}>
+        {/* Image */}
+        <View style={styles.foodImageWrapper}>
+          <Image
+            source={{uri: data.product_image}}
+            resizeMode="cover"
+            style={{width, height: 200}}
+          />
+          {/* <View style={{padding: 10, marginTop: 10, backgroundColor: 'white'}}>
+            <Text style={{fontSize: 25, fontWeight: '500'}}>{data.product_name}</Text>
+          </View> */}
+        </View>
+
+        <View style={{width: '100%', padding: 10, marginTop: 10, backgroundColor: 'white'}}>
+          <Text style={{fontSize: 19, fontWeight: '600', marginBottom: 10}}>
+            Special instruction
+          </Text>
+          <View style={{backgroundColor: '#f2f2f2', padding: 5, paddingTop: -5}}>
+            <TextInput
+              style={{height: 60, justifyContent: 'flex-start', textAlignVertical: 'top'}}
+              placeholder="For example: no spicy, ..."
+              placeholderTextColor={'gray'}
+              onChangeText={text => setNote(text)}
+              multiline={true}
+              numberOfLines={4}
+              underlineColorAndroid="transparent"
             />
           </View>
-          <View style={{padding: 20}}>
-            <Text style={{fontSize: 25, fontWeight: '500'}}>{data.product_name}</Text>
-          </View>
         </View>
-        <View style={{width: '100%', padding: 20}}>
-          <Text style={{fontSize: 17, fontWeight: '600', marginBottom: 5}}>Note</Text>
-          <TextInput
-            style={{
-              width: '100%',
-              paddingVertical: 10,
-              borderBottomWidth: 1,
-              borderBottomColor: 'rgba(230,230,230,1)',
-            }}
-            placeholder="For example: no spicy, ..."
-            placeholderTextColor={'gray'}
-            onChangeText={text => setNote(text)}
-          />
+        <View style={{width: '100%', padding: 10, marginTop: 10, backgroundColor: 'white'}}>
+          <Text style={{fontSize: 19, fontWeight: '600', marginBottom: 10}}>
+            Frequently Bought Together
+          </Text>
+          {['Poke Salad', 'Chirashi', 'Hot Night'].map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                marginVertical: 10,
+                paddingHorizontal: 10,
+              }}>
+              <View style={{flexDirection: 'row'}}>
+                <TouchableOpacity>
+                  <MaterialCommunityIcon name="checkbox-blank-outline" size={25} color="grey" />
+                </TouchableOpacity>
+                <View style={{marginLeft: 10}}>
+                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item}</Text>
+                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>$10.00</Text>
+                </View>
+              </View>
+              <Image
+                source={require('../../../assets/image/upcomingproduct.png')}
+                style={{width: 100, height: 100}}
+                resizeMode="contain"
+              />
+            </View>
+          ))}
         </View>
         <View style={styles.quantityWrapper}>
           <TouchableOpacity
@@ -144,6 +178,7 @@ export const ProductOptions = props => {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
       <View style={styles.orderButtonWrapper}>
         <TouchableOpacity style={styles.orderButton} onPress={() => handleAddToCart()}>
           <Text
@@ -185,9 +220,11 @@ export const ProductOptions = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
     backgroundColor: 'white',
+    height: height,
+    // position: 'relative',
   },
   headerWrapper: {
     flexDirection: 'row',
@@ -200,7 +237,8 @@ const styles = StyleSheet.create({
   },
   foodImageWrapper: {
     width,
-    marginTop: 5,
+    backgroundColor: 'white',
+    paddingBottom: 15,
   },
   additionalOptionWrapper: {
     padding: 20,
@@ -237,18 +275,21 @@ const styles = StyleSheet.create({
     width,
     justifyContent: 'center',
     alignItems: 'center',
+    // position: 'absolute',
+    // bottom: -120,
   },
   orderButton: {
     width: '100%',
     padding: 15,
     backgroundColor: 'black',
-    marginTop: -300,
   },
   quantityWrapper: {
     flexDirection: 'row',
     width,
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 15,
+    marginTop: 10,
+    backgroundColor: 'white',
+    padding: 10,
   },
 });

@@ -36,7 +36,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>This application required your permission</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

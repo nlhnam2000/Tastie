@@ -36,13 +36,10 @@ export const ChangePasswordForm = ({navigation, route}) => {
   const handleSubmit = async password => {
     if (password !== '') {
       try {
-        let res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/auth/change-password`,
-          {
-            phone: data.phone,
-            password: password,
-          },
-        );
+        let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/change-password`, {
+          phone: data.phone,
+          password: password,
+        });
         if (res.data.status === true) {
           alert(res.data.message);
           dispatch(signin(data.phone, password));
@@ -131,7 +128,7 @@ export const ChangePasswordForm = ({navigation, route}) => {
           style={{
             borderRadius: 25,
             padding: 10,
-            backgroundColor: colors.yellow,
+            backgroundColor: 'black',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',

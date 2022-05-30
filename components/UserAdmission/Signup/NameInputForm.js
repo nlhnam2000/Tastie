@@ -112,21 +112,21 @@ export const NameInputForm = props => {
           style={{
             borderRadius: 25,
             padding: 10,
-            backgroundColor: colors.yellow,
+            backgroundColor: 'black',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
           <Text
             style={{
-              color: 'black',
+              color: 'white',
               fontSize: 18,
               marginRight: 5,
               fontWeight: '500',
             }}>
             Next
           </Text>
-          <Feather name="arrow-right" size={20} color={'black'} />
+          <Feather name="arrow-right" size={20} color={'white'} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

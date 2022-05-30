@@ -64,8 +64,8 @@ export const LoginForm = ({navigation, route}) => {
       <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
         <Text style={{fontWeight: '600', fontSize: 19}}>
-          Welcome <Text style={{fontWeight: 'bold'}}>{data.first_name}</Text>,
-          please enter your password to signin
+          Welcome <Text style={{fontWeight: 'bold'}}>{data.first_name}</Text>, please enter your
+          password to signin
         </Text>
         <View
           ref={passwordInputRef}
@@ -143,28 +143,28 @@ export const LoginForm = ({navigation, route}) => {
             style={{
               borderRadius: 25,
               padding: 10,
-              backgroundColor: colors.yellow,
+              backgroundColor: 'black',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
             }}>
             <Text
               style={{
-                color: 'black',
+                color: 'white',
                 fontSize: 18,
                 marginRight: 5,
                 fontWeight: '500',
               }}>
-              Signin
+              Sign in
             </Text>
-            <Feather name="arrow-right" size={20} color={'black'} />
+            <Feather name="arrow-right" size={20} color={'white'} />
           </TouchableOpacity>
         ) : (
           <View
             style={{
               borderRadius: 25,
               padding: 10,
-              backgroundColor: colors.yellow,
+              backgroundColor: 'black',
               flexDirection: 'row',
               alignItems: 'center',
               justifyContent: 'space-between',
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   confirmModal: {
-    backgroundColor: colors.yellow,
+    backgroundColor: 'black',
     borderRadius: 20,
     padding: 10,
     width: '30%',

@@ -82,7 +82,7 @@ export const Chat = props => {
               Orders
             </Text>
             <TouchableOpacity>
-              <Text style={{color: colors.yellow, fontWeight: '600', fontSize: 17}}>Update</Text>
+              <Text style={{color: 'black', fontWeight: '600', fontSize: 17}}>Update</Text>
             </TouchableOpacity>
           </View>
           {/* <View>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     marginRight: 20,
   },
   confirmModal: {
-    backgroundColor: colors.yellow,
+    backgroundColor: 'black',
     borderRadius: 20,
     padding: 10,
     width: '30%',

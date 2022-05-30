@@ -72,7 +72,7 @@ export const SimpleAlertDialog = props => {
               <Text
                 style={{
                   textAlign: 'center',
-                  color: 'black',
+                  color: 'white',
                   fontWeight: 'bold',
                 }}>
                 OK
@@ -107,7 +107,7 @@ export const DuoAlertDialog = props => {
               <Text
                 style={{
                   textAlign: 'center',
-                  color: 'white',
+                  color: 'black',
                   fontWeight: 'bold',
                 }}>
                 No
@@ -117,7 +117,7 @@ export const DuoAlertDialog = props => {
               <Text
                 style={{
                   textAlign: 'center',
-                  color: 'black',
+                  color: 'white',
                   fontWeight: 'bold',
                 }}>
                 Yes
@@ -183,14 +183,15 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   cancelModal: {
-    backgroundColor: colors.red,
+    backgroundColor: 'white',
     borderRadius: 20,
     padding: 10,
     width: '30%',
     marginRight: 20,
+    borderWidth: 1,
   },
   confirmModal: {
-    backgroundColor: colors.yellow,
+    backgroundColor: 'black',
     borderRadius: 20,
     padding: 10,
     width: '30%',

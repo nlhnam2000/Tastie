@@ -14,11 +14,7 @@ import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
-import {
-  SendOTP,
-  EmailVerification,
-  clearAlertMessage,
-} from '../../../store/action/auth';
+import {SendOTP, EmailVerification, clearAlertMessage} from '../../../store/action/auth';
 import {IP_ADDRESS} from '../../../global';
 import {SimpleAlertDialog} from '../../Error/AlertDialog';
 
@@ -75,12 +71,9 @@ export const SignupScreen2 = ({navigation, route}) => {
 
   const SendCodeToEmail = async email => {
     try {
-      let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`,
-        {
-          email: email,
-        },
-      );
+      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`, {
+        email: email,
+      });
       if (res.data.status === true) {
         // await AsyncStorage.removeItem('verified_email_token');
         console.log('Email token ', res.data.result.verifyEmailToken);
@@ -93,14 +86,11 @@ export const SignupScreen2 = ({navigation, route}) => {
 
   const EmailVerification = async (emailToken, otp, email) => {
     try {
-      let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`,
-        {
-          verifyEmailToken: emailToken,
-          code: otp,
-          email: email,
-        },
-      );
+      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`, {
+        verifyEmailToken: emailToken,
+        code: otp,
+        email: email,
+      });
       // success
       if (res.data.status === true) {
         navigation.navigate('NameInputForm', {data: data});
@@ -116,12 +106,7 @@ export const SignupScreen2 = ({navigation, route}) => {
 
   const handleEmailVerification = async values => {
     let otp =
-      values.input1 +
-      values.input2 +
-      values.input3 +
-      values.input4 +
-      values.input5 +
-      values.input6;
+      values.input1 + values.input2 + values.input3 + values.input4 + values.input5 + values.input6;
 
     await EmailVerification(verifyToken, otp, data.email);
   };
@@ -142,22 +127,11 @@ export const SignupScreen2 = ({navigation, route}) => {
           <Text style={{fontWeight: 'bold', fontSize: 17}}>{data.email}</Text>
           {` in ${timer} seconds`}.
         </Text>
-        <Text style={{marginTop: 10}}>
-          Please enter the 6-digit code below.
-        </Text>
+        <Text style={{marginTop: 10}}>Please enter the 6-digit code below.</Text>
       </View>
-      <Formik
-        initialValues={initialValues}
-        onSubmit={values => handleEmailVerification(values)}>
+      <Formik initialValues={initialValues} onSubmit={values => handleEmailVerification(values)}>
         {formikProps => {
-          const {
-            errors,
-            values,
-            touched,
-            handleSubmit,
-            handleChange,
-            handleBlur,
-          } = formikProps;
+          const {errors, values, touched, handleSubmit, handleChange, handleBlur} = formikProps;
 
           return (
             <View
@@ -316,7 +290,7 @@ export const SignupScreen2 = ({navigation, route}) => {
                   style={{
                     borderRadius: 25,
                     padding: 10,
-                    backgroundColor: colors.yellow,
+                    backgroundColor: 'black',
                     flexDirection: 'row',
                     alignItems: 'center',
                     justifyContent: 'space-between',

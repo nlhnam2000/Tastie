@@ -189,6 +189,7 @@ export const DeliveryTab = props => {
 
           <ScrollView
             style={{width}}
+            contentContainerStyle={{backgroundColor: '#f2f2f2'}}
             refreshControl={
               <RefreshControl
                 tintColor={colors.boldred}
@@ -205,60 +206,62 @@ export const DeliveryTab = props => {
                 }}
               />
             }>
-            <View style={{width}}>
+            <View style={{width, backgroundColor: 'white'}}>
               <BrowseCategory {...props} />
             </View>
             <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={1}
-                location={state.userLocation}
-                offset={6}
-                categoryTitle="Order near you"
-              />
-            </View>
-            <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={2}
-                location={state.userLocation}
-                offset={1}
-                categoryTitle="Today offer"
-              />
-            </View>
-            <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={3}
-                location={state.userLocation}
-                offset={12}
-                categoryTitle="Most rating"
-              />
-            </View>
-            <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={4}
-                location={state.userLocation}
-                offset={18}
-                categoryTitle="In a rush"
-              />
-            </View>
-            <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={5}
-                location={state.userLocation}
-                categoryTitle="New on Tastie"
-              />
-            </View>
-            <View style={{width}}>
-              <CategoryList
-                {...props}
-                groupID={6}
-                location={state.userLocation}
-                categoryTitle="Most popular"
-              />
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={1}
+                  location={state.userLocation}
+                  offset={6}
+                  categoryTitle="Order near you"
+                />
+              </View>
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={2}
+                  location={state.userLocation}
+                  offset={1}
+                  categoryTitle="Today offer"
+                />
+              </View>
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={3}
+                  location={state.userLocation}
+                  offset={12}
+                  categoryTitle="Most rating"
+                />
+              </View>
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={4}
+                  location={state.userLocation}
+                  offset={18}
+                  categoryTitle="In a rush"
+                />
+              </View>
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={5}
+                  location={state.userLocation}
+                  categoryTitle="New on Tastie"
+                />
+              </View>
+              <View style={{width}}>
+                <CategoryList
+                  {...props}
+                  groupID={6}
+                  location={state.userLocation}
+                  categoryTitle="Most popular"
+                />
+              </View>
             </View>
           </ScrollView>
         </View>

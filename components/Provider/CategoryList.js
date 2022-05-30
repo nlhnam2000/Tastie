@@ -137,6 +137,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     paddingVertical: 10,
+    marginTop: 10,
   },
   heading: {
     fontSize: 20,

@@ -61,9 +61,7 @@ export const PhoneInputForm = props => {
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
       <View style={styles.contentWrapper}>
-        <Text style={{fontWeight: '600', fontSize: 19}}>
-          Enter your phone number
-        </Text>
+        <Text style={{fontWeight: '600', fontSize: 19}}>Enter your phone number</Text>
         <TextInput
           style={styles.inputField}
           placeholder="Your phone number"
@@ -102,23 +100,23 @@ export const PhoneInputForm = props => {
         <TouchableOpacity
           onPress={async () => await handleSubmit(phone)}
           style={{
-            borderRadius: 25,
+            borderRadius: 5,
             padding: 10,
-            backgroundColor: colors.yellow,
+            backgroundColor: 'black',
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
           }}>
           <Text
             style={{
-              color: 'black',
               fontSize: 18,
               marginRight: 5,
               fontWeight: '500',
+              color: 'white',
             }}>
             Next
           </Text>
-          <Feather name="arrow-right" size={20} color={'black'} />
+          <Feather name="arrow-right" size={20} color={'white'} />
         </TouchableOpacity>
       </View>
     </SafeAreaView>

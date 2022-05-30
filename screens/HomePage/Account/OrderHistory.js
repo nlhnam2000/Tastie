@@ -241,14 +241,24 @@ export const OrderHistory = props => {
                 key={index}
                 style={{width: '100%', borderBottomWidth: 1, borderBottomColor: colors.secondary}}>
                 <View style={styles.orderHeader}>
-                  <Text style={{color: 'gray'}}>{order.order_code}</Text>
+                  <Text style={{color: 'gray', width: '50%'}} numberOfLines={1}>
+                    {order.order_code}
+                  </Text>
                   <Text style={{color: 'gray'}}>{order.completed_at}</Text>
                 </View>
                 <TouchableOpacity
                   style={styles.orderContent}
-                  onPress={() =>
-                    props.navigation.navigate('OrderStatus', {order_code: order.order_code})
-                  }>
+                  onPress={() => {
+                    if (order.order_status === 'Completed') {
+                      props.navigation.navigate('DetailOrder', {
+                        order_code: order.order_code,
+                        total_price: order.total_amount,
+                        payment_method: order.payment_method,
+                      });
+                    } else {
+                      props.navigation.navigate('OrderStatus', {order_code: order.order_code});
+                    }
+                  }}>
                   <ImageBackground
                     source={{uri: order.provider_avatar}}
                     style={{width: 150, height: 120, marginRight: 20}}
