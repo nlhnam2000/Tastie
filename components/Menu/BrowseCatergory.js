@@ -31,6 +31,7 @@ export const BrowseCategory = props => {
                 categoryID: categoryData[0].id,
               },
               title: categoryData[0].title,
+              image: categoryData[0].image,
             });
           }}>
           <Text style={{fontSize: 16, fontWeight: '500', alignSelf: 'flex-end'}}>
@@ -50,6 +51,7 @@ export const BrowseCategory = props => {
                 categoryID: categoryData[1].id,
               },
               title: categoryData[1].title,
+              image: categoryData[1].image,
             });
           }}>
           <Text style={{fontSize: 16, fontWeight: '500', alignSelf: 'flex-end'}}>
@@ -73,6 +75,7 @@ export const BrowseCategory = props => {
                     categoryID: categoryData[item].id,
                   },
                   title: categoryData[item].title,
+                  image: categoryData[item].image,
                 });
               }}>
               <Image source={categoryData[item].image} style={{width: 50, height: 50}} />

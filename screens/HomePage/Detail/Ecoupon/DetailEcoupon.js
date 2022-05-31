@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 // assets & components
-import {Header} from '../../../../components/Layout/Header';
+import {Header} from '../../../../components/Layout/Header/Header';
 
 // libraries
 import Feather from 'react-native-vector-icons/Feather';

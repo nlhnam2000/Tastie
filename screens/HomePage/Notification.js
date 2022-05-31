@@ -17,7 +17,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
-import {Header} from '../../components/Layout/Header';
+import {Header} from '../../components/Layout/Header/Header';
 import {IP_ADDRESS} from '../../global';
 
 // libraries

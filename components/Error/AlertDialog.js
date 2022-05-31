@@ -34,7 +34,7 @@ export const ActionAlertDialog = props => {
               <Text
                 style={{
                   textAlign: 'center',
-                  color: 'black',
+                  color: 'white',
                   fontWeight: 'bold',
                 }}>
                 OK

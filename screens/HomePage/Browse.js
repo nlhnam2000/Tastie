@@ -36,6 +36,7 @@ export const Browse = props => {
               categoryID: item.id,
             },
             title: item.title,
+            image: item.image,
           })
         }>
         <Text style={{fontWeight: '600'}}>{item.title}</Text>

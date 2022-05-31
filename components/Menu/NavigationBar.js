@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: Dimensions.get('screen').width,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: Platform.OS === 'ios' ? 20 : 10,
     backgroundColor: 'white',
     borderTopColor: 'rgb(230,230,230)',
     borderTopWidth: 1,

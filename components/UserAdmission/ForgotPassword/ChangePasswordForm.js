@@ -135,7 +135,7 @@ export const ChangePasswordForm = ({navigation, route}) => {
           }}>
           <Text
             style={{
-              color: 'black',
+              color: 'white',
               fontSize: 18,
               marginRight: 5,
               fontWeight: '500',

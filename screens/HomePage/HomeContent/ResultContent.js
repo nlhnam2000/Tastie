@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef} from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {
   ImageBackground,
   Dimensions,
   Platform,
+  Animated,
 } from 'react-native';
 
 // components
 import colors from '../../../colors/colors';
-import {IP_ADDRESS} from '../../../global';
+import {IP_ADDRESS, convertDollar} from '../../../global';
 import {SimpleSkeleton} from '../../../components/Skeleton/SimpleSkeleton';
+import {Header} from '../../../components/Layout/Header/Header';
 
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
@@ -24,14 +26,33 @@ import axios from 'axios';
 
 import {useSelector} from 'react-redux';
 
-const {width} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window');
+const CATEGORY_IMAGE_HEIGHT = 150;
+const PROVIDER_TEXT_MAX_WIDTH = width - 15 - 150 - 10 - 30;
 
 export const ResultContent = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
-  const {groupID, title, keyword, categoryFilter} = route.params;
+  const {groupID, title, keyword, categoryFilter, image} = route.params;
   const [data, setData] = useState([]);
   const [offset, setOffset] = useState(1);
   const state = useSelector(state => state.UserReducer);
+
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const headerImageHeiht = scrollY.interpolate({
+    inputRange: [0, 1000],
+    outputRange: [CATEGORY_IMAGE_HEIGHT - 50, 0],
+    extrapolate: 'clamp',
+  });
+  const headerContentOpacity = scrollY.interpolate({
+    inputRange: [0, 400],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
+  const headerTitleOpacity = scrollY.interpolate({
+    inputRange: [0, 900],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   const LoadProvider = async (group_id, offset, limit = 20) => {
     try {
@@ -130,20 +151,26 @@ export const ResultContent = ({navigation, route}) => {
     return (
       <TouchableOpacity
         onPress={() => navigation.navigate('DetailProvider', {data: item})}
-        style={[styles.providerWrapper, {marginTop: index % 2 !== 0 ? 20 : 0}]}>
+        style={[styles.providerWrapper, {marginTop: 20}]}>
         <ImageBackground
           source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
-          style={{height: 200, width: width}}
+          style={{height: 100, width: 100}}
         />
-        <View style={[styles.flexRowBetween]}>
-          <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
-            <View style={{width: width - 200, marginBottom: 5}}>
-              <Text numberOfLines={1} style={[styles.subheading]}>
+        <View style={[styles.flexRowBetween, {marginLeft: 15}]}>
+          <View>
+            <View style={{justifyContent: 'space-between'}}>
+              <Text
+                numberOfLines={1}
+                style={[styles.subheading, {width: PROVIDER_TEXT_MAX_WIDTH, marginVertical: 1}]}>
                 {item.provider_name ?? item.name}
               </Text>
+              <Text style={{marginVertical: 1}}>
+                • Delivery fee ${convertDollar(item.delivery_fee)}
+              </Text>
+              <Text style={{marginVertical: 1}}>{item.estimated_cooking_time} minutes</Text>
             </View>
-            <Text>{item.estimated_cooking_time} minutes</Text>
+            <Text>{item.promotionCode && ''}</Text>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
             <Text>{item.order_totals}</Text>
@@ -165,12 +192,44 @@ export const ResultContent = ({navigation, route}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerWrapper}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+      <View
+        style={{
+          paddingHorizontal: 10,
+          paddingVertical: 15,
+          position: 'relative',
+          width: '100%',
+          zIndex: 0,
+          backgroundColor: '#f2f2f2',
+        }}>
+        <TouchableOpacity
+          style={{position: 'absolute', top: 15, left: 10, zIndex: 10}}
+          onPress={() => navigation.goBack()}>
           <Feather name="arrow-left" size={20} color="black" />
         </TouchableOpacity>
-        <Text style={[styles.heading, {textAlign: 'center'}]}>{title}</Text>
+        <Animated.Text
+          style={{
+            textAlign: 'center',
+            fontSize: 17,
+            fontWeight: '600',
+            opacity: headerTitleOpacity,
+          }}>
+          {title}
+        </Animated.Text>
       </View>
+      <Animated.View style={[styles.headerWrapper, {height: headerImageHeiht}]}>
+        <Animated.Text style={{fontSize: 24, fontWeight: '600', opacity: headerContentOpacity}}>
+          {title}
+        </Animated.Text>
+        <Animated.View style={{opacity: headerContentOpacity}}>
+          <Image
+            source={image}
+            style={{
+              width: 150,
+              height: CATEGORY_IMAGE_HEIGHT,
+            }}
+          />
+        </Animated.View>
+      </Animated.View>
       <View
         style={{
           width: '100%',
@@ -188,11 +247,14 @@ export const ResultContent = ({navigation, route}) => {
           }}
           renderItem={renderItem}
           style={{
-            backgroundColor: 'rgba(230,230,230, 0.6)',
+            height,
           }}
           contentContainerStyle={{
-            paddingBottom: Platform.OS === 'android' ? 60 : 0,
+            paddingBottom: Platform.OS === 'android' ? 150 : 30,
           }}
+          onScroll={Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
+            useNativeDriver: false,
+          })}
         />
       </View>
     </SafeAreaView>
@@ -207,14 +269,14 @@ const styles = StyleSheet.create({
   },
   headerWrapper: {
     width: '100%',
-    // paddingHorizontal: 20,
-    paddingVertical: 10,
     position: 'relative',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(230,230,230,1.0)',
+    backgroundColor: '#f2f2f2',
+    paddingLeft: 15,
+    paddingVertical: 0,
+    height: CATEGORY_IMAGE_HEIGHT - 50,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   backButton: {
     position: 'absolute',
@@ -230,10 +292,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 10,
+    width: width - 15 - 100 - 10 - 15,
   },
   providerWrapper: {
-    // paddingHorizontal: 15,
+    paddingHorizontal: 15,
     backgroundColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '100%',
+    // borderWidth: 1,
   },
   subheading: {
     fontWeight: '600',
