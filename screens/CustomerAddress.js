@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import {TextInput} from 'react-native-gesture-handler';
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -32,6 +33,7 @@ export const CustomerAddress = props => {
     user_phone: null,
     user_address: [],
   });
+  const [addressInput, setAddressInput] = useState('');
 
   useEffect(() => {
     // setLoading(false);
@@ -90,8 +92,31 @@ export const CustomerAddress = props => {
         <Text style={[styles.heading1, {textAlign: 'center'}]}>Your address</Text>
       </View>
 
+      <View
+        style={[
+          styles.flexRowBetween,
+          {paddingHorizontal: 10, paddingVertical: 5, backgroundColor: 'white'},
+        ]}>
+        <Feather name="search" color={'gray'} size={20} />
+        <TextInput
+          placeholder="Your current address ?"
+          style={{padding: 10, width: '90%', fontWeight: 'bold', fontSize: 17}}
+          onChangeText={text => setAddressInput(text)}
+          returnKeyType="search"
+          onSubmitEditing={event => {
+            props.navigation.navigate('MapScreen', {address: addressInput});
+          }}
+        />
+        <Feather
+          name="map"
+          color={'black'}
+          size={20}
+          onPress={() => props.navigation.navigate('MapScreen', {address: addressInput})}
+        />
+      </View>
+
       <ScrollView>
-        <View style={[styles.sectionWrapper, {borderTopWidth: 1, borderTopColor: '#e6e6e6'}]}>
+        {/* <View style={[styles.sectionWrapper, {borderTopWidth: 1, borderTopColor: '#e6e6e6'}]}>
           <View style={styles.flexRow}>
             <MaterialCommunityIcon name="map-marker" size={20} color="black" />
             <View style={{marginLeft: 10, width: '90%'}}>
@@ -102,7 +127,7 @@ export const CustomerAddress = props => {
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
         <Text style={{padding: 15, color: 'gray', fontSize: 15, fontWeight: '500'}}>
           Saved address
         </Text>
@@ -219,6 +244,7 @@ const styles = StyleSheet.create({
     width: '100%',
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
   },
   addButton: {
     width: '100%',

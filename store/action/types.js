@@ -26,6 +26,7 @@ export const CART_TAB = 'CART_TAB';
 export const RESET_PASSWORD = 'RESET_PASSWORD';
 
 // clear alert message
+export const DISPLAY_ALERT_MESSAGE = 'DISPLAY_ALERT_MESSAGE';
 export const CLEAR_ALERT_MESSAGE = 'CLEAR_ALERT_MESSAGE';
 
 // add to cart

@@ -94,7 +94,7 @@ export const DuoAlertDialog = props => {
     <Modal animationType="slide" transparent={true} visible={true}>
       <View style={styles.modalContainer}>
         <View style={styles.modalView}>
-          <Text>{props.message}</Text>
+          <Text style={{textAlign: 'center', lineHeight: 25}}>{props.message}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -169,8 +169,9 @@ const styles = StyleSheet.create({
   modalView: {
     margin: 20,
     backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
+    borderRadius: 15,
+    padding: 20,
+    paddingVertical: 35,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOffset: {
@@ -184,7 +185,7 @@ const styles = StyleSheet.create({
   },
   cancelModal: {
     backgroundColor: 'white',
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     width: '30%',
     marginRight: 20,
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
   },
   confirmModal: {
     backgroundColor: 'black',
-    borderRadius: 20,
+    borderRadius: 10,
     padding: 10,
     width: '30%',
   },

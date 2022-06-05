@@ -36,6 +36,7 @@ import {
   CLEAR_CART,
   SOCKET_CONNECTION,
   SOCKET_DISCONNECTION,
+  DISPLAY_ALERT_MESSAGE,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS} from '../../global';
@@ -233,6 +234,12 @@ export const UserReducer = (state = initialState, action) => {
       };
     }
     case EMAIL_PHONE_NOT_EXISTED: {
+      return {
+        ...state,
+        ...payload,
+      };
+    }
+    case DISPLAY_ALERT_MESSAGE: {
       return {
         ...state,
         ...payload,

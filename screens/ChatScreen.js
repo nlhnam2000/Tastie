@@ -69,12 +69,12 @@ export const ChatScreen = props => {
   };
 
   useEffect(() => {
-    state.socket.emit('join-room', order_code);
-    state.socket.on('receive-shipper-inbox', message => {
+    state.socketServer.host.emit('join-room', order_code);
+    state.socketServer.host.on('receive-shipper-inbox', message => {
       setMessages(prev => [...prev, {sender: 'shipper', message: message}]);
       console.log('Received: ', message);
     });
-    inputRef.current.focus();
+    // inputRef.current.focus();
   }, []);
 
   return (
@@ -138,11 +138,11 @@ export const ChatScreen = props => {
           onPress={() => {
             if (message !== '') {
               setMessages(prev => [...prev, {sender: 'customer', message: message}]);
-              state.socket.emit('customer-inbox', message, order_code);
+              state.socketServer.host.emit('customer-inbox', message, order_code);
               setMessage('');
               setTimeout(() => {
                 scrollRef.current.scrollToEnd();
-                inputRef.current.clear();
+                // inputRef.current.clear();
               }, 100);
             }
           }}

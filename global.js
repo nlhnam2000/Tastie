@@ -1,9 +1,10 @@
 import axios from 'axios';
 import moment from 'moment';
 
-// export const IP_ADDRESS = '192.168.55.8';
+// export const IP_ADDRESS = '192.168.55.3';
 export const IP_ADDRESS = '157.230.243.92';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
+export const GEOAPIFY = '936151db693c4437aefc3ab950f1c033';
 export const MAPBOXGS_ACCESS_TOKEN =
   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g';
 
@@ -55,27 +56,18 @@ export const currentDateString = () => {
 
 export const cleanOperationTime = data => {
   const array = [];
-  /* 
-    array = [
-      {
-        date: 'Monday, Tuesday', 
-        time: 08:00:00 - 23:00:00
-      }, 
-      {
-        date: 'Friday, Sunday', 
-        time: 10:00:00 - 23:00:00
-      }
-    ]
-  */
+  const temp = [];
+
   for (const day of Object.keys(data)) {
-    const index = array.lastIndexOf(data[day].open_time + ' - ' + data[day].close_time);
+    const index = temp.indexOf(data[day].open_time + ' - ' + data[day].close_time);
     if (index === -1) {
+      temp.push(data[day].open_time + ' - ' + data[day].close_time);
       array.push({
-        date: day,
+        date: day[0].toUpperCase() + day.slice(1), // uppercase the first letter
         time: data[day].open_time + ' - ' + data[day].close_time,
       });
     } else {
-      array[index].date += ', ' + day;
+      array[index].date += ', ' + day[0].toUpperCase() + day.slice(1);
     }
   }
 

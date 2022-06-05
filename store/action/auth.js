@@ -23,13 +23,24 @@ import {
   TOGGLE_NOTIFICATION,
   CHECKED_NOTIFICATION,
   PLACED_ORDER,
+  DISPLAY_ALERT_MESSAGE,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../../global';
+import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN, GEOAPIFY} from '../../global';
 import Geolocation from 'react-native-geolocation-service';
 import axios from 'axios';
 
 // const validateEmailOrPhone = () => {};
+
+export const DisplayAlertMessage = message => dispatch => {
+  dispatch({
+    type: DISPLAY_ALERT_MESSAGE,
+    payload: {
+      triggerAlertMessage: true,
+      alertMessage: message,
+    },
+  });
+};
 
 export const clearAlertMessage = () => dispatch => {
   dispatch({
@@ -392,10 +403,10 @@ export const AutoSetLocation = () => async dispatch => {
         let address = '';
         axios
           .get(
-            `https://api.mapbox.com/geocoding/v5/mapbox.places/${position.coords.longitude},${position.coords.latitude}.json?access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+            `https://api.geoapify.com/v1/geocode/reverse?lat=${position.coords.latitude}&lon=${position.coords.longitude}&apiKey=${GEOAPIFY}`,
           )
           .then(res => {
-            address = res.data.features[0].place_name;
+            address = res.data.features[0].properties.name;
             return {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,

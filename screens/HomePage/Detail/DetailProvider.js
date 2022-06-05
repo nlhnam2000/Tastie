@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 // components
 import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
-import {IP_ADDRESS} from '../../../global';
+import {IP_ADDRESS, cleanOperationTime} from '../../../global';
 import {DetailProviderSkeleton} from '../../../components/Skeleton/DetailProviderSkeleton';
 
 // actions
@@ -31,6 +31,7 @@ import {NavigateToCart} from '../../../store/action/navigation';
 
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../../colors/colors';
 import {useSelector, useDispatch} from 'react-redux';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
@@ -57,11 +58,44 @@ export const DetailProvider = props => {
   const [menuCategory, setMenuCategory] = useState([]);
   const [item, setItem] = useState([]);
   const [info, setInfo] = useState({});
+  const [upcomingProducts, setUpcomingProducts] = useState([]);
+  const [selectedUpcomingProduct, setSelectedUpcomingProduct] = useState(upcomingProducts[0]);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [operation_time, setOperation_time] = useState([]);
 
   const providerInfoModal = useRef();
   const openProviderInfoModal = () => {
     providerInfoModal.current?.open();
+  };
+
+  const handleFavorite = async (provider_id, user_id) => {
+    try {
+      if (isFavorite) {
+        const res = await axios.post(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/remove-from-favorite`,
+          {
+            provider_id,
+            user_id,
+          },
+        );
+
+        if (res.data.status) {
+          setIsFavorite(false);
+        }
+      } else {
+        const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/add-to-favorite`, {
+          provider_id,
+          user_id,
+        });
+
+        if (res.data.status) {
+          setIsFavorite(true);
+        }
+      }
+    } catch (error) {
+      console.error('Cannot add to favorite', error);
+    }
   };
 
   const getListProduct = async provider_id => {
@@ -73,8 +107,21 @@ export const DetailProvider = props => {
   };
 
   const getProviderInfo = async provider_id => {
+    let res = await axios.post(`http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/get-info`, {
+      provider_id: provider_id,
+      user_id: state.user_id,
+    });
+
+    // let res = await axios.get(
+    //   `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/${provider_id}/get-info`,
+    // );
+
+    return res.data;
+  };
+
+  const getUpcomingProduct = async provider_id => {
     let res = await axios.get(
-      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/${provider_id}/get-info`,
+      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/get-up-coming-product/${provider_id}`,
     );
 
     return res.data;
@@ -83,32 +130,38 @@ export const DetailProvider = props => {
   const loadDetailProvider = async provider_id => {
     const res1 = getListProduct(provider_id);
     const res2 = getProviderInfo(provider_id);
-    Promise.all([res1, res2]).then(data => {
+    const res3 = getUpcomingProduct(provider_id);
+    Promise.all([res1, res2, res3]).then(data => {
       // data[0] means the response from 1st api call
-      if (data[0].result) {
-        data[0].result.forEach((item, index) => {
-          setMenuCategory(prev => [
-            ...prev,
-            {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
-          ]);
-          if (index === 0) {
-            setSelectedTab(item.menu_category_name);
-          }
-        });
+      data[0].result.forEach((item, index) => {
+        setMenuCategory(prev => [
+          ...prev,
+          {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
+        ]);
+        if (index === 0) {
+          setSelectedTab(item.menu_category_name);
+        }
+      });
 
-        // clone the "products" property to "data" property to use SectionList
-        let providerDetailResult = data[0].result.reduce((r, s) => {
-          r.push({...s, data: s.products});
-          return r;
-        }, []);
+      // clone the "products" property to "data" property to use SectionList
+      let providerDetailResult = data[0].result.reduce((r, s) => {
+        r.push({...s, data: s.products});
+        return r;
+      }, []);
 
-        setItem(providerDetailResult);
-      }
+      setItem(providerDetailResult);
 
       // data[1] means the response from 2nd api call
       if (data[1].provider_info) {
         setInfo(prev => ({...prev, ...data[1].provider_info}));
+        setIsFavorite(data[1].provider_info.isFavorite);
       }
+
+      // data[2] means the response from 3rd api call
+      if (data[2].status) {
+        setUpcomingProducts(data[2].response);
+      }
+
       setLoading(false);
     });
   };
@@ -116,6 +169,12 @@ export const DetailProvider = props => {
   useEffect(() => {
     loadDetailProvider(data.provider_id);
   }, []);
+
+  useEffect(() => {
+    if (info.operation_time) {
+      setOperation_time(cleanOperationTime(info.operation_time));
+    }
+  }, [info]);
 
   // useEffect(() => {
   //   console.log(menuCategory);
@@ -221,18 +280,20 @@ export const DetailProvider = props => {
   const UpcomingProductList = React.memo(function UpcomingProductList(props) {
     return (
       <FlatList
-        data={[{id: 1}, {id: 2}]}
-        keyExtractor={item => item.id.toString()}
+        data={upcomingProducts}
+        keyExtractor={item => item.upcoming_product_id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => (
+        renderItem={({item, index}) => (
           <View style={{flexDirection: 'row', alignItems: 'center', marginRight: 20}}>
             <TouchableOpacity
               style={{borderRadius: 40}}
-              // onPress={() => setOpenUpcoming(true)}
-              onPress={() => openModalize()}>
+              onPress={() => {
+                setSelectedUpcomingProduct(upcomingProducts[index]);
+                openModalize();
+              }}>
               <ImageBackground
-                source={require('../../../assets/image/upcomingproduct.png')}
+                source={{uri: item.product_image}}
                 style={{width: 120, height: 120, marginTop: 10}}></ImageBackground>
             </TouchableOpacity>
           </View>
@@ -372,8 +433,13 @@ export const DetailProvider = props => {
                         borderRadius: 40,
                         padding: 5,
                         backgroundColor: 'white',
-                      }}>
-                      <Feather name="heart" size={22} color={'#000'} />
+                      }}
+                      onPress={() => handleFavorite(info.data.provider_id, state.user_id)}>
+                      {isFavorite ? (
+                        <MaterialIcon name="heart" size={22} color={colors.boldred} />
+                      ) : (
+                        <Feather name="heart" size={22} color={'black'} />
+                      )}
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={{
@@ -399,7 +465,9 @@ export const DetailProvider = props => {
                   <Text style={{fontSize: 22, fontWeight: 'bold', paddingHorizontal: 20}}>
                     {info.data.merchant_name}
                   </Text>
-                  <View style={styles.infoWrapper}>
+                  <TouchableOpacity
+                    onPress={() => openProviderInfoModal()}
+                    style={styles.infoWrapper}>
                     <View style={styles.info}>
                       <Text style={{fontWeight: '600'}}>
                         {' '}
@@ -409,10 +477,8 @@ export const DetailProvider = props => {
                       <Text style={{color: 'gray', marginTop: 10}}>Open until {data.openHour}</Text>
                       <Text style={{color: 'gray'}}>Tap for hours, address and more</Text>
                     </View>
-                    <TouchableOpacity onPress={() => openProviderInfoModal()}>
-                      <Feather name="chevron-right" size={24} color={'#000'} />
-                    </TouchableOpacity>
-                  </View>
+                    <Feather name="chevron-right" size={24} color={'#000'} />
+                  </TouchableOpacity>
                   <View
                     style={{
                       backgroundColor: '#e6e6e6',
@@ -483,15 +549,18 @@ export const DetailProvider = props => {
                       <Feather name="chevron-right" size={20} color={'#000'} />
                     </View>
                   </TouchableOpacity>
-                  <View
-                    style={{
-                      width: '100%',
-                      paddingHorizontal: 20,
-                      marginTop: 20,
-                    }}>
-                    <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
-                    <UpcomingProductList />
-                  </View>
+                  {upcomingProducts.length > 0 && (
+                    <View
+                      style={{
+                        width: '100%',
+                        paddingHorizontal: 20,
+                        marginTop: 20,
+                      }}>
+                      <Text style={{fontSize: 19, fontWeight: '600'}}>Upcoming product</Text>
+                      <UpcomingProductList />
+                    </View>
+                  )}
+
                   <View style={styles.contentWrapper}>
                     <View
                       style={{
@@ -727,7 +796,7 @@ export const DetailProvider = props => {
                 </View>
                 <TouchableOpacity
                   onPress={() => setOpenAddress(prev => !prev)}
-                  style={styles.sectionWrapper}>
+                  style={[styles.sectionWrapper, {paddingTop: 10}]}>
                   <View>
                     <Feather name="clock" size={22} color={'black'} />
                   </View>
@@ -738,32 +807,44 @@ export const DetailProvider = props => {
                       justifyContent: 'space-between',
                       width: '100%',
                       paddingHorizontal: 15,
-                      borderBottomColor: 'rgba(230,230,230,1)',
-                      borderBottomWidth: 2,
-                      paddingVertical: 25,
+                      paddingTop: openAddress ? 10 : 20,
                     }}>
-                    {/* <View>
-                        <Text
-                          style={{
-                            fontSize: 17,
-                            fontWeight: '600',
-                            marginBottom: openAddress ? 10 : 0,
-                          }}>
-                          Open until {data.closedHour}
-                        </Text>
-                        {openAddress ? (
-                          <>
-                            <Text>Monday - Saturday</Text>
-                            <Text>
-                              {data.openHour} - {data.closedHour}
-                            </Text>
-                          </>
-                        ) : null}
-                      </View> */}
+                    <View>
+                      <Text
+                        style={{
+                          fontSize: 17,
+                          fontWeight: '600',
+                          marginBottom: openAddress ? 15 : 0,
+                          marginTop: openAddress ? 0 : -20,
+                        }}>
+                        Open hour
+                      </Text>
+                    </View>
 
-                    <Feather name={openAddress ? 'minus' : 'plus'} size={22} color={'gray'} />
+                    <Feather
+                      name={openAddress ? 'minus' : 'plus'}
+                      size={22}
+                      color={'gray'}
+                      style={{marginBottom: openAddress ? 15 : 0, marginTop: openAddress ? 0 : -20}}
+                    />
                   </View>
                 </TouchableOpacity>
+                <View
+                  style={{
+                    marginLeft: 36,
+                    borderBottomWidth: 2,
+                    borderBottomColor: 'rgba(230,230,230,1)',
+                    paddingBottom: 10,
+                  }}>
+                  {openAddress
+                    ? operation_time.map((item, index) => (
+                        <View key={index} style={{marginLeft: 10, marginBottom: 10}}>
+                          <Text style={{fontWeight: '500', marginBottom: 5}}>{item.date}</Text>
+                          <Text>{item.time}</Text>
+                        </View>
+                      ))
+                    : null}
+                </View>
                 {/* <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
                     <View style={{paddingVertical: 25}}>
                       <Feather name="star" size={22} color={'black'} />
@@ -813,15 +894,8 @@ export const DetailProvider = props => {
             </ScrollView>
           </View>
         </Modalize>
-        <Modalize
-          ref={modalizeRef}
-          // HeaderComponent={() => (
-          //   <View style={{padding: 10, alignSelf: 'center'}}>
-          //     <View style={{padding: 5, backgroundColor: 'gray'}}></View>
-          //   </View>
-          // )}
-        >
-          <UpcomingProduct />
+        <Modalize ref={modalizeRef}>
+          <UpcomingProduct data={selectedUpcomingProduct} />
         </Modalize>
       </View>
     );
@@ -1019,5 +1093,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
     paddingHorizontal: 15,
+    paddingVertical: 10,
   },
 });

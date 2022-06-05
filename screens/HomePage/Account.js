@@ -102,7 +102,7 @@ export const Account = props => {
             <TouchableOpacity
               style={styles.menuWrapper}
               // onPress={() => props.navigation.navigate('DetailOrder')}
-              onPress={() => props.navigation.navigate('OrderHistory')}>
+              onPress={() => props.navigation.navigate('OrderHistoryTab')}>
               <MaterialCommunity name="bookmark" size={26} color={'black'} />
               <Text
                 style={{
@@ -129,7 +129,9 @@ export const Account = props => {
                 Your favorites
               </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.menuWrapper}>
+            <TouchableOpacity
+              style={styles.menuWrapper}
+              onPress={() => props.navigation.navigate('CustomerAddress')}>
               <MaterialCommunity color={'black'} name="home-account" size={26} />
               <Text
                 style={{
@@ -142,7 +144,14 @@ export const Account = props => {
               </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.menuWrapper} onPress={() => onDisplayNotification()}>
+            <TouchableOpacity
+              style={styles.menuWrapper}
+              onPress={() =>
+                props.navigation.navigate('ResultContent', {
+                  groupID: 2,
+                  title: 'Today offer',
+                })
+              }>
               <MaterialCommunity color={'black'} name="ticket-percent" size={26} />
               <Text
                 style={{

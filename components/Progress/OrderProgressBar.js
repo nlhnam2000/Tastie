@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import colors from '../../colors/colors';
 
 export const OrderProgressBar = props => {
   return (
@@ -8,9 +9,9 @@ export const OrderProgressBar = props => {
       <View style={{alignItems: 'center', position: 'relative'}}>
         <View
           style={{
-            padding: 10,
-            backgroundColor: props.submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-            borderRadius: 40,
+            padding: 7,
+            backgroundColor: props.submittedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
             position: 'absolute',
             left: '2%',
           }}>
@@ -18,9 +19,9 @@ export const OrderProgressBar = props => {
         </View>
         <View
           style={{
-            padding: 10,
-            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-            borderRadius: 40,
+            padding: 7,
+            backgroundColor: props.assignedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
             position: 'absolute',
             left: '23%',
           }}>
@@ -28,9 +29,9 @@ export const OrderProgressBar = props => {
         </View>
         <View
           style={{
-            padding: 10,
-            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-            borderRadius: 40,
+            padding: 7,
+            backgroundColor: props.confirmedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
             position: 'absolute',
             left: '45%',
           }}>
@@ -38,9 +39,9 @@ export const OrderProgressBar = props => {
         </View>
         <View
           style={{
-            padding: 10,
-            backgroundColor: props.pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
-            borderRadius: 40,
+            padding: 7,
+            backgroundColor: props.pickedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
             position: 'absolute',
             left: '68%',
           }}>
@@ -48,22 +49,23 @@ export const OrderProgressBar = props => {
         </View>
         <View
           style={{
-            padding: 10,
-            backgroundColor: props.completedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            padding: 7,
+            backgroundColor: props.completedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
             borderRadius: 40,
             position: 'absolute',
             left: '90%',
           }}>
           <Feather name={props.completedStatus ? 'check' : 'loader'} size={10} color="white" />
         </View>
+        {/* Line Progress */}
         <View
           style={{
             width: '18%',
             padding: 2,
             position: 'absolute',
-            top: 13,
+            top: 10,
             left: '8%',
-            backgroundColor: props.submittedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.submittedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
         <View
@@ -71,9 +73,9 @@ export const OrderProgressBar = props => {
             width: '18%',
             padding: 2,
             position: 'absolute',
-            top: 13,
+            top: 10,
             left: '28%',
-            backgroundColor: props.assignedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.assignedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
         <View
@@ -81,9 +83,9 @@ export const OrderProgressBar = props => {
             width: '18%',
             padding: 2,
             position: 'absolute',
-            top: 13,
+            top: 10,
             left: '51%',
-            backgroundColor: props.confirmedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            backgroundColor: props.confirmedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
         <View
@@ -91,25 +93,25 @@ export const OrderProgressBar = props => {
             width: '18%',
             padding: 2,
             position: 'absolute',
-            top: 13,
-            left: '75%',
-            backgroundColor: props.pickedStatus ? '#55A316' : 'rgba(200,200,200,1.0)',
+            top: 10,
+            left: '73%',
+            backgroundColor: props.pickedStatus ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
-
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: -2}}>
+        {/* Text Progress */}
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: -2}}>
           Submitted
         </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '20%'}}>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '20%'}}>
           Assigned
         </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '41%'}}>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '41%'}}>
           Confirmed
         </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '67%'}}>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '67%'}}>
           Picked
         </Text>
-        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 40, left: '84%'}}>
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '84%'}}>
           Completed
         </Text>
       </View>

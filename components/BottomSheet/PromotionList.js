@@ -71,7 +71,8 @@ export const PromotionList = props => {
   };
 
   useEffect(() => {
-    LoadPromotionList(props.providerId);
+    // LoadPromotionList(props.providerId);
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -90,7 +91,9 @@ export const PromotionList = props => {
       ListHeaderComponent={
         <View style={{width: '100%'}}>
           <Text style={{fontSize: 16, fontWeight: '500', textAlign: 'center', marginBottom: 10}}>
-            These are the available promotions
+            {promos.length > 0
+              ? 'These are the available promotions'
+              : 'There is no available promotion'}
           </Text>
         </View>
       }

@@ -100,9 +100,14 @@ export const OrderStatus = props => {
         },
       );
       if (res.data.status) {
-        alert('Your order has been canceled !');
+        // alert('Your order has been canceled !');
+        setNotification('Your order has been canceled !');
+        setOpenModal(true);
         dispatch(DisconnectSocket());
-        props.navigation.navigate('Home Page');
+
+        setTimeout(() => {
+          props.navigation.navigate('Home Page');
+        }, 2000);
       }
     } catch (error) {
       console.error(error);
@@ -206,27 +211,6 @@ export const OrderStatus = props => {
           longitude: data.longitude,
           shipperName: data.shipperName,
         }));
-        mapRef.current.fitToCoordinates(
-          [
-            {
-              latitude: state.userLocation.latitude,
-              longitude: state.userLocation.longitude,
-            },
-            {
-              latitude: shipperLocation.latitude,
-              longitude: shipperLocation.longitude,
-            },
-            {
-              // restaurant's location
-              latitude: 10.770426270078108,
-              longitude: 106.69433674255707,
-            },
-          ],
-          {
-            edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
-            animated: true,
-          },
-        );
       });
       state.socketServer.host.on('shipper-has-arrived', message => {
         setNotification(message);
@@ -434,24 +418,6 @@ export const OrderStatus = props => {
           rotateEnabled={false}
           scrollEnabled={false}
           zoomEnabled={false}
-          onLayout={event => {
-            mapRef.current.fitToCoordinates(
-              [
-                {
-                  latitude: state.userLocation.latitude,
-                  longitude: state.userLocation.longitude,
-                },
-                {
-                  latitude: 10.770426270078108,
-                  longitude: 106.69433674255707,
-                },
-              ],
-              {
-                edgePadding: {top: 100, right: 100, bottom: 100, left: 100},
-                animated: true,
-              },
-            );
-          }}
           style={styles.map}
           showsUserLocation
           provider={PROVIDER_GOOGLE}
@@ -634,9 +600,11 @@ export const OrderStatus = props => {
                             }}>
                             {item.product_name}
                           </Text>
-                          <Text style={{marginLeft: 15, fontStyle: 'italic', color: 'gray'}}>
-                            {additionalOptions[index]}
-                          </Text>
+                          {additionalOptions[index] && (
+                            <Text style={{marginLeft: 15, fontStyle: 'italic', color: 'gray'}}>
+                              {additionalOptions[index]}
+                            </Text>
+                          )}
                           {item.special_instruction !== '' ? (
                             <Text>Note: {item.SpecialInstruction}</Text>
                           ) : null}
@@ -714,30 +682,45 @@ export const OrderStatus = props => {
                   marginTop: 20,
                   flexDirection: 'row',
                   width,
-                  paddingHorizontal: 20,
+                  paddingHorizontal: 0,
                   alignItems: 'center',
                   justifyContent: assignedStatus ? 'center' : 'space-around',
                 }}>
                 {!assignedStatus && (
                   <TouchableOpacity
                     onPress={() => handleCancelOrder()}
-                    style={{padding: 20, backgroundColor: '#ffcccc'}}>
+                    style={{
+                      paddingHorizontal: 15,
+                      paddingVertical: 15,
+                      backgroundColor: colors.boldred,
+                      width: '40%',
+                    }}>
                     <Text
                       style={{
                         fontWeight: 'bold',
                         textAlign: 'center',
-                        color: 'red',
-                        textTransform: 'uppercase',
+                        color: 'white',
+                        fontSize: 16,
                       }}>
-                      Cancel this order
+                      Cancel order
                     </Text>
                   </TouchableOpacity>
                 )}
                 <TouchableOpacity
                   onPress={() => setOpenDetail(prev => !prev)}
-                  style={{padding: 20, backgroundColor: 'black'}}>
+                  style={{
+                    paddingHorizontal: 15,
+                    paddingVertical: 15,
+                    backgroundColor: 'black',
+                    width: '40%',
+                  }}>
                   <Text
-                    style={{fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>
+                    style={{
+                      fontWeight: 'bold',
+                      textAlign: 'center',
+                      color: 'white',
+                      fontSize: 16,
+                    }}>
                     See less
                   </Text>
                 </TouchableOpacity>
@@ -746,7 +729,7 @@ export const OrderStatus = props => {
           ) : (
             <TouchableOpacity
               onPress={() => setOpenDetail(prev => !prev)}
-              style={{padding: 20, backgroundColor: 'black'}}>
+              style={{padding: 20, backgroundColor: 'black', width: '50%'}}>
               <Text style={{fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>
                 Show order details
               </Text>

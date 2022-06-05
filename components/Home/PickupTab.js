@@ -98,7 +98,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
         {
           latitude: location.latitude,
           longitude: location.longitude,
-          limit: 5,
+          limit: 10,
           offset: 1,
         },
       );

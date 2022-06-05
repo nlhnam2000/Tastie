@@ -39,6 +39,26 @@ export const ProductOptions = props => {
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
   const [cartForm, setCartForm] = useState({});
   const [openModal, setOpenModal] = useState(false);
+  const [FBT, setFBT] = useState([
+    {
+      name: 'Poke Salad',
+      price: 10.0,
+      image: require('../../../assets/image/upcomingproduct.png'),
+      checked: false,
+    },
+    {
+      name: 'Chiraishi',
+      price: 10.0,
+      image: require('../../../assets/image/upcomingproduct.png'),
+      checked: false,
+    },
+    {
+      name: 'Hot Night',
+      price: 10.0,
+      image: require('../../../assets/image/upcomingproduct.png'),
+      checked: false,
+    },
+  ]);
 
   const handleAddToCart = () => {
     if (state.userCart.provider_id && state.userCart.provider_id !== cartForm.provider_id) {
@@ -51,6 +71,13 @@ export const ProductOptions = props => {
       }, 800);
       // console.log(cartForm);
     }
+  };
+
+  const handleTickFBT = index => {
+    const copy = [...FBT];
+    copy[index].checked = !copy[index].checked;
+
+    setFBT(copy);
   };
 
   useEffect(() => {
@@ -135,7 +162,7 @@ export const ProductOptions = props => {
           <Text style={{fontSize: 19, fontWeight: '600', marginBottom: 10}}>
             Frequently Bought Together
           </Text>
-          {['Poke Salad', 'Chirashi', 'Hot Night'].map((item, index) => (
+          {FBT.map((item, index) => (
             <View
               key={index}
               style={{
@@ -146,19 +173,19 @@ export const ProductOptions = props => {
                 paddingHorizontal: 10,
               }}>
               <View style={{flexDirection: 'row'}}>
-                <TouchableOpacity>
-                  <MaterialCommunityIcon name="checkbox-blank-outline" size={25} color="grey" />
+                <TouchableOpacity onPress={() => handleTickFBT(index)}>
+                  <MaterialCommunityIcon
+                    name={item.checked ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                    size={25}
+                    color="black"
+                  />
                 </TouchableOpacity>
                 <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item}</Text>
-                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>$10.00</Text>
+                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item.name}</Text>
+                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>${item.price}</Text>
                 </View>
               </View>
-              <Image
-                source={require('../../../assets/image/upcomingproduct.png')}
-                style={{width: 100, height: 100}}
-                resizeMode="contain"
-              />
+              <Image source={item.image} style={{width: 100, height: 100}} resizeMode="contain" />
             </View>
           ))}
         </View>
@@ -203,12 +230,13 @@ export const ProductOptions = props => {
       </View>
       <DuoAlertDialog
         visible={openModal}
-        message={'Do you want to clear the previous cart ?'}
+        message={`Do you want to clear the previous cart from ${state.userCart.provider_name} ?`}
         onCancel={() => setOpenModal(false)}
         onConfirm={() => {
           dispatch(ClearCart(state.user_id));
-          dispatch(AddToCart(cartForm));
+
           setTimeout(() => {
+            dispatch(AddToCart(cartForm));
             props.navigation.goBack();
           }, 800);
         }}

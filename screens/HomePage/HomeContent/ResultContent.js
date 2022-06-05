@@ -32,25 +32,30 @@ const PROVIDER_TEXT_MAX_WIDTH = width - 15 - 150 - 10 - 30;
 
 export const ResultContent = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
-  const {groupID, title, keyword, categoryFilter, image} = route.params;
+  const {groupID, title, keyword, categoryFilter, image, ecoupon_id} = route.params;
   const [data, setData] = useState([]);
   const [offset, setOffset] = useState(1);
   const state = useSelector(state => state.UserReducer);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const headerImageHeiht = scrollY.interpolate({
-    inputRange: [0, 1000],
+    inputRange: [0, CATEGORY_IMAGE_HEIGHT],
     outputRange: [CATEGORY_IMAGE_HEIGHT - 50, 0],
     extrapolate: 'clamp',
   });
   const headerContentOpacity = scrollY.interpolate({
-    inputRange: [0, 400],
+    inputRange: [0, CATEGORY_IMAGE_HEIGHT],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
   const headerTitleOpacity = scrollY.interpolate({
-    inputRange: [0, 900],
+    inputRange: [0, CATEGORY_IMAGE_HEIGHT],
     outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+  const headerContentPaddingBottom = scrollY.interpolate({
+    inputRange: [0, 50],
+    outputRange: [25, 0],
     extrapolate: 'clamp',
   });
 
@@ -64,6 +69,7 @@ export const ResultContent = ({navigation, route}) => {
           offset: offset,
           latitude: state.userLocation.latitude,
           longitude: state.userLocation.longitude,
+          user_id: state.user_id,
         },
       );
       if (res.data.response) {
@@ -86,6 +92,7 @@ export const ResultContent = ({navigation, route}) => {
           offset: offset + 1,
           latitude: state.userLocation.latitude,
           longitude: state.userLocation.longitude,
+          user_id: state.user_id,
         },
       );
       if (res.data.response) {
@@ -104,6 +111,7 @@ export const ResultContent = ({navigation, route}) => {
         type: '1',
         longitude: state.userLocation.longitude,
         latitude: state.userLocation.latitude,
+        user_id: state.user_id,
       });
       if (res.data.status) {
         setData(res.data.data.items);
@@ -125,6 +133,7 @@ export const ResultContent = ({navigation, route}) => {
           category_type: filter.type.toString(),
           category_id: filter.categoryID,
         },
+        user_id: state.user_id,
       });
       if (res.data.status) {
         setData(res.data.data.items);
@@ -136,12 +145,37 @@ export const ResultContent = ({navigation, route}) => {
     }
   };
 
+  const LoadProviderByEcoupon = async ecoupon_id => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/home/get-list-provider-by-ecoupon`,
+        {
+          ecoupon_id: ecoupon_id,
+          longitude: state.userLocation.longitude.toString(),
+          latitude: state.userLocation.latitude.toString(),
+          limit: 100,
+          offset: 1,
+        },
+      );
+
+      if (res.data.status) {
+        setData(res.data.response);
+      }
+    } catch (error) {
+      console.error('Cannot load provider by ecoupon', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (keyword) {
       LoadSearchResult(keyword);
     } else if (categoryFilter) {
       LoadCategoryResult(categoryFilter);
       // console.log(categoryFilter);
+    } else if (ecoupon_id) {
+      LoadProviderByEcoupon(ecoupon_id);
     } else {
       LoadProvider(groupID, offset);
     }
@@ -173,7 +207,7 @@ export const ResultContent = ({navigation, route}) => {
             <Text>{item.promotionCode && ''}</Text>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-            <Text>{item.order_totals}</Text>
+            <Text>{item.order_totals ?? 4.5}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -220,7 +254,8 @@ export const ResultContent = ({navigation, route}) => {
         <Animated.Text style={{fontSize: 24, fontWeight: '600', opacity: headerContentOpacity}}>
           {title}
         </Animated.Text>
-        <Animated.View style={{opacity: headerContentOpacity}}>
+        <Animated.View
+          style={{opacity: headerContentOpacity, paddingBottom: headerContentPaddingBottom}}>
           <Image
             source={image}
             style={{
@@ -272,7 +307,7 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: '#f2f2f2',
     paddingLeft: 15,
-    paddingVertical: 0,
+    // paddingBottom: 25,
     height: CATEGORY_IMAGE_HEIGHT - 50,
     flexDirection: 'row',
     justifyContent: 'space-between',

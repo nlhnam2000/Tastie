@@ -35,12 +35,10 @@ export const UpcomingProduct = props => {
   ];
 
   return (
-    <ScrollView
-      showsVerticalScrollIndicator={false}
-      style={{width: '100%', position: 'absolute', height: Dimensions.get('window').height}}>
+    <>
       <View style={{width: '100%', height: 'auto'}}>
         <ImageBackground
-          source={require('../../assets/image/upcomingproduct.png')}
+          source={{uri: props.data.product_image}}
           resizeMode="cover"
           style={{width: '100%', height: 250, position: 'relative'}}>
           <View
@@ -57,14 +55,10 @@ export const UpcomingProduct = props => {
         </ImageBackground>
         <View style={styles.productInfo}>
           <View style={styles.productHeader}>
-            <Text style={styles.heading}>Sunny Side Breakfast Bowl</Text>
-            <Text>$5.50</Text>
+            <Text style={styles.heading}>{props.data.product_name}</Text>
+            <Text>${props.data.estimated_price.toFixed(2)}</Text>
           </View>
-          <Text>
-            Organic sunny-side egg, avocado, caramelized onion, roasted Brussels sprouts and sweet
-            potato, farro, massaged kale, citrus-cumin salt, pistachio dukkah. This item contains
-            nuts.
-          </Text>
+          <Text>{props.data.product_description}</Text>
           <View style={styles.optionHeader}>
             <Text style={{fontSize: 17, fontWeight: '500'}}>
               Are you eager to try this upcoming product?
@@ -114,7 +108,7 @@ export const UpcomingProduct = props => {
           <View style={{width: '100%', height: 100}}></View>
         </View>
       </View>
-    </ScrollView>
+    </>
   );
 };
 

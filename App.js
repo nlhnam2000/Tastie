@@ -30,6 +30,7 @@ import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import fontAwesome from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {ActionAlertDialog} from './components/Error/AlertDialog';
 
 // import components
 import {SignupScreen2} from './components/UserAdmission/Signup/SignupScreen2';
@@ -63,6 +64,8 @@ import {CustomerAddressForm} from './screens/CustomerAddressForm';
 import {ChatScreen} from './screens/ChatScreen';
 import {DetailEcoupon} from './screens/HomePage/Detail/Ecoupon/DetailEcoupon';
 import {EditCustomerAddress} from './screens/EditCustomerAddress';
+import {OrderHistoryTab} from './screens/HomePage/Account/OrderHistoryTab';
+import {MapScreen} from './screens/MapScreen';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -74,6 +77,7 @@ import {
   TokenNotFound,
   SetUserLocation,
   AutoSetLocation,
+  clearAlertMessage,
 } from './store/action/auth';
 import colors from './colors/colors';
 import {IP_ADDRESS, getAccessToken} from './global';
@@ -129,51 +133,12 @@ export default function App(props) {
         dispatch(TokenNotFound());
       }
 
-      // const settings = await notifee.requestPermission();
-      // if (settings.authorizationStatus >= AuthorizationStatus.AUTHORIZED) {
-      //   console.log('rooms: ', state.socketServer.rooms);
-      //   if (state.socketServer.rooms.length > 0) {
-      //     state.socketServer.rooms.forEach(room => {
-      //       state.socketServer.host.on('join-room', room);
-      //     });
-
-      //     state.socketServer.host.on('receive-shipper-inbox', async message => {
-      //       console.log('shipper inbox: ', message);
-      //       if (Platform.OS === 'android') {
-      //         PushNotification.cancelAllLocalNotifications();
-      //         PushNotification.localNotification({
-      //           channelId: 'homescreen-channel',
-      //           title: 'Message from shipper:',
-      //           message: message,
-      //         });
-      //       } else {
-      //         onDisplayNotification('Message from shipper', message);
-      //       }
-      //     });
-
-      //     state.socketServer.host.on('shipper-on-the-way', message => {
-      //       PushNotification.cancelAllLocalNotifications();
-      //       PushNotification.localNotification({
-      //         channelId: 'homescreen-channel',
-      //         title: 'The shipper is on the way',
-      //         message: message,
-      //       });
-      //     });
-
-      //     state.socketServer.host.on('shipper-has-arrived', async message => {
-      //       if (Platform.OS === 'android') {
-      //         PushNotification.cancelAllLocalNotifications();
-      //         PushNotification.localNotification({
-      //           channelId: 'homescreen-channel',
-      //           title: 'The shipper has arrived at your place',
-      //           message: message,
-      //         });
-      //       } else {
-      //         onDisplayNotification('Shipper has arrived !!!', message);
-      //       }
-      //     });
-      //   }
-      // }
+      if (state.socketServer.rooms.length > 0) {
+        console.log('rooms: ', state.socketServer.rooms);
+        state.socketServer.rooms.forEach(room => {
+          state.socketServer.host.on('join-room', room);
+        });
+      }
     }, 100);
   }, []);
 
@@ -185,8 +150,14 @@ export default function App(props) {
     );
   } else {
     return (
+      // For android gesture handling
       <GestureHandlerRootView style={{flex: 1}}>
         <NavigationContainer>
+          <ActionAlertDialog
+            visible={state.triggerAlertMessage}
+            message={state.alertMessage ?? ''}
+            onCancel={() => dispatch(clearAlertMessage())}
+          />
           {state.user_token !== null ? (
             <Stack.Navigator initialRouteName="Home Page">
               <Stack.Screen
@@ -291,6 +262,12 @@ export default function App(props) {
                 component={EditCustomerAddress}
                 options={{headerShown: false}}
               />
+              <Stack.Screen
+                name="OrderHistoryTab"
+                component={OrderHistoryTab}
+                options={{headerShown: false}}
+              />
+              <Stack.Screen name="MapScreen" component={MapScreen} options={{headerShown: false}} />
             </Stack.Navigator>
           ) : (
             <Stack.Navigator initialRouteName="Begin">

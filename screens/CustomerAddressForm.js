@@ -234,7 +234,6 @@ export const CustomerAddressForm = props => {
         </View>
         <View style={styles.modalContainer}>
           <MapView
-            cacheEnabled
             initialRegion={{
               latitude:
                 state.userLocation.latitude === 0

@@ -53,7 +53,7 @@ export const DetailEcoupon = props => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header goBack {...props} />
       <View style={styles.ecouponWrapper}>
         <View style={{width: '90%'}}>
@@ -81,7 +81,14 @@ export const DetailEcoupon = props => {
         </Text>
         <Text style={styles.text}>• For more information, contact tastie@app.com</Text>
       </ScrollView>
-      <TouchableOpacity style={styles.button} onPress={() => notify()}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          props.navigation.navigate('ResultContent', {
+            title: item.ecoupon_name,
+            ecoupon_id: item.ecoupon_id,
+          })
+        }>
         <Text
           style={{
             textAlign: 'center',
@@ -93,7 +100,7 @@ export const DetailEcoupon = props => {
           Order Now
         </Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -19,6 +19,7 @@ import {paymentMethod} from '../assets/dummy/paymentMethod';
 import {PaymentMethodList} from '../components/BottomSheet/PaymentMethodList';
 import {PromotionList} from '../components/BottomSheet/PromotionList';
 import {SchedulePickerModal} from '../components/Modal/SchedulePicker';
+import {DeliveryAddressBottomSheet} from '../components/BottomSheet/DeliveryAddress';
 import colors from '../colors/colors';
 
 // actions
@@ -36,6 +37,7 @@ import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
+import {Modalize} from 'react-native-modalize';
 
 export const GoToCheckout = props => {
   const [loading, setLoading] = useState(true);
@@ -56,9 +58,15 @@ export const GoToCheckout = props => {
   const [orderForm, setOrderForm] = useState({});
   const [openSchedule, setOpenSchedule] = useState(false);
   const [scheduleTime, setScheduleTime] = useState(null);
+  const [deliveryLocation, setDeliveryLocation] = useState({
+    address: state.userLocation.address,
+    latitude: state.userLocation.latitude,
+    longitude: state.userLocation.longitude,
+  });
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
+  const deliveryAddressModalize = useRef();
   const promoSnapPoint = useMemo(() => ['90%'], []);
   const paymentSnapPoint = useMemo(() => ['50%', '90%'], []);
 
@@ -161,7 +169,7 @@ export const GoToCheckout = props => {
       ...prev,
       delivery_mode: selectedTab === 'Delivery' ? 1 : 2,
       customer_id: state.user_id,
-      delivery_address: state.userLocation.address,
+      delivery_address: deliveryLocation.address,
       customer_phone: state.phone,
       payment_method: selectedPayment === 'Cash' ? 1 : selectedPayment === 'Momo' ? 2 : 3,
       payment_status: 1,
@@ -235,7 +243,9 @@ export const GoToCheckout = props => {
                     {state.userLocation.address}
                   </Text>
                 </View>
-                <Feather name="edit-3" size={17} color="black" />
+                <TouchableOpacity onPress={() => deliveryAddressModalize.current?.open()}>
+                  <Feather name="edit-3" size={17} color="black" />
+                </TouchableOpacity>
               </View>
             </View>
             <View style={{marginVertical: 10}}>
@@ -597,6 +607,21 @@ export const GoToCheckout = props => {
           }}
         />
       </BottomSheet>
+      <Modalize ref={deliveryAddressModalize} modalHeight={Dimensions.get('window').height - 400}>
+        <DeliveryAddressBottomSheet
+          {...props}
+          currentLocation={deliveryLocation}
+          onConfirm={location => {
+            setDeliveryLocation(prev => ({
+              ...prev,
+              address: location.address,
+              latitude: location.latitude,
+              longtiude: location.longitude,
+            }));
+            deliveryAddressModalize.current.close();
+          }}
+        />
+      </Modalize>
       <SchedulePickerModal
         visible={openSchedule}
         provider_id={state.userCart.provider_id}

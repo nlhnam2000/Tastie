@@ -79,52 +79,50 @@ export const NavigationBar = props => {
         console.log('customer received from admin');
       });
 
-      if (state.socketServer.rooms.length > 0) {
-        console.log('rooms: ', state.socketServer.rooms);
-        state.socketServer.rooms.forEach(room => {
-          state.socketServer.host.on('join-room', room);
-        });
+      // console.log('rooms: ', state.socketServer.rooms);
+      // state.socketServer.rooms.forEach(room => {
+      //   state.socketServer.host.on('join-room', room);
+      // });
 
-        state.socketServer.host.on('receive-shipper-inbox', async message => {
-          console.log('shipper inbox: ', message);
-          if (Platform.OS === 'android') {
-            PushNotification.cancelAllLocalNotifications();
-            PushNotification.localNotification({
-              channelId: 'homescreen-channel',
-              title: 'Message from shipper:',
-              message: message,
-            });
-          } else {
-            onDisplayNotification('Message from shipper', message);
-          }
-        });
+      state.socketServer.host.on('receive-shipper-inbox', async message => {
+        console.log('shipper inbox: ', message);
+        if (Platform.OS === 'android') {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'Message from shipper:',
+            message: message,
+          });
+        } else {
+          onDisplayNotification('Message from shipper', message);
+        }
+      });
 
-        state.socketServer.host.on('shipper-on-the-way', message => {
-          if (Platform.OS === 'android') {
-            PushNotification.cancelAllLocalNotifications();
-            PushNotification.localNotification({
-              channelId: 'homescreen-channel',
-              title: 'The shipper is on the way',
-              message: message,
-            });
-          } else {
-            onDisplayNotification('The shipper is on the way', message);
-          }
-        });
+      state.socketServer.host.on('shipper-on-the-way', message => {
+        if (Platform.OS === 'android') {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'The shipper is on the way',
+            message: message,
+          });
+        } else {
+          onDisplayNotification('The shipper is on the way', message);
+        }
+      });
 
-        state.socketServer.host.on('shipper-has-arrived', async message => {
-          if (Platform.OS === 'android') {
-            PushNotification.cancelAllLocalNotifications();
-            PushNotification.localNotification({
-              channelId: 'homescreen-channel',
-              title: 'The shipper has arrived at your place',
-              message: message,
-            });
-          } else {
-            onDisplayNotification('Shipper has arrived !!!', message);
-          }
-        });
-      }
+      state.socketServer.host.on('shipper-has-arrived', async message => {
+        if (Platform.OS === 'android') {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'The shipper has arrived at your place',
+            message: message,
+          });
+        } else {
+          onDisplayNotification('Shipper has arrived !!!', message);
+        }
+      });
     } else {
       dispatch(InitSocket());
     }

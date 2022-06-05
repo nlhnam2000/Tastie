@@ -12,18 +12,25 @@ import {
   ActivityIndicator,
   StatusBar,
   FlatList,
+  Button,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import {categoryData} from '../../assets/dummy/categoryData';
 import colors from '../../colors/colors';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
 import {IP_ADDRESS} from '../../global';
+import {SimpleAlertDialog, ActionAlertDialog} from '../../components/Error/AlertDialog';
+import {clearAlertMessage, DisplayAlertMessage} from '../../store/action/auth';
+
+import {useDispatch, useSelector} from 'react-redux';
 
 const {width, height} = Dimensions.get('window');
 
 export const Browse = props => {
   const [loading, setLoading] = useState(true);
   const [searchKey, setSearchKey] = useState(null);
+  const state = useSelector(state => state.UserReducer);
+  const dispatch = useDispatch();
 
   const renderCategory = ({item, index}) => {
     return (
@@ -109,6 +116,9 @@ export const Browse = props => {
             numColumns={2}
             renderItem={renderCategory}
             style={{height: '70%'}}
+            // ListFooterComponent={() => (
+            //   <Button title="Test" onPress={() => dispatch(DisplayAlertMessage('hihi'))} />
+            // )}
           />
         </View>
 

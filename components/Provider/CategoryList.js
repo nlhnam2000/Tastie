@@ -10,11 +10,13 @@ import {
   Dimensions,
 } from 'react-native';
 import {popularData} from '../../assets/dummy/popularData';
-import {shuffle, IP_ADDRESS, OpenStatus} from '../../global';
+import {shuffle, IP_ADDRESS, OpenStatus, convertDollar} from '../../global';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
 import {SimpleSkeleton} from '../Skeleton/SimpleSkeleton';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
+import colors from '../../colors/colors';
 
 const {width} = Dimensions.get('window');
 
@@ -32,6 +34,7 @@ export const CategoryList = props => {
         offset: props.offset ?? 1,
         latitude: props.location.latitude,
         longitude: props.location.longitude,
+        user_id: state.user_id,
       },
     );
     if (res.data.response) {
@@ -51,7 +54,7 @@ export const CategoryList = props => {
     }
   }, [props.location]);
 
-  if (loading) {
+  if (loading || providerList.length === 0) {
     return (
       <View style={styles.container}>
         <SimpleSkeleton />
@@ -91,6 +94,7 @@ export const CategoryList = props => {
                   width: width - 80,
                   alignItems: 'center',
                   justifyContent: 'center',
+                  position: 'relative',
                 }}>
                 {OpenStatus(item.operation_time) === 'CLOSED' && (
                   <View
@@ -107,6 +111,25 @@ export const CategoryList = props => {
                     </Text>
                   </View>
                 )}
+                {item.isFavorite ? (
+                  <MaterialIcon
+                    name="heart"
+                    size={22}
+                    color={'white'}
+                    style={{
+                      position: 'absolute',
+                      right: 5,
+                      top: 5,
+                    }}
+                  />
+                ) : (
+                  <Feather
+                    name="heart"
+                    size={22}
+                    color="white"
+                    style={{position: 'absolute', right: 5, top: 5}}
+                  />
+                )}
               </ImageBackground>
               <View style={[styles.flexRowBetween]}>
                 <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
@@ -115,7 +138,11 @@ export const CategoryList = props => {
                       {item.provider_name}
                     </Text>
                   </View>
-                  <Text>{item.estimated_cooking_time} minutes</Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <Text>{(item.distance / 1000).toFixed(2)} km • </Text>
+                    <Text>${convertDollar(item.delivery_fee)} delivery fee • </Text>
+                    <Text>{item.estimated_cooking_time} min</Text>
+                  </View>
                 </View>
                 <View
                   style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>

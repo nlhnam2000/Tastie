@@ -120,7 +120,7 @@ export const Notification = props => {
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <SafeAreaView style={[styles.container]}>
+      <View style={[styles.container]}>
         <Header title={'Notification'} />
         <View style={{width, paddingHorizontal: 20}}>
           <FlatList
@@ -144,7 +144,7 @@ export const Notification = props => {
             }
           />
         </View>
-      </SafeAreaView>
+      </View>
       <NavigationBar active={props.tabname} />
     </View>
   );

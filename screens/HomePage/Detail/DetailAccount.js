@@ -21,11 +21,15 @@ import {
   DuoAlertDialog,
   ActionAlertDialog,
 } from '../../../components/Error/AlertDialog';
+import {Header} from '../../../components/Layout/Header/Header';
 import {IP_ADDRESS, getAccessToken} from '../../../global';
 import {clearAlertMessage, UpdateProfile, retrieveToken} from '../../../store/action/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {ScrollView} from 'react-native-gesture-handler';
 const {width, height} = Dimensions.get('window');
+
+const ACCOUNT_FORM_HEIGHT = height - 250;
 
 export const DetailAccount = props => {
   const dispatch = useDispatch();
@@ -40,10 +44,18 @@ export const DetailAccount = props => {
     email: state.email || '',
     first_name: state.first_name || '',
     last_name: state.last_name || '',
+    isChanged: false,
   });
+  const [showUpdateButton, setShowUpdateButton] = useState(false);
 
-  const submitForm = form => {
-    console.log(form);
+  const submitForm = () => {
+    const form = {
+      account_id: updateForm.account_id,
+      phone: updateForm.phone,
+      email: updateForm.email,
+      first_name: updateForm.first_name,
+      last_name: updateForm.last_name,
+    };
     dispatch(UpdateProfile(form));
     setTimeout(() => {
       props.navigation.goBack();
@@ -51,10 +63,10 @@ export const DetailAccount = props => {
     }, 2500);
   };
 
-  let phoneInputRef = useRef();
-  let firstnameInputRef = useRef();
-  let lastnameInputRef = useRef();
-  let emailInputRef = useRef();
+  const phoneInputRef = useRef();
+  const firstnameInputRef = useRef();
+  const lastnameInputRef = useRef();
+  const emailInputRef = useRef();
 
   useEffect(() => {
     setTimeout(async () => {
@@ -64,7 +76,14 @@ export const DetailAccount = props => {
       console.log(state);
       setLoading(false);
     }, 200);
+    // setLoading(false);
   }, []);
+
+  useEffect(() => {
+    if (updateForm.isChanged) {
+      setShowUpdateButton(true);
+    }
+  }, [updateForm]);
 
   if (loading) {
     return (
@@ -77,135 +96,152 @@ export const DetailAccount = props => {
   } else {
     return (
       <View style={styles.container}>
-        <SafeAreaView style={styles.content}>
-          <View style={styles.headerWrapper}>
-            <TouchableOpacity onPress={() => props.navigation.goBack()}>
-              <Feather name="arrow-left" size={20} color={'black'} />
-            </TouchableOpacity>
+        <View style={styles.content}>
+          <Header goBack title="Profile" {...props} />
+          <View style={styles.flexJustifyCenter}>
+            <View
+              style={{width: 80, height: 80, backgroundColor: '#f2f2f2', borderRadius: 40}}></View>
             <Text
               style={{
-                fontWeight: 'bold',
-                fontSize: 18,
-                textAlign: 'center',
-                marginLeft: 30,
-              }}>
-              Profile
-            </Text>
-            <TouchableOpacity disabled={!edit} onPress={() => submitForm(updateForm)}>
-              <Text style={{color: 'black', fontWeight: '600', fontSize: 17}}>Update</Text>
-            </TouchableOpacity>
+                fontSize: 17,
+                fontWeight: '600',
+                marginTop: 10,
+              }}>{`${state.first_name} ${state.last_name}`}</Text>
           </View>
-          <View style={styles.accountContent}>
-            <View style={styles.inputWrapper}>
-              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Mobile Number</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
+          <View style={styles.formWrapper}>
+            <View>
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>First Name</Text>
                 <TextInput
-                  editable={edit}
-                  style={styles.inputField}
-                  value={updateForm.phone}
-                  onChangeText={phone => setUpdateForm({...updateForm, phone: phone})}
-                  ref={phoneInputRef}
-                />
-                <Button
-                  title="EDIT"
-                  color={'black'}
-                  onPress={() => {
-                    setEdit(true);
-                    setTimeout(() => {
-                      phoneInputRef.current.focus();
-                    }, 200);
-                  }}
-                />
-              </View>
-            </View>
-            <View style={{backgroundColor: '#f2f2f2', height: 5, width}}></View>
-            <View style={styles.nameInputWrapper}>
-              <View>
-                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>First Name</Text>
-                <TextInput
-                  editable={edit}
+                  ref={firstnameInputRef}
                   style={styles.inputField}
                   value={updateForm.first_name}
-                  onChangeText={text => setUpdateForm({...updateForm, first_name: text})}
-                  ref={firstnameInputRef}
+                  onChangeText={text =>
+                    setUpdateForm(prev => ({
+                      ...prev,
+                      first_name: text,
+                      isChanged: true,
+                    }))
+                  }
                   onFocus={() =>
                     firstnameInputRef.current.setNativeProps({
                       style: {
-                        borderBottomWidth: 2,
+                        borderBottomWidth: 1,
                         borderBottomColor: 'rgba(230,230,230, 1.0)',
+                        marginBottom: 10,
+                        paddingBottom: 0,
                       },
                     })
                   }
                 />
               </View>
-              <View>
-                <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Last Name</Text>
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Last Name</Text>
                 <TextInput
-                  editable={edit}
+                  ref={lastnameInputRef}
                   style={styles.inputField}
                   value={updateForm.last_name}
-                  onChangeText={text => setUpdateForm({...updateForm, last_name: text})}
-                  ref={lastnameInputRef}
+                  onChangeText={text =>
+                    setUpdateForm(prev => ({
+                      ...prev,
+                      last_name: text,
+                      isChanged: true,
+                    }))
+                  }
                   onFocus={() =>
                     lastnameInputRef.current.setNativeProps({
                       style: {
-                        borderBottomWidth: 2,
+                        borderBottomWidth: 1,
                         borderBottomColor: 'rgba(230,230,230, 1.0)',
+                        marginBottom: 10,
+                        paddingBottom: 0,
                       },
                     })
                   }
                 />
               </View>
-            </View>
-            <View style={styles.inputWrapper}>
-              <Text style={{color: 'gray', fontSize: 17, fontWeight: '600'}}>Email</Text>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  width: '100%',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}>
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Phone number</Text>
                 <TextInput
-                  editable={edit}
-                  autoCapitalize="none"
+                  ref={phoneInputRef}
+                  style={styles.inputField}
+                  value={updateForm.phone}
+                  onChangeText={text =>
+                    setUpdateForm(prev => ({
+                      ...prev,
+                      phone: text,
+                      isChanged: true,
+                    }))
+                  }
+                  onFocus={() =>
+                    phoneInputRef.current.setNativeProps({
+                      style: {
+                        borderBottomWidth: 1,
+                        borderBottomColor: 'rgba(230,230,230, 1.0)',
+                        marginBottom: 10,
+                        paddingBottom: 0,
+                      },
+                    })
+                  }
+                />
+              </View>
+              <View style={styles.formGroup}>
+                <Text style={styles.formLabel}>Email</Text>
+                <TextInput
+                  ref={emailInputRef}
                   style={styles.inputField}
                   value={updateForm.email}
-                  onChangeText={email => setUpdateForm({...updateForm, email: email})}
-                  ref={emailInputRef}
+                  onChangeText={text =>
+                    setUpdateForm(prev => ({
+                      ...prev,
+                      email: text,
+                      isChanged: true,
+                    }))
+                  }
                   onFocus={() =>
                     emailInputRef.current.setNativeProps({
                       style: {
-                        borderBottomWidth: 2,
+                        borderBottomWidth: 1,
                         borderBottomColor: 'rgba(230,230,230, 1.0)',
+                        marginBottom: 10,
+                        paddingBottom: 0,
                       },
                     })
                   }
                 />
               </View>
+              {updateForm.isChanged && (
+                <TouchableOpacity
+                  onPress={() => submitForm()}
+                  style={{
+                    backgroundColor: colors.boldred,
+                    width: '30%',
+                    alignSelf: 'center',
+                    paddingVertical: 10,
+                    marginTop: 10,
+                  }}>
+                  <Text style={{textAlign: 'center', color: 'white', fontWeight: '500'}}>
+                    Update
+                  </Text>
+                </TouchableOpacity>
+              )}
             </View>
             <View
               style={{
-                marginTop: 60,
-                justifyContent: 'center',
+                flexDirection: 'row',
                 alignItems: 'center',
+                width: '100%',
+                justifyContent: 'center',
               }}>
-              {Platform.OS === 'ios' ? (
-                <Button color={'black'} title="Logout" onPress={() => setOpenModal(true)} />
-              ) : (
-                <View style={{width: '30%'}}>
-                  <Button color={'black'} title="Logout" onPress={() => setOpenModal(true)} />
-                </View>
-              )}
+              <TouchableOpacity style={styles.signoutButton} onPress={() => setOpenModal(true)}>
+                <Text
+                  style={{color: 'white', fontSize: 16, fontWeight: '500', textAlign: 'center'}}>
+                  Sign out
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </SafeAreaView>
+        </View>
         {/* Alert Dialog */}
         <DuoAlertDialog
           message="Are you sure to logout ?"
@@ -241,6 +277,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     width: '100%',
+    // position: 'relative',
   },
   headerWrapper: {
     width: '100%',
@@ -269,12 +306,13 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   inputField: {
-    width: '85%',
+    width: '100%',
     fontWeight: '500',
     marginTop: 5,
     fontSize: 17,
-    paddingVertical: 10,
+    // paddingVertical: Platform.OS === 'ios' ? 10 : 0,
     color: 'black',
+    marginVertical: Platform.OS === 'ios' ? 10 : 0,
   },
   modalContainer: {
     flex: 1,
@@ -310,5 +348,33 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 10,
     width: '30%',
+  },
+  flexJustifyCenter: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: '#c4c4c4',
+  },
+  formWrapper: {
+    width: '100%',
+    padding: 15,
+    // backgroundColor: 'red',
+    justifyContent: 'space-between',
+    position: 'relative',
+    height: ACCOUNT_FORM_HEIGHT,
+  },
+  formGroup: {
+    marginBottom: Platform.OS === 'ios' ? 10 : 0,
+  },
+  formLabel: {
+    color: 'gray',
+  },
+  signoutButton: {
+    backgroundColor: 'black',
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    width: '50%',
   },
 });

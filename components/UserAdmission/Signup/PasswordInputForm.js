@@ -136,6 +136,7 @@ export const PasswordInputForm = props => {
             style={styles.inputField}
             secureTextEntry={!showPassword2}
             placeholder="Re-enter your password"
+            placeholderTextColor={'gray'}
             clearButtonMode="always"
             onFocus={() =>
               password2InputRef.current.setNativeProps({

@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   SafeAreaView,
+  Platform,
 } from 'react-native';
 import colors from '../../../colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
@@ -180,10 +181,14 @@ export const DetailOrder = props => {
                   backgroundColor: '#AB2E15',
                   marginBottom: 10,
                 }}></View>
-              <Text>Completed</Text>
-              {/* <Text style={{color: 'gray'}}>
-                {orderSummary.order_status.at(-1).update_at.split(', ')[0] || 'unknown'}
-              </Text> */}
+              <Text>
+                {orderSummary.order_status[orderSummary.order_status.length - 1].order_status_name}
+              </Text>
+              <Text style={{color: 'gray'}}>
+                {orderSummary.order_status[orderSummary.order_status.length - 1].update_at.split(
+                  ', ',
+                )[0] || 'unknown'}
+              </Text>
             </View>
           </View>
         </View>
@@ -268,16 +273,21 @@ export const DetailOrder = props => {
           justifyContent: 'space-around',
           alignItems: 'center',
           width: '100%',
+          paddingBottom: Platform.OS === 'android' ? 30 : 0,
         }}>
-        <TouchableOpacity
-          style={{
-            width: '40%',
-            borderWidth: 2,
-            borderColor: 'black',
-            paddingVertical: 15,
-          }}>
-          <Text style={[styles.heading, {textAlign: 'center'}]}>View Rating</Text>
-        </TouchableOpacity>
+        {orderSummary.order_status[orderSummary.order_status.length - 1].order_status_name ===
+          'Completed' && (
+          <TouchableOpacity
+            style={{
+              width: '40%',
+              borderWidth: 2,
+              borderColor: 'black',
+              paddingVertical: 15,
+            }}>
+            <Text style={[styles.heading, {textAlign: 'center'}]}>View Rating</Text>
+          </TouchableOpacity>
+        )}
+
         <TouchableOpacity
           style={{
             width: '40%',

@@ -81,6 +81,7 @@ export const LoginForm = ({navigation, route}) => {
             ref={textInputRef}
             style={styles.inputPasswordField}
             placeholder="Your password"
+            placeholderTextColor={'gray'}
             autoCapitalize="none"
             secureTextEntry={!showPassword}
             onFocus={() =>
@@ -141,7 +142,7 @@ export const LoginForm = ({navigation, route}) => {
           <TouchableOpacity
             onPress={() => handleSubmit(password)}
             style={{
-              borderRadius: 25,
+              borderRadius: 5,
               padding: 10,
               backgroundColor: 'black',
               flexDirection: 'row',

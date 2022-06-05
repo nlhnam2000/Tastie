@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Dimensions,
+  FlatList,
 } from 'react-native';
 import colors from '../../../../colors/colors';
 import {IP_ADDRESS} from '../../../../global';
@@ -37,9 +38,8 @@ export const PromotionsList = props => {
       );
       if (res.data.status) {
         setPromotionList(res.data.response.promotion);
+        setLoading(false);
       }
-
-      setLoading(false);
     };
     LoadPromotionList(provider_id);
   }, []);
@@ -62,8 +62,13 @@ export const PromotionsList = props => {
         </TouchableOpacity>
         <Text style={styles.heading}>Available promotion</Text>
       </View>
+      {/* <FlatList data={promotionList} keyExtractor={item => item.promotion_id} /> */}
       <ScrollView style={styles.contentWrapper}>
-        <Text style={styles.subheading}>Available promotion list</Text>
+        <Text style={styles.subheading}>
+          {promotionList.length > 0
+            ? 'Available promotion list'
+            : 'There is no available promotion'}
+        </Text>
         {promotionList.map((item, index) => (
           <View key={index} style={styles.promotionItem}>
             <Text style={styles.smallheading}>Unlimited until {item.expire_at}</Text>
@@ -101,22 +106,22 @@ export const PromotionsList = props => {
       <BottomSheet
         ref={promotionBottomSheetRef}
         index={-1}
-        snapPoints={['75%']}
+        snapPoints={['85%']}
         enablePanDownToClose={true}
         onChange={index => {
           index === -1 ? setOpenBottomSheet(false) : null;
         }}
         backgroundStyle={{
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 1,
-            height: openBottomSheet ? -Dimensions.get('window').height : 0, // to lightoff the background
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 0,
+          // shadowColor: '#000',
+          // shadowOffset: {
+          //   width: 1,
+          //   height: openBottomSheet ? -Dimensions.get('window').height : 0, // to lightoff the background
+          // },
+          // shadowOpacity: 0.2,
+          // shadowRadius: 0,
           borderWidth: 1,
           borderColor: colors.secondary,
-          // elevation: 24,
+          // elevation: 1,
         }}>
         <BottomSheetScrollView
           contentContainerStyle={{backgroundColor: 'white', paddingVertical: 20}}>
