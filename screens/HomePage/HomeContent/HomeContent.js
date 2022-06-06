@@ -36,6 +36,7 @@ export const HomeContent = props => {
   const [selectedTab, setSelectedTab] = useState(headerTab[0]);
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
   const createChannel = () => {
     PushNotification.createChannel({
@@ -80,7 +81,11 @@ export const HomeContent = props => {
             })}
           </View>
         </View>
-        {selectedTab === 'Delivery' ? <DeliveryTab {...props} /> : <PickupTab {...props} />}
+        {selectedTab === 'Delivery' ? (
+          <DeliveryTab {...props} />
+        ) : (
+          <PickupTab {...props} scrollY={scrollY} />
+        )}
       </View>
     );
   }

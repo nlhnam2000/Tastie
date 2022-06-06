@@ -1,13 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, {useState, useEffect, useRef, useMemo, useCallback} from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
-  Button,
   TouchableOpacity,
   TextInput,
   Dimensions,
@@ -17,11 +13,6 @@ import {
   Animated,
   Platform,
   ActivityIndicator,
-  Modal,
-  Switch,
-  TouchableWithoutFeedback,
-  RefreshControl,
-  NativeModules,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
@@ -29,25 +20,64 @@ import {categoryData} from '../../assets/dummy/categoryData';
 import {useDispatch, useSelector} from 'react-redux';
 import MapView, {PROVIDER_GOOGLE, Marker, PROVIDER_DEFAULT} from 'react-native-maps';
 import axios from 'axios';
-import {IP_ADDRESS} from '../../global';
+import {IP_ADDRESS, convertDollar} from '../../global';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import {gestureHandlerRootHOC, FlatList} from 'react-native-gesture-handler';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const {width, height} = Dimensions.get('window');
 
 export const PickupTab = gestureHandlerRootHOC(props => {
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
   const [providerList, setProviderList] = useState([]);
-  const bottomSheetRef = useRef();
+  const bottomSheetRef1 = useRef();
+  const bottomSheetRef2 = useRef();
   const mapRef = useRef();
+  const providerHorizontalListRef = useRef();
   const filterModalize = useRef();
+  const snapPoints1 = useMemo(() => ['18%', '45%', '95%'], []);
+  const snapPoints2 = useMemo(() => ['40%'], []);
+  const scrollY = useRef(new Animated.Value(0)).current;
+
+  const marginTop = scrollY.interpolate({
+    inputRange: [0, 200],
+    outputRange: [0, -insets.top - 80],
+    extrapolate: 'clamp',
+  });
+  const headerOpacity = scrollY.interpolate({
+    inputRange: [0, 100],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
 
   const openFilterModalize = () => {
     filterModalize.current?.open();
   };
 
-  const renderCategoryIcon = ({item}) => {
+  const closeBottomSheet1 = useCallback(() => {
+    bottomSheetRef1.current?.close();
+  }, []);
+  const openBottomSheet1 = useCallback(() => {
+    bottomSheetRef1.current?.snapToIndex(1);
+  }, []);
+  const closeBottomSheet2 = useCallback(() => {
+    bottomSheetRef2.current?.close();
+  }, []);
+  const openBottomSheet2 = useCallback(() => {
+    bottomSheetRef2.current?.expand();
+  }, []);
+
+  const scrollToIndex = index => {
+    providerHorizontalListRef.current.scrollToIndex({
+      animated: true,
+      index: index,
+      viewOffset: 30,
+    });
+  };
+
+  const renderCategoryIcon = ({item, index}) => {
     return (
       <TouchableOpacity
         style={{
@@ -72,7 +102,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
         <ImageBackground
           source={{uri: item.profile_pic ?? item.avatar}}
           resizeMode="cover"
-          style={{height: 200, width: width - 20}}
+          style={{height: 150, width: width - 20}}
         />
         <View style={[styles.flexRowBetween]}>
           <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
@@ -81,7 +111,11 @@ export const PickupTab = gestureHandlerRootHOC(props => {
                 {item.provider_name ?? item.name}
               </Text>
             </View>
-            <Text>{item.estimated_cooking_time} minutes</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text>{(item.distance / 1000).toFixed(2)} km • </Text>
+              <Text>${convertDollar(item.delivery_fee)} delivery fee • </Text>
+              <Text>{item.estimated_cooking_time} mins</Text>
+            </View>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
             <Text>{item.order_totals}</Text>
@@ -91,14 +125,48 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     );
   };
 
+  const renderHorizontalScroll = ({item, index}) => (
+    <TouchableOpacity
+      onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
+      style={[
+        styles.providerHorizontalWrapper,
+        {marginLeft: index === 0 ? 30 : 0, marginRight: 10},
+      ]}>
+      <ImageBackground
+        source={{uri: item.profile_pic ?? item.avatar}}
+        resizeMode="cover"
+        style={{height: 150, width: width - 40}}
+        imageStyle={{borderTopLeftRadius: 20, borderTopRightRadius: 20}}
+      />
+      <View style={[styles.flexRowBetween, {justifyContent: 'space-around'}]}>
+        <View style={{paddingVertical: 10, paddingHorizontal: 5}}>
+          <View style={{width: width - 200, marginBottom: 5}}>
+            <Text numberOfLines={1} style={[styles.subheading]}>
+              {item.provider_name ?? item.name}
+            </Text>
+          </View>
+          <View style={{flexDirection: 'row', alignItems: 'center'}}>
+            <Text>{(item.distance / 1000).toFixed(2)} km • </Text>
+            <Text>${convertDollar(item.delivery_fee)} delivery fee • </Text>
+            <Text>{item.estimated_cooking_time} mins</Text>
+          </View>
+        </View>
+        <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
+          <Text>{item.order_totals}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
   const LoadNearByProvider = async location => {
+    // closeBottomSheet2();
     try {
       let res = await axios.post(
         `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-near-by-provider`,
         {
           latitude: location.latitude,
           longitude: location.longitude,
-          limit: 10,
+          limit: 100,
           offset: 1,
         },
       );
@@ -148,9 +216,9 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <Animated.View style={[styles.container, {marginTop: 0}]}>
       <View style={styles.headerWrapper}>
-        <View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
+        <Animated.View style={[styles.tabWrapper, {marginTop: -15, position: 'relative'}]}>
           <Text style={{fontSize: 18, fontWeight: '500'}}>Delivery to • </Text>
           <TouchableOpacity
             onPress={() => props.navigation.navigate('CustomerAddress')}
@@ -166,7 +234,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
             </Text>
             <Feather name="chevron-down" size={20} color={'black'} />
           </TouchableOpacity>
-        </View>
+        </Animated.View>
       </View>
 
       <MapView
@@ -180,16 +248,26 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           longitudeDelta: 0.0121,
         }}
         showsUserLocation
-        showsMyLocationButton
+        // showsMyLocationButton
         mapType="terrain"
         // onMapReady={() => {
         //   LoadNearByProvider(state.userLocation);
         // }}
         // minZoomLevel={15}
+        onPress={() => {
+          closeBottomSheet2();
+          openBottomSheet1();
+        }}
         provider={PROVIDER_GOOGLE}
         style={styles.map}>
         {providerList.map((provider, index) => (
           <Marker
+            onPress={event => {
+              event.stopPropagation();
+              closeBottomSheet1();
+              openBottomSheet2();
+              scrollToIndex(index);
+            }}
             key={index}
             coordinate={{
               latitude: parseFloat(provider.latitude),
@@ -204,9 +282,9 @@ export const PickupTab = gestureHandlerRootHOC(props => {
         ))}
       </MapView>
       <BottomSheet
-        ref={bottomSheetRef}
+        ref={bottomSheetRef1}
         index={0}
-        snapPoints={['18%', '45%', '95%']}
+        snapPoints={snapPoints1}
         enableContentPanningGesture
         enableHandlePanningGesture>
         <View style={styles.contentContainer}>
@@ -216,12 +294,6 @@ export const PickupTab = gestureHandlerRootHOC(props => {
             renderItem={renderCategoryIcon}
             horizontal
             showsHorizontalScrollIndicator={false}
-            // contentContainerStyle={{
-            //   paddingVertical: 10,
-            //   paddingHorizontal: 30,
-            //   paddingEnd: 30,
-            //   backgroundColor: 'white',
-            // }}
             contentContainerStyle={{paddingHorizontal: 30, paddingVertical: 10}}
           />
           <FlatList
@@ -230,10 +302,34 @@ export const PickupTab = gestureHandlerRootHOC(props => {
             contentContainerStyle={{backgroundColor: '#f2f2f2'}}
             renderItem={renderItem}
             style={{marginTop: 20}}
+            onScroll={Animated.event([{nativeEvent: {contentOffset: {y: scrollY}}}], {
+              useNativeDriver: false,
+            })}
           />
         </View>
       </BottomSheet>
-    </SafeAreaView>
+      <BottomSheet
+        ref={bottomSheetRef2}
+        snapPoints={snapPoints2}
+        index={-1}
+        // style={{marginTop: insets.top + 80}}
+        backdropComponent={() => <></>}
+        backgroundStyle={{backgroundColor: 'transparent'}}>
+        <View style={styles.contentContainer}>
+          <FlatList
+            ref={providerHorizontalListRef}
+            data={providerList}
+            horizontal
+            contentContainerStyle={{backgroundColor: 'transparent'}}
+            keyExtractor={item => item.provider_id}
+            renderItem={renderHorizontalScroll}
+            showsHorizontalScrollIndicator={false}
+            initialNumToRender={providerList.length}
+            onScrollToIndexFailed={({index, averageItemLength}) => scrollToIndex(index)}
+          />
+        </View>
+      </BottomSheet>
+    </Animated.View>
   );
 });
 
@@ -256,7 +352,8 @@ const styles = StyleSheet.create({
   },
   map: {
     width,
-    height: 500,
+    height: 600,
+    // zIndex: 1,
   },
   contentContainer: {
     width: '100%',
@@ -274,6 +371,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
     backgroundColor: 'white',
+  },
+  providerHorizontalWrapper: {
+    // paddingHorizontal: 20,
+    // paddingVertical: 10,
+    backgroundColor: 'white',
+    // marginRight: 10,
+    // marginLeft: 15,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#c4c4c4',
   },
   heading: {
     fontSize: 20,

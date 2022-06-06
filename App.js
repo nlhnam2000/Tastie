@@ -8,20 +8,7 @@
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-  ActivityIndicator,
-  Image,
-  Button,
-  Platform,
-  Modal,
-} from 'react-native';
+import {StyleSheet, View, ActivityIndicator} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -130,6 +117,7 @@ export default function App(props) {
         // console.log('access token', accessToken);
         dispatch(retrieveToken(accessToken));
       } else {
+        console.log('token not found');
         dispatch(TokenNotFound());
       }
 
