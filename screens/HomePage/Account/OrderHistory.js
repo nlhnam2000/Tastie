@@ -23,7 +23,6 @@ import colors from '../../../colors/colors';
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector, useDispatch} from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import PushNotification from 'react-native-push-notification';
@@ -47,7 +46,11 @@ export const OrderHistory = props => {
   const renderOrderStatus = status => {
     switch (status) {
       case 'Completed':
-        return <Text style={{fontWeight: '600'}}>More detail</Text>;
+        return (
+          <Text style={{fontWeight: '600'}}>
+            {props.filterStatus === 'ToRate' ? 'Rate this restaurant' : 'More detail'}
+          </Text>
+        );
       case 'Canceled':
         return (
           <Text style={{fontWeight: '600', color: colors.boldred}}>
@@ -76,9 +79,17 @@ export const OrderHistory = props => {
       if (res.data.response) {
         if (props.filterStatus === 'History') {
           // completed or canceled
-          setOrderHistory(res.data.response.filter(res => res.order_status_nb >= 5));
+          setOrderHistory(
+            res.data.response.list_order_history.filter(res => res.order_status_nb >= 5),
+          );
         } else if (props.filterStatus === 'Ongoing') {
-          setOrderHistory(res.data.response.filter(res => res.order_status_nb < 5));
+          setOrderHistory(
+            res.data.response.list_order_history.filter(res => res.order_status_nb < 5),
+          );
+        } else if (props.filterStatus === 'ToRate') {
+          setOrderHistory(
+            res.data.response.list_order_not_rated.filter(res => res.order_status_nb === 5),
+          );
         }
       }
     } catch (error) {
@@ -285,11 +296,15 @@ export const OrderHistory = props => {
                           order.order_status === 'Completed' ||
                           order.order_status === 'Canceled'
                         ) {
-                          props.navigation.navigate('DetailOrder', {
-                            order_code: order.order_code,
-                            total_price: order.total_amount,
-                            payment_method: order.payment_method,
-                          });
+                          if (props.filterStatus === 'ToRate') {
+                            props.navigation.navigate('RatingProvider', {order_id: order.order_id});
+                          } else {
+                            props.navigation.navigate('DetailOrder', {
+                              order_code: order.order_code,
+                              total_price: order.total_amount,
+                              payment_method: order.payment_method,
+                            });
+                          }
                         } else {
                           props.navigation.navigate('OrderStatus', {order_code: order.order_code});
                         }

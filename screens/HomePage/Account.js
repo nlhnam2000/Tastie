@@ -117,7 +117,12 @@ export const Account = props => {
 
             <TouchableOpacity
               style={styles.menuWrapper}
-              onPress={() => props.navigation.navigate('YourFavorites')}>
+              onPress={() =>
+                props.navigation.navigate('ResultContent', {
+                  isFavorite: true,
+                  title: 'Your favorite',
+                })
+              }>
               <MaterialCommunity color={'black'} name="heart" size={26} />
               <Text
                 style={{

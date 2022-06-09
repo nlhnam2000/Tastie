@@ -19,7 +19,7 @@ import colors from '../../../colors/colors';
 import {IP_ADDRESS, convertDollar} from '../../../global';
 import {SimpleSkeleton} from '../../../components/Skeleton/SimpleSkeleton';
 import {Header} from '../../../components/Layout/Header/Header';
-
+import {DisplayAlertMessage} from '../../../store/action/auth';
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
@@ -32,7 +32,7 @@ const PROVIDER_TEXT_MAX_WIDTH = width - 15 - 150 - 10 - 30;
 
 export const ResultContent = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
-  const {groupID, title, keyword, categoryFilter, image, ecoupon_id} = route.params;
+  const {groupID, title, keyword, categoryFilter, image, ecoupon_id, isFavorite} = route.params;
   const [data, setData] = useState([]);
   const [offset, setOffset] = useState(1);
   const state = useSelector(state => state.UserReducer);
@@ -168,6 +168,27 @@ export const ResultContent = ({navigation, route}) => {
     }
   };
 
+  const LoadFavoriteProvider = async (user_id, longitude, latitude) => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/home/get-list-provider-favorite`,
+        {
+          user_id: user_id,
+          longitude: longitude.toString(),
+          latitude: latitude.toString(),
+        },
+      );
+      if (res.data.status) {
+        setData(res.data.response);
+      }
+    } catch (error) {
+      DisplayAlertMessage('Cannot get favorite provider');
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (keyword) {
       LoadSearchResult(keyword);
@@ -176,6 +197,12 @@ export const ResultContent = ({navigation, route}) => {
       // console.log(categoryFilter);
     } else if (ecoupon_id) {
       LoadProviderByEcoupon(ecoupon_id);
+    } else if (isFavorite) {
+      LoadFavoriteProvider(
+        state.user_id,
+        state.userLocation.longitude,
+        state.userLocation.latitude,
+      );
     } else {
       LoadProvider(groupID, offset);
     }

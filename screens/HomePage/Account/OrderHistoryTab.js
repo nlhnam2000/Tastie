@@ -55,7 +55,10 @@ export const OrderHistoryTab = props => {
           name="History"
           children={() => <OrderHistory filterStatus={'History'} {...props} />}
         />
-        <Tab.Screen name="To Rate" component={ToRate} />
+        <Tab.Screen
+          name="To Rate"
+          children={() => <OrderHistory filterStatus={'ToRate'} {...props} />}
+        />
       </Tab.Navigator>
     </View>
   );

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import moment from 'moment';
 
-// export const IP_ADDRESS = '192.168.55.3';
-export const IP_ADDRESS = '157.230.243.92';
+export const IP_ADDRESS = '192.168.55.8';
+// export const IP_ADDRESS = '157.230.243.92';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const GEOAPIFY = '936151db693c4437aefc3ab950f1c033';
 export const MAPBOXGS_ACCESS_TOKEN =
