@@ -15,6 +15,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../colors/colors';
 import {categoryData} from '../../assets/dummy/categoryData';
 import {useDispatch, useSelector} from 'react-redux';
@@ -274,10 +275,27 @@ export const PickupTab = gestureHandlerRootHOC(props => {
               longitude: parseFloat(provider.longitude),
             }}
             title={provider.provider_name}>
-            <Image
+            {/* <Image
               source={require('../../assets/image/providerMarker.png')}
               style={{width: 40, height: 40}}
-            />
+            /> */}
+            <View
+              style={{
+                padding: 5,
+                borderRadius: 40,
+                backgroundColor: 'black',
+                borderColor: '#c4c4c4',
+                shadowColor: '#000',
+                shadowOffset: {
+                  width: 0,
+                  height: 1,
+                },
+                shadowRadius: 0,
+                shadowOpacity: 0.25,
+                elevation: 3,
+              }}>
+              <MaterialIcon name="silverware" size={22} color="white" />
+            </View>
           </Marker>
         ))}
       </MapView>

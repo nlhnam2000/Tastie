@@ -37,7 +37,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+import FastImage from 'react-native-fast-image';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -389,9 +389,7 @@ export const DetailProvider = props => {
                         {item.description}
                       </Text>
                     </View>
-                    <ImageBackground
-                      style={styles.foodImage}
-                      source={{uri: item.product_image}}></ImageBackground>
+                    <FastImage style={styles.foodImage} source={{uri: item.product_image}} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -845,51 +843,32 @@ export const DetailProvider = props => {
                       ))
                     : null}
                 </View>
-                {/* <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
-                    <View style={{paddingVertical: 25}}>
-                      <Feather name="star" size={22} color={'black'} />
-                    </View>
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        width: '100%',
-                        paddingHorizontal: 15,
-                        borderBottomColor: 'rgba(230,230,230,1)',
-                        borderBottomWidth: 2,
-                        paddingVertical: 25,
-                      }}>
-                      <TouchableOpacity onPress={() => setOpenRating(prev => !prev)}>
-                        <Text style={{fontSize: 17, fontWeight: '600'}}>Rating & Reviews</Text>
-                        {openRating
-                          ? data.reviews.map((review, index) => {
-                              return (
-                                <View key={index} style={{width: '100%', marginTop: 20}}>
-                                  <View
-                                    style={{
-                                      flexDirection: 'row',
-                                      alignItems: 'center',
-                                      width: '100%',
-                                      marginBottom: 5,
-                                    }}>
-                                    <Text style={{fontSize: 17, fontWeight: '500', marginRight: 5}}>
-                                      {review.customer}
-                                    </Text>
-                                    <Rating rating={review.ratings} />
-                                  </View>
+                <View style={[styles.sectionWrapper, {alignItems: 'flex-start'}]}>
+                  <View style={{paddingVertical: 25}}>
+                    <Feather name="star" size={22} color={'black'} />
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      paddingHorizontal: 15,
+                      borderBottomColor: 'rgba(230,230,230,1)',
+                      borderBottomWidth: 2,
+                      paddingVertical: 25,
+                    }}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        props.navigation.navigate('Review', {provider_id: info.data.provider_id})
+                      }>
+                      <Text style={{fontSize: 17, fontWeight: '600'}}>Rating & Reviews</Text>
+                    </TouchableOpacity>
 
-                                  <Text style={{color: 'gray'}}>{review.comments}</Text>
-                                </View>
-                              );
-                            })
-                          : null}
-                      </TouchableOpacity>
-
-                      <TouchableOpacity onPress={() => setOpenRating(prev => !prev)}>
-                        <Feather name={openRating ? 'minus' : 'plus'} size={22} color={'gray'} />
-                      </TouchableOpacity>
-                    </View>
-                  </View> */}
+                    <TouchableOpacity onPress={() => setOpenRating(prev => !prev)}>
+                      <Feather name={'chevron-right'} size={22} color={'gray'} />
+                    </TouchableOpacity>
+                  </View>
+                </View>
               </View>
             </ScrollView>
           </View>
