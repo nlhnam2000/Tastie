@@ -26,6 +26,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import PushNotification from 'react-native-push-notification';
+import FastImage from 'react-native-fast-image';
 
 const {width, height} = Dimensions.get('window');
 
@@ -266,7 +267,7 @@ export const OrderHistory = props => {
                     <Text style={{color: 'gray'}}>{order.completed_at}</Text>
                   </View>
                   <View style={styles.orderContent}>
-                    <ImageBackground
+                    <FastImage
                       source={{uri: order.provider_avatar}}
                       style={{width: 100, height: 100, marginRight: 20}}
                     />

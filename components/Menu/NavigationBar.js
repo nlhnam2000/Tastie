@@ -39,7 +39,7 @@ export const NavigationBar = props => {
   const state = useSelector(state => state.UserReducer);
   const [newNoti, setNewNoti] = useState(false);
 
-  async function onDisplayNotification(title, message) {
+  async function onDisplayNotification(message) {
     // Create a channel
     const channelId = await notifee.createChannel({
       id: 'default',
@@ -50,8 +50,8 @@ export const NavigationBar = props => {
 
     // Display a notification
     await notifee.displayNotification({
-      title: title,
-      body: message,
+      title: message.subject,
+      body: message.content,
       ios: {
         channelId,
       },
@@ -90,8 +90,8 @@ export const NavigationBar = props => {
           PushNotification.cancelAllLocalNotifications();
           PushNotification.localNotification({
             channelId: 'homescreen-channel',
-            title: 'Message from shipper:',
-            message: message,
+            title: message.subject,
+            message: message.content,
           });
         } else {
           onDisplayNotification('Message from shipper', message);

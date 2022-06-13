@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   View,
   Text,
@@ -16,6 +16,7 @@ import {Header} from '../../../../components/Layout/Header/Header';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
+import notifee, {EventType} from '@notifee/react-native';
 
 export const DetailEcoupon = props => {
   const {item} = props.route.params;
@@ -44,11 +45,29 @@ export const DetailEcoupon = props => {
     }
   };
 
-  const notify = () => {
-    PushNotification.localNotification({
-      channelId: 'homescreen-channel',
-      title: 'Test notification',
-      message: 'test123',
+  const notify = async (title, message) => {
+    // PushNotification.localNotification({
+    //   channelId: 'homescreen-channel',
+    //   title: 'Test notification',
+    //   message: 'test123',
+    // });
+
+    await notifee.cancelAllNotifications();
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: title,
+      body: message,
+      data: {
+        provider_id: '1000085',
+      },
+      ios: {
+        foregroundPresentationOptions: {
+          alert: true,
+          badge: true,
+          sound: true,
+        },
+      },
     });
   };
 
@@ -84,10 +103,11 @@ export const DetailEcoupon = props => {
       <TouchableOpacity
         style={styles.button}
         onPress={() =>
-          props.navigation.navigate('ResultContent', {
-            title: item.ecoupon_name,
-            ecoupon_id: item.ecoupon_id,
-          })
+          // props.navigation.navigate('ResultContent', {
+          //   title: item.ecoupon_name,
+          //   ecoupon_id: item.ecoupon_id,
+          // })
+          notify('Hi', 'test')
         }>
         <Text
           style={{

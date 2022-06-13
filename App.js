@@ -70,7 +70,7 @@ import {
 import colors from './colors/colors';
 import {IP_ADDRESS, getAccessToken} from './global';
 import PushNotification from 'react-native-push-notification';
-import notifee, {AuthorizationStatus} from '@notifee/react-native';
+import notifee, {AuthorizationStatus, EventType} from '@notifee/react-native';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -129,6 +129,17 @@ export default function App(props) {
         });
       }
     }, 100);
+
+    return notifee.onForegroundEvent(({type, detail}) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail);
+          break;
+        case EventType.PRESS:
+          console.log('User pressed notification', detail);
+          break;
+      }
+    });
   }, []);
 
   if (state.isLoading) {

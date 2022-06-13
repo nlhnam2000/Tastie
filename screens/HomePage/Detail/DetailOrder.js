@@ -85,6 +85,7 @@ export const DetailOrder = props => {
     //   list.push(optionItemName.toString().split(',').join(', '));
     // });
     // setAdditionalOptions(list);
+    console.log(order_code);
     const res1 = GetOrderSummary();
     const res2 = GetOrderDetail();
     Promise.all([res1, res2]).then(values => {

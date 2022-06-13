@@ -17,6 +17,7 @@ import {SimpleSkeleton} from '../Skeleton/SimpleSkeleton';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../colors/colors';
+import FastImage from 'react-native-fast-image';
 
 const {width} = Dimensions.get('window');
 
@@ -38,7 +39,8 @@ export const CategoryList = props => {
       },
     );
     if (res.data.response) {
-      setProviderList(res.data.response.filter(r => OpenStatus(r.operation_time) !== 'OFF'));
+      // setProviderList(res.data.response.filter(r => OpenStatus(r.operation_time) !== 'OFF'));
+      setProviderList(res.data.response);
     }
     setLoading(false);
   };
@@ -86,17 +88,17 @@ export const CategoryList = props => {
             <TouchableOpacity
               onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
               style={styles.providerWrapper}>
-              <ImageBackground
+              <FastImage
                 source={{uri: item.profile_pic}}
-                resizeMode="cover"
+                resizeMode={FastImage.resizeMode.cover}
                 style={{
                   height: 150,
-                  width: width - 80,
+                  width: width - 40,
                   alignItems: 'center',
                   justifyContent: 'center',
                   position: 'relative',
                 }}>
-                {OpenStatus(item.operation_time) === 'CLOSED' && (
+                {item.operation_time[0].status !== 1 && (
                   <View
                     style={{
                       backgroundColor: 'rgba(0,0,0,0.5)',
@@ -130,7 +132,7 @@ export const CategoryList = props => {
                     style={{position: 'absolute', right: 5, top: 5}}
                   />
                 )}
-              </ImageBackground>
+              </FastImage>
               <View style={[styles.flexRowBetween]}>
                 <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
                   <View style={{width: width - 200, marginBottom: 5}}>

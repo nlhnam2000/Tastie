@@ -25,6 +25,7 @@ import {IP_ADDRESS, convertDollar} from '../../global';
 import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import {gestureHandlerRootHOC, FlatList} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import FastImage from 'react-native-fast-image';
 
 const {width, height} = Dimensions.get('window');
 
@@ -39,7 +40,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   const providerHorizontalListRef = useRef();
   const filterModalize = useRef();
   const snapPoints1 = useMemo(() => ['18%', '45%', '95%'], []);
-  const snapPoints2 = useMemo(() => ['40%'], []);
+  const snapPoints2 = useMemo(() => ['35%', '50%'], []);
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const marginTop = scrollY.interpolate({
@@ -67,7 +68,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     bottomSheetRef2.current?.close();
   }, []);
   const openBottomSheet2 = useCallback(() => {
-    bottomSheetRef2.current?.expand();
+    bottomSheetRef2.current?.snapToIndex(0);
   }, []);
 
   const scrollToIndex = index => {
@@ -100,9 +101,9 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           styles.providerWrapper,
           {marginBottom: index === providerList.length - 1 ? 100 : 0, marginTop: 10},
         ]}>
-        <ImageBackground
+        <FastImage
           source={{uri: item.profile_pic ?? item.avatar}}
-          resizeMode="cover"
+          resizeMode={FastImage.resizeMode.cover}
           style={{height: 150, width: width - 20}}
         />
         <View style={[styles.flexRowBetween]}>
@@ -133,11 +134,11 @@ export const PickupTab = gestureHandlerRootHOC(props => {
         styles.providerHorizontalWrapper,
         {marginLeft: index === 0 ? 30 : 0, marginRight: 10},
       ]}>
-      <ImageBackground
+      <FastImage
         source={{uri: item.profile_pic ?? item.avatar}}
-        resizeMode="cover"
-        style={{height: 150, width: width - 40}}
-        imageStyle={{borderTopLeftRadius: 20, borderTopRightRadius: 20}}
+        resizeMode={FastImage.resizeMode.cover}
+        style={{height: 120, width: width - 40, borderTopLeftRadius: 20, borderTopRightRadius: 20}}
+        // imageStyle={{borderTopLeftRadius: 20, borderTopRightRadius: 20}}
       />
       <View style={[styles.flexRowBetween, {justifyContent: 'space-around'}]}>
         <View style={{paddingVertical: 10, paddingHorizontal: 5}}>
@@ -169,6 +170,8 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           longitude: location.longitude,
           limit: 100,
           offset: 1,
+          user_id: state.user_id,
+          group_provider_id: 7,
         },
       );
       if (res.data.status) {
@@ -387,7 +390,7 @@ const styles = StyleSheet.create({
   },
   providerWrapper: {
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 5,
     backgroundColor: 'white',
   },
   providerHorizontalWrapper: {

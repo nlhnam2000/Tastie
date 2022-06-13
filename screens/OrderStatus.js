@@ -125,6 +125,7 @@ export const OrderStatus = props => {
           name: state.first_name + ' ' + state.last_name,
           phone: state.phone,
           address: state.userLocation.address,
+          user_id: state.user_id,
           location: {
             latitude: state.userLocation.latitude,
             longitude: state.userLocation.longitude,
@@ -141,6 +142,8 @@ export const OrderStatus = props => {
         },
         order_code,
       );
+    } else {
+      console.log('no');
     }
   }, [assignedStatus, orderData]);
 
@@ -213,7 +216,7 @@ export const OrderStatus = props => {
         }));
       });
       state.socketServer.host.on('shipper-has-arrived', message => {
-        setNotification(message);
+        setNotification('The shipper has arrived to your place');
         setOpenModal(true);
         setCompletedStatus(true);
         setTrackingMessage(prev => ({
@@ -221,6 +224,7 @@ export const OrderStatus = props => {
           title: 'Order completed',
           message: 'The shipper has arrived to your place.',
         }));
+        state.socketServer.host.emit('leave-room', order_code);
       });
       state.socketServer.host.on('order-accepted', message => {
         setWaiting(false);

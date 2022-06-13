@@ -23,6 +23,7 @@ import {DisplayAlertMessage} from '../../../store/action/auth';
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
 import axios from 'axios';
+import FastImage from 'react-native-fast-image';
 
 import {useSelector} from 'react-redux';
 
@@ -213,9 +214,9 @@ export const ResultContent = ({navigation, route}) => {
       <TouchableOpacity
         onPress={() => navigation.navigate('DetailProvider', {data: item})}
         style={[styles.providerWrapper, {marginTop: 20}]}>
-        <ImageBackground
+        <FastImage
           source={{uri: item.profile_pic ?? item.avatar}}
-          resizeMode="cover"
+          resizeMode={FastImage.resizeMode.cover}
           style={{height: 100, width: 100}}
         />
         <View style={[styles.flexRowBetween, {marginLeft: 15}]}>

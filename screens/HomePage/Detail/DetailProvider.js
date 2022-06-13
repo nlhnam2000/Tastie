@@ -69,6 +69,8 @@ export const DetailProvider = props => {
     providerInfoModal.current?.open();
   };
 
+  const AnimatedImage = Animated.createAnimatedComponent(FastImage);
+
   const handleFavorite = async (provider_id, user_id) => {
     try {
       if (isFavorite) {
@@ -409,7 +411,7 @@ export const DetailProvider = props => {
             ListEmptyComponent={() => <Text>Empty</Text>}
             ListHeaderComponent={() => (
               <>
-                <Animated.Image
+                <AnimatedImage
                   source={{uri: info.data.avatar}}
                   resizeMode="cover"
                   style={[styles.providerCover, {opacity}]}

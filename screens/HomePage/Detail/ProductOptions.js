@@ -25,6 +25,7 @@ import moment from 'moment';
 import {AddToCart, ClearCart} from '../../../store/action/cart';
 import {DuoAlertDialog} from '../../../components/Error/AlertDialog';
 import {sleep} from '../../../global';
+import FastImage from 'react-native-fast-image';
 
 const {width, height} = Dimensions.get('window');
 
@@ -132,9 +133,9 @@ export const ProductOptions = props => {
         contentContainerStyle={{backgroundColor: '#f2f2f2'}}>
         {/* Image */}
         <View style={styles.foodImageWrapper}>
-          <Image
+          <FastImage
             source={{uri: data.product_image}}
-            resizeMode="cover"
+            resizeMode={FastImage.resizeMode.cover}
             style={{width, height: 200}}
           />
           {/* <View style={{padding: 10, marginTop: 10, backgroundColor: 'white'}}>
@@ -185,7 +186,11 @@ export const ProductOptions = props => {
                   <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>${item.price}</Text>
                 </View>
               </View>
-              <Image source={item.image} style={{width: 100, height: 100}} resizeMode="contain" />
+              <FastImage
+                source={item.image}
+                style={{width: 100, height: 100}}
+                resizeMode={FastImage.resizeMode.contain}
+              />
             </View>
           ))}
         </View>

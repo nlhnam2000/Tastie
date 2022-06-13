@@ -89,6 +89,7 @@ export const GoToCheckout = props => {
       );
       if (res.data.status && res.data.order_code) {
         let orderCode = res.data.order_code;
+        console.log('order_code from api', orderCode);
         try {
           let submitOrder = await axios.post(
             `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
