@@ -52,7 +52,13 @@ export const Cart = props => {
     //   });
     //   setAdditionalOptions(list);
     // }
-    console.log(state.userCart.cart);
+    // console.log(state.userCart.cart);
+    // let listProduct = state.userCart.cart.map((item, index) => ({
+    //   ...item,
+    //   additionalOption: [],
+    //   additionalOptions: [],
+    // }));
+
     setLoading(false);
   }, []);
 

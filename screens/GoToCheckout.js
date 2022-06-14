@@ -88,15 +88,24 @@ export const GoToCheckout = props => {
         orderForm,
       );
       if (res.data.status && res.data.order_code) {
-        let orderCode = res.data.order_code;
-        console.log('order_code from api', orderCode);
+        const orderCode = res.data.order_code;
+        // console.log('order_code from api', orderCode);
+        // let listProduct = state.userCart.cart.map((item, index) => ({
+        //   ...item,
+        //   additional_option: [],
+        //   additionalOptions: [],
+        //   special_instruction: '',
+        // }));
+        const body = {
+          order_code: orderCode,
+          customer_id: state.user_id,
+          // list_product: listProduct,
+        };
+        console.log(body);
         try {
           let submitOrder = await axios.post(
             `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
-            {
-              customer_id: state.user_id,
-              order_code: orderCode,
-            },
+            body,
           );
           if (submitOrder.data.status) {
             // dispatch(InitSocket());
@@ -114,8 +123,6 @@ export const GoToCheckout = props => {
     } catch (error) {
       console.error(error);
     }
-
-    // console.log(orderForm);
   };
 
   useEffect(() => {

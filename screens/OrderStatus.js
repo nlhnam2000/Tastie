@@ -600,7 +600,7 @@ export const OrderStatus = props => {
                               marginBottom: 10,
                               fontSize: 17,
                               fontWeight: '600',
-                              width: '80%',
+                              width: '40%',
                             }}>
                             {item.product_name}
                           </Text>

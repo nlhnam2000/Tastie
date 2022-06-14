@@ -258,6 +258,7 @@ export const UserReducer = (state = initialState, action) => {
           provider_id: payload.userCart.providerID,
           provider_name: payload.userCart.providerName,
           cart: payload.userCart.items,
+          item_code: payload.userCart.item_code,
           // status: 'ADDED',
         },
       };

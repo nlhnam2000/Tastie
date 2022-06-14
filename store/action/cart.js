@@ -27,7 +27,7 @@ export const RetrieveCart = user_id => async dispatch => {
           userCart: res.data.response,
         },
       });
-      console.log(res.data.response);
+      // console.log(res.data.response);
     } else {
       dispatch({
         type: CART_IS_EMPTY,

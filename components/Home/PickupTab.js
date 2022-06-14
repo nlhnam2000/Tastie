@@ -26,6 +26,7 @@ import BottomSheet, {BottomSheetFlatList} from '@gorhom/bottom-sheet';
 import {gestureHandlerRootHOC, FlatList} from 'react-native-gesture-handler';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import FastImage from 'react-native-fast-image';
+import {ProviderMarker} from '../Marker/Marker';
 
 const {width, height} = Dimensions.get('window');
 
@@ -34,6 +35,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
   const [providerList, setProviderList] = useState([]);
+  const [selectedMarker, setSelectedMarker] = useState(null);
   const bottomSheetRef1 = useRef();
   const bottomSheetRef2 = useRef();
   const mapRef = useRef();
@@ -78,6 +80,21 @@ export const PickupTab = gestureHandlerRootHOC(props => {
       viewOffset: 30,
     });
   };
+
+  const onViewableItemsChanged = ({viewableItems, changed}) => {
+    console.log(viewableItems[0].item.provider_name);
+    setSelectedMarker(viewableItems[0].items);
+    // console.log(changed);
+  };
+  const onViewChangeRef = useRef(({viewableItems}) => {
+    console.log(viewableItems);
+    setSelectedMarker(viewableItems[0].item);
+  });
+  const onViewChangeConfigRef = useRef({
+    minimumViewTime: 1,
+    waitForInteraction: true,
+    viewAreaCoveragePercentThreshold: 50,
+  });
 
   const renderCategoryIcon = ({item, index}) => {
     return (
@@ -210,6 +227,29 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     }
   }, [providerList]);
 
+  // useEffect(() => {
+  //   if (selectedMarker) {
+  //     mapRef.current.fitToCoordinates(
+  //       [
+  //         {
+  //           latitude: parseFloat(selectedMarker.latitude),
+  //           longitude: parseFloat(selectedMarker.longitude),
+  //         },
+  //         // {
+  //         //   // latitude: 10.766575409142378,
+  //         //   // longitude: 106.69510799782778,
+  //         //   latitude: state.userLocation.latitude,
+  //         //   longitude: state.userLocation.longitude,
+  //         // },
+  //       ],
+  //       {
+  //         edgePadding: {top: 20, right: 20, bottom: 20, left: 20},
+  //         animated: true,
+  //       },
+  //     );
+  //   }
+  // }, [selectedMarker]);
+
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
@@ -251,8 +291,17 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           latitudeDelta: 0.015,
           longitudeDelta: 0.0121,
         }}
+        region={{
+          latitude: selectedMarker
+            ? parseFloat(selectedMarker.latitude)
+            : state.userLocation.latitude,
+          longitude: selectedMarker
+            ? parseFloat(selectedMarker.longitude)
+            : state.userLocation.longitude,
+          latitudeDelta: 0.015,
+          longitudeDelta: 0.0121,
+        }}
         showsUserLocation
-        // showsMyLocationButton
         mapType="terrain"
         // onMapReady={() => {
         //   LoadNearByProvider(state.userLocation);
@@ -268,6 +317,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           <Marker
             onPress={event => {
               event.stopPropagation();
+              setSelectedMarker(provider);
               closeBottomSheet1();
               openBottomSheet2();
               scrollToIndex(index);
@@ -277,28 +327,13 @@ export const PickupTab = gestureHandlerRootHOC(props => {
               latitude: parseFloat(provider.latitude),
               longitude: parseFloat(provider.longitude),
             }}
+            // tracksViewChanges={provider.provider_id === selectedMarker?.provider_id ? false : true}
             title={provider.provider_name}>
             {/* <Image
               source={require('../../assets/image/providerMarker.png')}
               style={{width: 40, height: 40}}
             /> */}
-            <View
-              style={{
-                padding: 5,
-                borderRadius: 40,
-                backgroundColor: 'black',
-                borderColor: '#c4c4c4',
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 1,
-                },
-                shadowRadius: 0,
-                shadowOpacity: 0.25,
-                elevation: 3,
-              }}>
-              <MaterialIcon name="silverware" size={22} color="white" />
-            </View>
+            <ProviderMarker selected={provider.provider_id === selectedMarker?.provider_id} />
           </Marker>
         ))}
       </MapView>
@@ -347,6 +382,8 @@ export const PickupTab = gestureHandlerRootHOC(props => {
             showsHorizontalScrollIndicator={false}
             initialNumToRender={providerList.length}
             onScrollToIndexFailed={({index, averageItemLength}) => scrollToIndex(index)}
+            onViewableItemsChanged={onViewChangeRef.current}
+            viewabilityConfig={onViewChangeConfigRef.current}
           />
         </View>
       </BottomSheet>

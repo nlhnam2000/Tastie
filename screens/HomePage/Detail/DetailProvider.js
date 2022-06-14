@@ -25,6 +25,7 @@ import {
 import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
 import {IP_ADDRESS, cleanOperationTime} from '../../../global';
 import {DetailProviderSkeleton} from '../../../components/Skeleton/DetailProviderSkeleton';
+import {ProviderMarker, UserMarker} from '../../../components/Marker/Marker';
 
 // actions
 import {NavigateToCart} from '../../../store/action/navigation';
@@ -717,7 +718,7 @@ export const DetailProvider = props => {
               mapType="terrain"
               ref={mapref}
               scrollEnabled
-              onLayout={() => {
+              onMapLoaded={() => {
                 mapref.current.fitToCoordinates(
                   [
                     {
@@ -732,7 +733,7 @@ export const DetailProvider = props => {
                     },
                   ],
                   {
-                    edgePadding: {top: 30, right: 30, bottom: 20, left: 20},
+                    edgePadding: {top: 40, right: 20, bottom: 20, left: 20},
                     animated: true,
                   },
                 );
@@ -751,24 +752,22 @@ export const DetailProvider = props => {
                   latitude: parseFloat(info.data.latitude),
                   longitude: parseFloat(info.data.longitude),
                 }}>
-                <Image
-                  source={require('../../../assets/image/providerMarker.png')}
-                  style={{width: 40, height: 40}}
-                />
+                <ProviderMarker />
               </Marker>
               <Marker
                 coordinate={{
                   latitude: state.userLocation.latitude,
                   longitude: state.userLocation.longitude,
                 }}
-                tracksViewChanges={false}
-              />
+                tracksViewChanges={false}>
+                <UserMarker />
+              </Marker>
             </MapView>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               style={styles.modalHeader}
               onPress={() => providerInfoModal.current.close()}>
               <Feather name="x" size={20} color={'black'} />
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <ScrollView style={{width: FULL_WIDTH}}>
               <View style={{width: FULL_WIDTH}}>
                 <View style={styles.providerName}>

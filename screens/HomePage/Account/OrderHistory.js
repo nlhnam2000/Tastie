@@ -266,7 +266,23 @@ export const OrderHistory = props => {
                     </Text>
                     <Text style={{color: 'gray'}}>{order.completed_at}</Text>
                   </View>
-                  <View style={styles.orderContent}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      if (order.order_status === 'Completed' || order.order_status === 'Canceled') {
+                        if (props.filterStatus === 'ToRate') {
+                          props.navigation.navigate('RatingProvider', {order_id: order.order_id});
+                        } else {
+                          props.navigation.navigate('DetailOrder', {
+                            order_code: order.order_code,
+                            total_price: order.total_amount,
+                            payment_method: order.payment_method,
+                          });
+                        }
+                      } else {
+                        props.navigation.navigate('OrderStatus', {order_code: order.order_code});
+                      }
+                    }}
+                    style={styles.orderContent}>
                     <FastImage
                       source={{uri: order.provider_avatar}}
                       style={{width: 100, height: 100, marginRight: 20}}
@@ -288,31 +304,10 @@ export const OrderHistory = props => {
                         {order.payment_method}
                       </Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
                   <View style={styles.orderFooter}>
                     <Text style={{fontSize: 14, fontWeight: '400'}}>{order.order_status}</Text>
-                    <TouchableOpacity
-                      onPress={() => {
-                        if (
-                          order.order_status === 'Completed' ||
-                          order.order_status === 'Canceled'
-                        ) {
-                          if (props.filterStatus === 'ToRate') {
-                            props.navigation.navigate('RatingProvider', {order_id: order.order_id});
-                          } else {
-                            props.navigation.navigate('DetailOrder', {
-                              order_code: order.order_code,
-                              total_price: order.total_amount,
-                              payment_method: order.payment_method,
-                            });
-                          }
-                        } else {
-                          props.navigation.navigate('OrderStatus', {order_code: order.order_code});
-                        }
-                      }}
-                      style={styles.buttons}>
-                      {renderOrderStatus(order.order_status)}
-                    </TouchableOpacity>
+                    <View style={styles.buttons}>{renderOrderStatus(order.order_status)}</View>
                   </View>
                 </View>
               ))}

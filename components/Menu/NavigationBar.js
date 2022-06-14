@@ -56,6 +56,8 @@ export const NavigationBar = props => {
         channelId,
       },
     });
+
+    console.log('Message from shipper', message);
   }
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export const NavigationBar = props => {
             message: message.content,
           });
         } else {
-          onDisplayNotification('Message from shipper', message);
+          onDisplayNotification(message);
         }
       });
 
@@ -107,7 +109,7 @@ export const NavigationBar = props => {
             message: message,
           });
         } else {
-          onDisplayNotification('The shipper is on the way', message);
+          onDisplayNotification(message);
         }
       });
 
@@ -120,7 +122,7 @@ export const NavigationBar = props => {
             message: message,
           });
         } else {
-          onDisplayNotification('Shipper has arrived !!!', message);
+          onDisplayNotification(message);
         }
       });
     } else {
