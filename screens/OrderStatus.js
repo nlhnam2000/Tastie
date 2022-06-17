@@ -33,7 +33,10 @@ export const OrderStatus = props => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
   const {order_code} = props.route.params;
-  const [location, setLocation] = useState({latitude: 0, longitude: 0});
+  const [location, setLocation] = useState({
+    latitude: state.userLocation.latitude,
+    longitude: state.userLocation.longitude,
+  });
   const [shipperLocation, setShipperLocation] = useState({});
   const [notification, setNotification] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -141,6 +144,10 @@ export const OrderStatus = props => {
           },
         },
         order_code,
+        {
+          delivery_fee: orderData.delivery_fee,
+          total: parseFloat(totalCartPrice(orderData.items)),
+        },
       );
     } else {
       console.log('no');
@@ -148,31 +155,31 @@ export const OrderStatus = props => {
   }, [assignedStatus, orderData]);
 
   useEffect(() => {
-    const initialMap = async () => {
-      if (Platform.OS === 'ios') {
-        let permission = await Geolocation.requestAuthorization('whenInUse');
-        if (permission === 'granted') {
-          getGeolocation();
-        }
-      } else {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Example App',
-              message: 'Example App access to your location ',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            getGeolocation();
-          } else {
-            console.log('location permission denied');
-            alert('Location permission denied');
-          }
-        } catch (err) {
-          console.warn(err);
-        }
-      }
+    const initialMap = () => {
+      // if (Platform.OS === 'ios') {
+      //   let permission = await Geolocation.requestAuthorization('whenInUse');
+      //   if (permission === 'granted') {
+      //     getGeolocation();
+      //   }
+      // } else {
+      //   try {
+      //     const granted = await PermissionsAndroid.request(
+      //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      //       {
+      //         title: 'Example App',
+      //         message: 'Example App access to your location ',
+      //       },
+      //     );
+      //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      //       getGeolocation();
+      //     } else {
+      //       console.log('location permission denied');
+      //       alert('Location permission denied');
+      //     }
+      //   } catch (err) {
+      //     console.warn(err);
+      //   }
+      // }
       // state.socketServer.host = io(`http://${IP_ADDRESS}:3015`);
       state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
       /* 
@@ -303,7 +310,7 @@ export const OrderStatus = props => {
             merchant_name: data[0].response.merchant_name,
             items: data[0].response.items,
             num_items: data[0].response.num_items,
-            delivery_fee: data[0].response.delivery_fee,
+            delivery_fee: data[1].response.delivery_fee,
             order_id: data[1].response.order_id,
           }));
           setTrackingMessage({
@@ -661,7 +668,10 @@ export const OrderStatus = props => {
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Total</Text>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>
-                        ${totalCartPrice(orderData.items)}
+                        $
+                        {(
+                          parseFloat(totalCartPrice(orderData.items)) + orderData.delivery_fee
+                        ).toFixed(2)}
                       </Text>
                     </View>
                   </View>
