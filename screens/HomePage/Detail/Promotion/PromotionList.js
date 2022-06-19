@@ -14,7 +14,7 @@ import colors from '../../../../colors/colors';
 import {IP_ADDRESS} from '../../../../global';
 import axios from 'axios';
 import Feather from 'react-native-vector-icons/Feather';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetScrollView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {PromotionDetail} from '../../../../components/BottomSheet/PromotionDetail';
 
 export const PromotionsList = props => {
@@ -108,6 +108,9 @@ export const PromotionsList = props => {
         index={-1}
         snapPoints={['85%']}
         enablePanDownToClose={true}
+        backdropComponent={props => (
+          <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        )}
         onChange={index => {
           index === -1 ? setOpenBottomSheet(false) : null;
         }}

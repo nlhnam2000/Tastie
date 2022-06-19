@@ -102,12 +102,13 @@ export const DetailEcoupon = props => {
       </ScrollView>
       <TouchableOpacity
         style={styles.button}
-        onPress={() =>
-          // props.navigation.navigate('ResultContent', {
-          //   title: item.ecoupon_name,
-          //   ecoupon_id: item.ecoupon_id,
-          // })
-          notify('Hi', 'test')
+        onPress={
+          () =>
+            props.navigation.navigate('ResultContent', {
+              title: item.ecoupon_name,
+              ecoupon_id: item.ecoupon_id,
+            })
+          // notify('Hi', 'test')
         }>
         <Text
           style={{

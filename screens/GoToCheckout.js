@@ -33,7 +33,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -571,15 +571,9 @@ export const GoToCheckout = props => {
         index={-1}
         snapPoints={promoSnapPoint}
         enablePanDownToClose
-        backgroundStyle={{
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 1,
-            height: openPromo ? -Dimensions.get('window').height : 0, // to lightoff the background
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 0,
-        }}
+        backdropComponent={props => (
+          <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        )}
         onChange={index => (index === -1 ? setOpenPromo(false) : null)}>
         <PromotionList
           providerId={state.userCart.provider_id}
@@ -597,15 +591,9 @@ export const GoToCheckout = props => {
         snapPoints={paymentSnapPoint}
         enablePanDownToClose
         onChange={index => (index === -1 ? setOpenPayment(false) : null)}
-        backgroundStyle={{
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 1,
-            height: openPayment ? -Dimensions.get('window').height : 0, // to lightoff the background
-          },
-          shadowOpacity: 0.2,
-          shadowRadius: 0,
-        }}>
+        backdropComponent={props => (
+          <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+        )}>
         <PaymentMethodList
           data={paymentMethod}
           selected={selectedPayment}

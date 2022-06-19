@@ -18,7 +18,6 @@ import {NavigationBar} from '../../components/Menu/NavigationBar';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
 import {NavigateToHome} from '../../store/action/navigation';
-import {popularData} from '../../assets/dummy/popularData';
 import {
   RemoveCart,
   IncreaseQuantity,
@@ -73,13 +72,6 @@ export const Cart = props => {
     }
 
     return price.toFixed(2);
-  };
-
-  const getProviderInfo = provider_id => {
-    console.log(popularData[provider_id - 1]);
-    let provider = popularData[provider_id - 1];
-    dispatch(NavigateToHome());
-    props.navigation.navigate('DetailProvider', {data: provider});
   };
 
   if (loading) {

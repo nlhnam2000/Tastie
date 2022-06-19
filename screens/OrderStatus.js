@@ -24,6 +24,7 @@ import {ScrollView} from 'react-native-gesture-handler';
 import {OrderCompleted} from '../store/action/cart';
 import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
 import {DisconnectSocket} from '../store/action/auth';
+import BottomSheet, {BottomSheetScrollView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 
 // let socket;
 const {width, height} = Dimensions.get('window');
@@ -66,6 +67,7 @@ export const OrderStatus = props => {
 
   const mapRef = useRef();
   const scrollRef = useRef();
+  const bottomSheetRef = useRef();
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -156,31 +158,6 @@ export const OrderStatus = props => {
 
   useEffect(() => {
     const initialMap = () => {
-      // if (Platform.OS === 'ios') {
-      //   let permission = await Geolocation.requestAuthorization('whenInUse');
-      //   if (permission === 'granted') {
-      //     getGeolocation();
-      //   }
-      // } else {
-      //   try {
-      //     const granted = await PermissionsAndroid.request(
-      //       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      //       {
-      //         title: 'Example App',
-      //         message: 'Example App access to your location ',
-      //       },
-      //     );
-      //     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      //       getGeolocation();
-      //     } else {
-      //       console.log('location permission denied');
-      //       alert('Location permission denied');
-      //     }
-      //   } catch (err) {
-      //     console.warn(err);
-      //   }
-      // }
-      // state.socketServer.host = io(`http://${IP_ADDRESS}:3015`);
       state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
       /* 
         Check if the order has been registered to db or not
@@ -328,20 +305,32 @@ export const OrderStatus = props => {
             case 'Assigned':
               setSubmittedStatus(true);
               setAssignedStatus(true);
-              setTrackingMessage(prev => ({...prev, title: 'Order assigned'}));
+              setTrackingMessage(prev => ({
+                ...prev,
+                title: 'Order assigned',
+                message: 'We found a shipper for you. Please wait for a moment',
+              }));
               break;
             case 'Confirmed':
               setSubmittedStatus(true);
               setAssignedStatus(true);
               setConfirmedStatus(true);
-              setTrackingMessage(prev => ({...prev, title: 'Order confirmed'}));
+              setTrackingMessage(prev => ({
+                ...prev,
+                title: 'Order confirmed',
+                message: 'The restaurant is preparing your order',
+              }));
               break;
             case 'Picked':
               setSubmittedStatus(true);
               setAssignedStatus(true);
               setConfirmedStatus(true);
               setPickedStatus(true);
-              setTrackingMessage(prev => ({...prev, title: 'Order picked'}));
+              setTrackingMessage(prev => ({
+                ...prev,
+                title: 'Order picked',
+                message: 'The shipper is on the way to your place',
+              }));
               break;
             case 'Completed':
               setSubmittedStatus(true);
@@ -349,7 +338,11 @@ export const OrderStatus = props => {
               setConfirmedStatus(true);
               setPickedStatus(true);
               setCompletedStatus(true);
-              setTrackingMessage(prev => ({...prev, title: 'Order completed'}));
+              setTrackingMessage(prev => ({
+                ...prev,
+                title: 'Order completed',
+                message: 'Your order has been completed ! Enjoy your meal !',
+              }));
               break;
 
             default:
@@ -498,88 +491,99 @@ export const OrderStatus = props => {
         /> */}
       </View>
 
-      <View style={[styles.shipperInfo, {height: openDetail ? '90%' : '50%'}]}>
-        <TouchableOpacity
-          style={{
-            padding: 5,
-            alignSelf: 'flex-start',
-          }}
-          onPress={() => props.navigation.navigate('Home Page')}>
-          <Feather name="arrow-left" size={20} color="black" />
-        </TouchableOpacity>
-        <View
-          style={{
-            backgroundColor: 'white',
-            padding: 10,
-            marginTop: -95,
-            width: '25%',
-            borderRadius: 50,
-            alignSelf: 'center',
-          }}>
-          <View style={styles.remainingTime}>
-            <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>14 mins</Text>
+      <BottomSheet
+        ref={bottomSheetRef}
+        snapPoints={['25%', '90%']}
+        index={0}
+        handleComponent={() => (
+          <View
+            style={{
+              backgroundColor: 'white',
+              padding: 10,
+              marginTop: -40,
+              width: '25%',
+              borderRadius: 50,
+              alignSelf: 'center',
+            }}>
+            <View style={styles.remainingTime}>
+              <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>14 mins</Text>
+            </View>
           </View>
-        </View>
-        <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 20}}>
-          <Text style={{fontSize: 18, fontWeight: '500', marginBottom: 15}}>
-            {trackingMessage.title}
-          </Text>
-          <Text style={{textAlign: 'center'}}>{trackingMessage.message}</Text>
-        </View>
-        {shipperLocation.shipperName ? (
-          <View style={[styles.flexRowBetween, {paddingHorizontal: 20, marginTop: 15}]}>
-            <View style={styles.flexRow}>
-              <Image
-                source={require('../assets/image/shipperMarker.png')}
-                style={{width: 30, height: 30, borderRadius: 40, marginRight: 10}}
-              />
-              <View>
-                <Text style={{fontSize: 17, fontWeight: '400', marginBottom: 10}}>Brian J</Text>
-                <Text style={{fontSize: 17, fontWeight: '400'}}>12123123</Text>
+        )}>
+        <BottomSheetScrollView>
+          <View style={[styles.shipperInfo]}>
+            <TouchableOpacity
+              style={{
+                padding: 5,
+                position: 'absolute',
+                top: -10,
+                zIndex: 10,
+              }}
+              onPress={() => props.navigation.navigate('Home Page')}>
+              <Feather name="arrow-left" size={20} color="black" />
+            </TouchableOpacity>
+            <View style={{width: '100%', alignItems: 'center', paddingHorizontal: 20}}>
+              <Text style={{fontSize: 18, fontWeight: '500', marginBottom: 15}}>
+                {trackingMessage.title}
+              </Text>
+              <Text style={{textAlign: 'center'}}>{trackingMessage.message}</Text>
+            </View>
+            {assignedStatus ? (
+              <View style={[styles.flexRowBetween, {paddingHorizontal: 20, marginTop: 15}]}>
+                <View style={styles.flexRow}>
+                  <Image
+                    source={require('../assets/image/shipperMarker.png')}
+                    style={{width: 30, height: 30, borderRadius: 40, marginRight: 10}}
+                  />
+                  <View>
+                    <Text style={{fontSize: 17, fontWeight: '400', marginBottom: 10}}>
+                      Hoang Nam
+                    </Text>
+                    <Text style={{fontSize: 17, fontWeight: '400'}}>12123123</Text>
+                  </View>
+                </View>
+                <View style={styles.flexRow}>
+                  <TouchableOpacity
+                    style={{
+                      padding: 10,
+                      borderRadius: 40,
+                      borderWidth: 1,
+                      backgroundColor: 'white',
+                      marginRight: 10,
+                    }}>
+                    <Feather name="phone" size={14} color="black" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      props.navigation.navigate('ChatScreen', {order_code: order_code})
+                    }
+                    style={{
+                      padding: 10,
+                      borderRadius: 40,
+                      borderWidth: 1,
+                      backgroundColor: 'white',
+                    }}>
+                    <Feather name="message-square" size={14} color="black" />
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-            <View style={styles.flexRow}>
-              <TouchableOpacity
-                style={{
-                  padding: 10,
-                  borderRadius: 40,
-                  borderWidth: 1,
-                  backgroundColor: 'white',
-                  marginRight: 10,
-                }}>
-                <Feather name="phone" size={14} color="black" />
-              </TouchableOpacity>
-              <TouchableOpacity
-                onPress={() => props.navigation.navigate('ChatScreen', {order_code: order_code})}
-                style={{padding: 10, borderRadius: 40, borderWidth: 1, backgroundColor: 'white'}}>
-                <Feather name="message-square" size={14} color="black" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        ) : null}
+            ) : null}
 
-        <OrderProgressBar
-          submittedStatus={submittedStatus}
-          confirmedStatus={confirmedStatus}
-          assignedStatus={assignedStatus}
-          pickedStatus={pickedStatus}
-          completedStatus={completedStatus}
-        />
+            <OrderProgressBar
+              submittedStatus={submittedStatus}
+              confirmedStatus={confirmedStatus}
+              assignedStatus={assignedStatus}
+              pickedStatus={pickedStatus}
+              completedStatus={completedStatus}
+            />
 
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginTop: openDetail ? 20 : 60,
-          }}>
-          {openDetail ? (
-            <>
-              <ScrollView
-                style={{width: '100%', height: '60%'}}
-                ref={scrollRef}
-                onLayout={event => {
-                  scrollRef.current.scrollToEnd();
-                }}>
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginTop: 20,
+              }}>
+              <View style={{width: '100%'}}>
                 <Text style={{fontSize: 19, fontWeight: 'bold', textAlign: 'center'}}>
                   Your items
                 </Text>
@@ -600,25 +604,30 @@ export const OrderStatus = props => {
                       }}>
                       <View style={{flexDirection: 'row', alignItems: 'center', width: '80%'}}>
                         <Text style={{fontSize: 16}}>{item.quantity}x</Text>
-                        <View>
+                        <View style={{width: '85%'}}>
                           <Text
                             style={{
                               marginLeft: 15,
-                              marginBottom: 10,
                               fontSize: 17,
                               fontWeight: '600',
-                              width: '40%',
-                            }}>
+                            }}
+                            numberOfLines={3}>
                             {item.product_name}
                           </Text>
                           {additionalOptions[index] && (
-                            <Text style={{marginLeft: 15, fontStyle: 'italic', color: 'gray'}}>
+                            <Text
+                              style={{
+                                marginLeft: 15,
+                                fontStyle: 'italic',
+                                color: 'gray',
+                                marginTop: 10,
+                              }}>
                               {additionalOptions[index]}
                             </Text>
                           )}
-                          {item.special_instruction !== '' ? (
-                            <Text>Note: {item.SpecialInstruction}</Text>
-                          ) : null}
+                          {item.special_instruction !== '' && (
+                            <Text style={{marginTop: 10}}>Note: {item.SpecialInstruction}</Text>
+                          )}
                         </View>
                       </View>
                       <Text style={{fontWeight: '600', fontSize: 17}}>
@@ -649,12 +658,12 @@ export const OrderStatus = props => {
                         ${parseFloat(orderData.delivery_fee).toFixed(2)}
                       </Text>
                     </View>
-                    <View style={styles.flexRowBetween}>
+                    {/* <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>
                         Coupon
                       </Text>
                       <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>-$1.5</Text>
-                    </View>
+                    </View> */}
                   </View>
                   <View
                     style={{
@@ -690,67 +699,42 @@ export const OrderStatus = props => {
                     </View>
                   </View>
                 </View>
-              </ScrollView>
-              <View
-                style={{
-                  marginTop: 20,
-                  flexDirection: 'row',
-                  width,
-                  paddingHorizontal: 0,
-                  alignItems: 'center',
-                  justifyContent: assignedStatus ? 'center' : 'space-around',
-                }}>
-                {!assignedStatus && (
-                  <TouchableOpacity
-                    onPress={() => handleCancelOrder()}
-                    style={{
-                      paddingHorizontal: 15,
-                      paddingVertical: 15,
-                      backgroundColor: colors.boldred,
-                      width: '40%',
-                    }}>
-                    <Text
-                      style={{
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        color: 'white',
-                        fontSize: 16,
-                      }}>
-                      Cancel order
-                    </Text>
-                  </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  onPress={() => setOpenDetail(prev => !prev)}
-                  style={{
-                    paddingHorizontal: 15,
-                    paddingVertical: 15,
-                    backgroundColor: 'black',
-                    width: '40%',
-                  }}>
-                  <Text
-                    style={{
-                      fontWeight: 'bold',
-                      textAlign: 'center',
-                      color: 'white',
-                      fontSize: 16,
-                    }}>
-                    See less
-                  </Text>
-                </TouchableOpacity>
               </View>
-            </>
-          ) : (
+            </View>
+          </View>
+        </BottomSheetScrollView>
+        <View
+          style={{
+            marginTop: 20,
+            flexDirection: 'row',
+            width,
+            paddingHorizontal: 0,
+            alignItems: 'center',
+            justifyContent: assignedStatus ? 'center' : 'space-around',
+            paddingBottom: 30,
+          }}>
+          {!assignedStatus && (
             <TouchableOpacity
-              onPress={() => setOpenDetail(prev => !prev)}
-              style={{padding: 20, backgroundColor: 'black', width: '50%'}}>
-              <Text style={{fontSize: 17, fontWeight: 'bold', textAlign: 'center', color: 'white'}}>
-                Show order details
+              onPress={() => handleCancelOrder()}
+              style={{
+                paddingHorizontal: 15,
+                paddingVertical: 15,
+                backgroundColor: colors.boldred,
+                width: '40%',
+              }}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: 'white',
+                  fontSize: 16,
+                }}>
+                Cancel order
               </Text>
             </TouchableOpacity>
           )}
         </View>
-      </View>
+      </BottomSheet>
     </View>
   );
 };
@@ -801,10 +785,9 @@ const styles = StyleSheet.create({
   },
   shipperInfo: {
     width: '100%',
-    height: '40%',
     backgroundColor: 'white',
     marginBottom: 30,
-    paddingVertical: 20,
+    // paddingVertical: 10,
   },
   remainingTime: {
     padding: 15,

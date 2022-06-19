@@ -14,6 +14,7 @@ import {
 // libraries
 import Feather from 'react-native-vector-icons/Feather';
 import {useSelector} from 'react-redux';
+import colors from '../colors/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -106,7 +107,7 @@ export const ChatScreen = props => {
                 paddingEnd: obj.sender === 'shipper' ? 20 : 10,
                 paddingStart: obj.sender === 'shipper' ? 10 : 20,
                 paddingVertical: 5,
-                backgroundColor: obj.sender === 'shipper' ? 'green' : 'blue',
+                backgroundColor: obj.sender === 'shipper' ? 'rgb(200,200,200)' : colors.boldred,
                 borderRadius: 12,
                 marginBottom: 10,
                 alignSelf: obj.sender === 'shipper' ? 'flex-start' : 'flex-end',
@@ -115,7 +116,7 @@ export const ChatScreen = props => {
                 style={{
                   marginVertical: 10,
                   // textAlign: obj.sender === 'shipper' ? 'left' : 'right',
-                  color: 'white',
+                  color: obj.sender === 'shipper' ? 'black' : 'white',
                   fontWeight: '500',
                   // width: '100%',
                 }}>
@@ -173,6 +174,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 10,
   },
   inputMessage: {
     width: '80%',

@@ -35,6 +35,7 @@ export const DetailOrder = props => {
   });
   const [orderDetail, setOrderDetail] = useState({
     merchant_name: 'Unknown',
+    provider_id: 0,
     items: [],
     num_items: 0,
     delivery_fee: 0,
@@ -109,6 +110,7 @@ export const DetailOrder = props => {
           items: values[1].response.items,
           num_items: values[1].response.num_items,
           delivery_fee: values[1].response.delivery_fee,
+          provider_id: values[1].response.provider_id,
         }));
         setLoading(false);
       }
@@ -217,9 +219,9 @@ export const DetailOrder = props => {
               </Text>
               {orderDetail.items.map((item, index) => (
                 <View key={index} style={styles.detail}>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <View style={{flexDirection: 'row', alignItems: 'center', width: '70%'}}>
                     <Text style={{fontSize: 17}}>{item.quantity}x</Text>
-                    <View style={{marginLeft: 20}}>
+                    <View style={{marginLeft: 10}}>
                       <Text style={{fontSize: 17, fontWeight: '500', marginBottom: 10}}>
                         {item.product_name}
                       </Text>
@@ -279,6 +281,9 @@ export const DetailOrder = props => {
         {orderSummary.order_status[orderSummary.order_status.length - 1].order_status_name ===
           'Completed' && (
           <TouchableOpacity
+            onPress={() =>
+              props.navigation.navigate('Review', {provider_id: orderDetail.provider_id})
+            }
             style={{
               width: '40%',
               borderWidth: 2,

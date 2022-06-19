@@ -10,7 +10,7 @@ export const ProviderMarker = ({selected = false}) => {
         padding: selected ? 10 : 5,
         borderRadius: 40,
         backgroundColor: selected ? 'white' : 'black',
-        borderColor: '#c4c4c4',
+        borderColor: selected ? 'black' : '#c4c4c4',
         shadowColor: '#000',
         shadowOffset: {
           width: 0,
@@ -26,7 +26,7 @@ export const ProviderMarker = ({selected = false}) => {
   );
 };
 
-export const UserMarker = props => {
+export const UserMarker = () => {
   return (
     <View
       style={{

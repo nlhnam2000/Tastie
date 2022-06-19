@@ -170,6 +170,7 @@ export const DetailProvider = props => {
   };
 
   useEffect(() => {
+    console.log(data.provider_id);
     loadDetailProvider(data.provider_id);
   }, []);
 
@@ -249,7 +250,22 @@ export const DetailProvider = props => {
     setSelectedTab(categoryTitle);
   };
 
-  const renderCategoryTitle = ({item}) => {
+  const scrollToSection = (sectionIndex, itemIndex = 1) => {
+    ref.current?.scrollToLocation({sectionIndex, itemIndex});
+  };
+  const scrollToOffset = offset => {
+    ref.current?.scrollToOffset({offset: offset});
+  };
+  const onScrollToIndexFailed = info => {
+    const offset = info.averageItemLength * info.index;
+    scrollToOffset(offset);
+    const wait = new Promise(resolve => setTimeout(resolve, 200));
+    wait.then(() => {
+      scrollToSection(info.index);
+    });
+  };
+
+  const renderCategoryTitle = ({item, index}) => {
     // let index = item.menu_category_id;
     let categoryTitle = item.menuCategoryName;
     return (
@@ -267,6 +283,7 @@ export const DetailProvider = props => {
           //   animated: true,
           // });
           setSelectedTab(item.menuCategoryName);
+          scrollToSection(index);
         }}>
         <Text
           style={{
@@ -343,6 +360,7 @@ export const DetailProvider = props => {
                 horizontal={true}
                 renderItem={renderCategoryTitle}
                 showsHorizontalScrollIndicator={false}
+                // initialNumToRender={menuCategory.length}
               />
             </Animated.View>
           </Animated.View>
@@ -369,8 +387,9 @@ export const DetailProvider = props => {
               useNativeDriver: false,
             })}
             removeClippedSubviews={true}
-            initialNumToRender={5}
+            initialNumToRender={10}
             ref={ref}
+            onScrollToIndexFailed={onScrollToIndexFailed}
             renderItem={({item}) => (
               <View style={styles.menuContentWrapper}>
                 <View style={styles.menuContent}>
