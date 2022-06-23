@@ -71,7 +71,7 @@ export const PromotionList = props => {
   };
 
   useEffect(() => {
-    // LoadPromotionList(props.providerId);
+    LoadPromotionList(props.providerId);
     setLoading(false);
   }, []);
 

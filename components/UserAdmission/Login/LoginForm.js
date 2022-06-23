@@ -198,9 +198,9 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     width,
-    height: height - 70,
+    flex: 1,
     paddingVertical: 20,
-    // backgroundColor: 'white',
+    backgroundColor: 'white',
   },
   contentWrapper: {
     paddingHorizontal: 20,

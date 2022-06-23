@@ -52,23 +52,39 @@ export const DetailEcoupon = props => {
     //   message: 'test123',
     // });
 
-    await notifee.cancelAllNotifications();
-
-    // Display a notification
-    await notifee.displayNotification({
-      title: title,
-      body: message,
-      data: {
-        provider_id: '1000085',
-      },
-      ios: {
-        foregroundPresentationOptions: {
-          alert: true,
-          badge: true,
-          sound: true,
-        },
-      },
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
     });
+
+    if (Platform.OS === 'ios') {
+      await notifee.cancelAllNotifications();
+
+      // Display a notification
+      await notifee.displayNotification({
+        title: title,
+        body: message,
+        data: {
+          provider_id: '1000085',
+        },
+        ios: {
+          foregroundPresentationOptions: {
+            alert: true,
+            badge: true,
+            sound: true,
+          },
+        },
+        android: {
+          channelId,
+        },
+      });
+    } else {
+      PushNotification.localNotification({
+        channelId: 'default',
+        title: title,
+        message: message,
+      });
+    }
   };
 
   return (
@@ -102,13 +118,12 @@ export const DetailEcoupon = props => {
       </ScrollView>
       <TouchableOpacity
         style={styles.button}
-        onPress={
-          () =>
-            props.navigation.navigate('ResultContent', {
-              title: item.ecoupon_name,
-              ecoupon_id: item.ecoupon_id,
-            })
-          // notify('Hi', 'test')
+        onPress={() =>
+          // props.navigation.navigate('ResultContent', {
+          //   title: item.ecoupon_name,
+          //   ecoupon_id: item.ecoupon_id,
+          // })
+          notify('Hi', 'test')
         }>
         <Text
           style={{

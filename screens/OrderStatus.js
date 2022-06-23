@@ -25,6 +25,7 @@ import {OrderCompleted} from '../store/action/cart';
 import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
 import {DisconnectSocket} from '../store/action/auth';
 import BottomSheet, {BottomSheetScrollView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import {ShipperMarker} from '../components/Marker/Marker';
 
 // let socket;
 const {width, height} = Dimensions.get('window');
@@ -147,7 +148,7 @@ export const OrderStatus = props => {
         },
         order_code,
         {
-          delivery_fee: orderData.delivery_fee,
+          delivery_fee: orderData.delivery_fee.toFixed(2),
           total: parseFloat(totalCartPrice(orderData.items)),
         },
       );
@@ -465,10 +466,7 @@ export const OrderStatus = props => {
               }}
               title={shipperLocation.shipperName}
               description="Your order will be comming soon !">
-              <Image
-                source={require('../assets/image/shipperMarker.png')}
-                style={{width: 30, height: 30}}
-              />
+              <ShipperMarker />
             </Marker>
           ) : null}
           {polyline ? (
@@ -493,7 +491,7 @@ export const OrderStatus = props => {
 
       <BottomSheet
         ref={bottomSheetRef}
-        snapPoints={['25%', '90%']}
+        snapPoints={['40%', '90%']}
         index={0}
         handleComponent={() => (
           <View

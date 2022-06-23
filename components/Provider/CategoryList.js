@@ -24,6 +24,8 @@ const {width} = Dimensions.get('window');
 export const CategoryList = props => {
   const [loading, setLoading] = useState(true);
   const [providerList, setProviderList] = useState([]);
+  const [isError, setIsError] = useState(false);
+  const [imageSrc, setImageSrc] = useState({uri: 'image'});
   const state = useSelector(state => state.UserReducer);
 
   const loadProvider = async group_id => {
@@ -89,6 +91,7 @@ export const CategoryList = props => {
               onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
               style={styles.providerWrapper}>
               <FastImage
+                // onError={() => setIsError(true)}
                 source={{uri: item.profile_pic}}
                 resizeMode={FastImage.resizeMode.cover}
                 style={{

@@ -128,13 +128,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     width,
-    height: height - 70,
     paddingVertical: 20,
+    backgroundColor: 'white',
+    flex: 1,
   },
   contentWrapper: {
     paddingHorizontal: 20,
     marginTop: 10,
     width,
+    backgroundColor: 'white',
   },
   inputField: {
     width: '100%',

@@ -55,6 +55,7 @@ export const DetailProvider = props => {
   const state = useSelector(state => state.UserReducer);
   const mapref = useRef();
   const modalizeRef = useRef();
+  const categoryListRef = useRef();
   const dispatch = useDispatch();
   const [menuCategory, setMenuCategory] = useState([]);
   const [item, setItem] = useState([]);
@@ -136,15 +137,17 @@ export const DetailProvider = props => {
     const res3 = getUpcomingProduct(provider_id);
     Promise.all([res1, res2, res3]).then(data => {
       // data[0] means the response from 1st api call
-      data[0].result.forEach((item, index) => {
-        setMenuCategory(prev => [
-          ...prev,
-          {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
-        ]);
-        if (index === 0) {
-          setSelectedTab(item.menu_category_name);
-        }
-      });
+      // data[0].result.forEach((item, index) => {
+      //   setMenuCategory(prev => [
+      //     ...prev,
+      //     {menuCategoryId: item.menu_category_id, menuCategoryName: item.menu_category_name},
+      //   ]);
+      //   if (index === 0) {
+      //     setSelectedTab(item.menu_category_name);
+      //   }
+      // });
+
+      // const _menuCategory = [...data[0].result].map(item => )
 
       // clone the "products" property to "data" property to use SectionList
       let providerDetailResult = data[0].result.reduce((r, s) => {
@@ -180,9 +183,16 @@ export const DetailProvider = props => {
     }
   }, [info]);
 
-  // useEffect(() => {
-  //   console.log(menuCategory);
-  // }, [menuCategory]);
+  useEffect(() => {
+    if (item.length > 0) {
+      const copied = [...item].map(item => ({
+        menuCategoryId: item.menu_category_id,
+        menuCategoryName: item.menu_category_name,
+      }));
+      console.log(copied);
+      setMenuCategory(copied);
+    }
+  }, [item]);
 
   const openModalize = () => {
     modalizeRef.current?.open();
@@ -251,18 +261,41 @@ export const DetailProvider = props => {
   };
 
   const scrollToSection = (sectionIndex, itemIndex = 1) => {
-    ref.current?.scrollToLocation({sectionIndex, itemIndex});
+    if (item.length > 0) {
+      try {
+        ref.current.scrollToLocation({sectionIndex, itemIndex});
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
   const scrollToOffset = offset => {
-    ref.current?.scrollToOffset({offset: offset});
+    ref.current.scrollToOffset({offset: offset});
   };
   const onScrollToIndexFailed = info => {
     const offset = info.averageItemLength * info.index;
-    scrollToOffset(offset);
-    const wait = new Promise(resolve => setTimeout(resolve, 200));
-    wait.then(() => {
-      scrollToSection(info.index);
-    });
+    console.log(offset);
+    //scrollToSection(offset);
+    setTimeout(() => {
+      scrollToSection(offset);
+    }, 200);
+  };
+  const onViewChangeConfigRef = useRef({
+    minimumViewTime: 1,
+    waitForInteraction: true,
+    viewAreaCoveragePercentThreshold: 100,
+  });
+  const onViewableItemsChanged = ({viewableItems}) => {
+    // console.log(viewableItems);
+    // if (viewableItems[0].item.menu_category_name) {
+    //   setSelectedTab(viewableItems[0].item.menu_category_name);
+    //   const categoryNameList = [...menuCategory].map(item => item.menuCategoryName);
+    //   const index = categoryNameList.indexOf(viewableItems[0].item.menu_category_name);
+    //   console.log('index:', index);
+    //   if (index !== -1) {
+    //     categoryListRef.current?.scrollToIndex({index: index});
+    //   }
+    // }
   };
 
   const renderCategoryTitle = ({item, index}) => {
@@ -355,6 +388,7 @@ export const DetailProvider = props => {
                 paddingVertical: 15,
               }}>
               <FlatList
+                ref={categoryListRef}
                 data={menuCategory}
                 keyExtractor={(item, index) => index.toString()}
                 horizontal={true}
@@ -387,9 +421,11 @@ export const DetailProvider = props => {
               useNativeDriver: false,
             })}
             removeClippedSubviews={true}
-            initialNumToRender={10}
+            initialNumToRender={5}
             ref={ref}
             onScrollToIndexFailed={onScrollToIndexFailed}
+            onViewableItemsChanged={onViewableItemsChanged}
+            viewabilityConfig={onViewChangeConfigRef.current}
             renderItem={({item}) => (
               <View style={styles.menuContentWrapper}>
                 <View style={styles.menuContent}>

@@ -140,7 +140,7 @@ export const OrderHistory = props => {
 
   useEffect(() => {
     LoadOrderHistory();
-    createChannel();
+    // createChannel();
   }, []);
 
   if (loading) {

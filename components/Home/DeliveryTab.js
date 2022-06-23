@@ -106,7 +106,6 @@ export const DeliveryTab = props => {
   };
 
   useEffect(() => {
-    console.log(state.userLocation);
     if (state.userLocation.address === null) {
       // auto set location
       dispatch(AutoSetLocation());

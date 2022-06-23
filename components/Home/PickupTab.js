@@ -99,6 +99,16 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   const renderCategoryIcon = ({item, index}) => {
     return (
       <TouchableOpacity
+        onPress={() =>
+          props.navigation.navigate('ResultContent', {
+            categoryFilter: {
+              type: item.type,
+              categoryID: item.id,
+            },
+            title: item.title,
+            image: item.image,
+          })
+        }
         style={{
           marginRight: 20,
           alignItems: 'center',
@@ -226,29 +236,6 @@ export const PickupTab = gestureHandlerRootHOC(props => {
       );
     }
   }, [providerList]);
-
-  // useEffect(() => {
-  //   if (selectedMarker) {
-  //     mapRef.current.fitToCoordinates(
-  //       [
-  //         {
-  //           latitude: parseFloat(selectedMarker.latitude),
-  //           longitude: parseFloat(selectedMarker.longitude),
-  //         },
-  //         // {
-  //         //   // latitude: 10.766575409142378,
-  //         //   // longitude: 106.69510799782778,
-  //         //   latitude: state.userLocation.latitude,
-  //         //   longitude: state.userLocation.longitude,
-  //         // },
-  //       ],
-  //       {
-  //         edgePadding: {top: 20, right: 20, bottom: 20, left: 20},
-  //         animated: true,
-  //       },
-  //     );
-  //   }
-  // }, [selectedMarker]);
 
   if (loading) {
     return (

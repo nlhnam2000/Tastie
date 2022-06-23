@@ -13,6 +13,7 @@ import {
   Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
+import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector, useDispatch} from 'react-redux';
 import {signout} from '../../../store/action/auth';
 import colors from '../../../colors/colors';
@@ -100,7 +101,15 @@ export const DetailAccount = props => {
           <Header goBack title="Profile" {...props} />
           <View style={styles.flexJustifyCenter}>
             <View
-              style={{width: 80, height: 80, backgroundColor: '#f2f2f2', borderRadius: 40}}></View>
+              style={{
+                width: 80,
+                height: 80,
+                backgroundColor: '#f2f2f2',
+                borderRadius: 40,
+                justifyContent: 'center',
+              }}>
+              <MaterialIcon name="account" size={45} color="black" style={{alignSelf: 'center'}} />
+            </View>
             <Text
               style={{
                 fontSize: 17,

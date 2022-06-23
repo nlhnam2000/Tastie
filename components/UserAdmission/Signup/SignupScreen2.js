@@ -297,14 +297,14 @@ export const SignupScreen2 = ({navigation, route}) => {
                   }}>
                   <Text
                     style={{
-                      color: 'black',
+                      color: 'white',
                       fontSize: 18,
                       marginRight: 5,
                       fontWeight: '500',
                     }}>
                     Next
                   </Text>
-                  <Feather name="arrow-right" size={20} color={'black'} />
+                  <Feather name="arrow-right" size={20} color={'white'} />
                 </TouchableOpacity>
               </View>
             </View>

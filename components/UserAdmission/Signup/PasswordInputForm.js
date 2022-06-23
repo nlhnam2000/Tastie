@@ -60,9 +60,13 @@ export const PasswordInputForm = props => {
         lastname,
         password: password1,
       };
+      console.log(body);
       dispatch(SkipUpdate(body));
     }
-    if (password1 !== password2) {
+    if (password1.length < 8) {
+      setErrorMessage('The password must contains at least 8 characters');
+      setOpenModal(true);
+    } else if (password1 !== password2) {
       setErrorMessage('The password does not match');
       setOpenModal(true);
     }
@@ -223,13 +227,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     width,
-    height: height - 70,
+    flex: 1,
     paddingVertical: 20,
+    backgroundColor: 'white',
   },
   contentWrapper: {
     paddingHorizontal: 20,
     marginTop: 10,
     width,
+    backgroundColor: 'white',
   },
   inputField: {
     width: '100%',

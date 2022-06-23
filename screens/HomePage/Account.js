@@ -50,19 +50,19 @@ export const Account = props => {
   }
 
   useEffect(() => {
-    setTimeout(async () => {
-      let refreshToken = await AsyncStorage.getItem('user_token');
-      let accessToken = await getAccessToken(refreshToken);
-      dispatch(retrieveToken(accessToken));
-      console.log('user cart');
-      // if (state.userCart.cart.length > 0) {
-      //   state.userCart.cart.additionalOptions.forEach(c => {
-      //     console.log(c);
-      //   });
-      // }
-      // console.log(state.userCart.cart[0].additionalOptions);
-      setLoading(false);
-    }, 200);
+    // setTimeout(async () => {
+    //   let refreshToken = await AsyncStorage.getItem('user_token');
+    //   let accessToken = await getAccessToken(refreshToken);
+    //   dispatch(retrieveToken(accessToken));
+    //   // if (state.userCart.cart.length > 0) {
+    //   //   state.userCart.cart.additionalOptions.forEach(c => {
+    //   //     console.log(c);
+    //   //   });
+    //   // }
+    //   // console.log(state.userCart.cart[0].additionalOptions);
+    //   setLoading(false);
+    // }, 200);
+    setLoading(false);
   }, []);
 
   if (loading) {

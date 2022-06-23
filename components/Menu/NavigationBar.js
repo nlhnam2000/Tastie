@@ -16,6 +16,7 @@ import {
   ImageBackground,
   Platform,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcon from 'react-native-vector-icons/Ionicons';
@@ -38,6 +39,11 @@ export const NavigationBar = props => {
   const cart = useSelector(state => state.UserReducer.userCart.cart);
   const state = useSelector(state => state.UserReducer);
   const [newNoti, setNewNoti] = useState(false);
+  const isFocused = useIsFocused();
+
+  if (isFocused) {
+    dispatch(RetrieveCart(state.user_id));
+  }
 
   async function onDisplayNotification(message) {
     // Create a channel
@@ -60,18 +66,20 @@ export const NavigationBar = props => {
     console.log('Message from shipper', message);
   }
 
-  useEffect(() => {
-    console.log(state.userCart);
-    dispatch(RetrieveCart(state.user_id));
-    // dispatch(InitSocket());
-    // setTimeout(() => {
-    //   PushNotification.localNotification({
-    //     channelId: 'homescreen-channel',
-    //     title: 'Notification Testing',
-    //     message: 'test123',
-    //   });
-    // }, 4000);
-  }, []);
+  // useEffect(() => {
+  //   if (isFocused) {
+  //     dispatch(RetrieveCart(state.user_id));
+  //   }
+
+  //   // dispatch(InitSocket());
+  //   // setTimeout(() => {
+  //   //   PushNotification.localNotification({
+  //   //     channelId: 'homescreen-channel',
+  //   //     title: 'Notification Testing',
+  //   //     message: 'test123',
+  //   //   });
+  //   // }, 4000);
+  // }, []);
 
   useEffect(() => {
     if (state.socketServer.host) {

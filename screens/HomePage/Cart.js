@@ -13,6 +13,7 @@ import {
   Button,
   ScrollView,
 } from 'react-native';
+import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
 import Feather from 'react-native-vector-icons/Feather';
@@ -36,6 +37,7 @@ export const Cart = props => {
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
   const [additionalOptions, setAdditionalOptions] = useState([]);
+  const isFocus = useIsFocused();
 
   useEffect(() => {
     // if (state.userCart.provider_name !== null) {
@@ -57,7 +59,6 @@ export const Cart = props => {
     //   additionalOption: [],
     //   additionalOptions: [],
     // }));
-
     setLoading(false);
   }, []);
 

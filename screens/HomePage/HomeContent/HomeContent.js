@@ -46,7 +46,6 @@ export const HomeContent = props => {
   };
 
   useEffect(() => {
-    console.log(state.userLocation);
     // createChannel();
     setLoading(false);
   }, []);

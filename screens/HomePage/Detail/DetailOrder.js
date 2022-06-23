@@ -18,6 +18,7 @@ import axios from 'axios';
 
 export const DetailOrder = props => {
   const [loading, setLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const state = useSelector(state => state.UserReducer);
   const {order_code, payment_method, total_price} = props.route.params;
   const [additionalOptions, setAdditionalOptions] = useState([]);
@@ -57,6 +58,46 @@ export const DetailOrder = props => {
     }
 
     return sum.toFixed(2);
+  };
+
+  const ReOrder = async (order_code, user_id) => {
+    try {
+      setIsProcessing(true);
+      let fecthProductsFromOder = await axios.get(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+      );
+
+      if (fecthProductsFromOder.data.status) {
+        const insertProductToCart = async product => {
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+            {
+              user_id: user_id,
+              product_id: product.product_id,
+              quantity: product.quantity,
+              special_instruction: product.special_instruction,
+              additional_option: [],
+            },
+          );
+
+          return res.data;
+        };
+        const queryList = [];
+        fecthProductsFromOder.data.response.items.forEach(item => {
+          queryList.push(insertProductToCart(item));
+        });
+
+        Promise.all(queryList)
+          .then(values => {
+            console.log(values);
+            props.navigation.navigate('GoToCheckout');
+            setIsProcessing(false);
+          })
+          .catch(error => console.log(error));
+      }
+    } catch (error) {
+      console.error('cannot re-order', error);
+    }
   };
 
   const GetOrderSummary = async () => {
@@ -109,7 +150,7 @@ export const DetailOrder = props => {
           merchant_name: values[1].response.merchant_name,
           items: values[1].response.items,
           num_items: values[1].response.num_items,
-          delivery_fee: values[1].response.delivery_fee,
+          delivery_fee: values[0].response.delivery_fee,
           provider_id: values[1].response.provider_id,
         }));
         setLoading(false);
@@ -119,9 +160,9 @@ export const DetailOrder = props => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView style={[styles.container, {justifyContent: 'center'}]}>
         <ActivityIndicator size={'large'} color={colors.red} />
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -295,6 +336,7 @@ export const DetailOrder = props => {
         )}
 
         <TouchableOpacity
+          onPress={() => ReOrder(order_code, state.user_id)}
           style={{
             width: '40%',
             borderWidth: 2,
@@ -305,6 +347,15 @@ export const DetailOrder = props => {
           <Text style={[styles.heading, {color: 'white', textAlign: 'center'}]}>Re-order</Text>
         </TouchableOpacity>
       </View>
+      {isProcessing && (
+        <View
+          style={[
+            styles.container,
+            {backgroundColor: 'transparent', position: 'absolute', top: '50%'},
+          ]}>
+          <ActivityIndicator size={'large'} color={colors.red} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -314,6 +365,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: 'white',
   },
   headerWrapper: {
     width: '100%',
