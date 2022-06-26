@@ -25,6 +25,7 @@ import {
   DecreaseQuantity,
   SubmitOrder,
   UpdateQuantity,
+  ClearCart,
 } from '../../store/action/cart';
 import {DuoAlertDialog} from '../../components/Error/AlertDialog';
 import io from 'socket.io-client';
@@ -131,6 +132,15 @@ export const Cart = props => {
             <Text style={{textAlign: 'center', marginTop: 10, color: 'gray'}}>
               {state.userCart.date}
             </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => dispatch(ClearCart(state.user_id))}
+            style={{
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              alignSelf: 'flex-end',
+            }}>
+            <Text style={{fontWeight: '500', color: colors.red}}>Clear all</Text>
           </TouchableOpacity>
           <View style={styles.cartWrapper}>
             {state.userCart.cart.map((item, index) => (

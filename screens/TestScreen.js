@@ -1,8 +1,10 @@
 import {View, Text, StyleSheet} from 'react-native';
-import React, {useRef} from 'react';
+import React, {useRef, useEffect, useState} from 'react';
 import MapView from 'react-native-maps';
 import {useSelector} from 'react-redux';
-import BottomSheet from '@gorhom/bottom-sheet';
+import BottomSheet, {BottomSheetModalProvider, BottomSheetModal} from '@gorhom/bottom-sheet';
+import {WebView} from 'react-native-webview';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const handleComponent = () => {
   return (
@@ -22,36 +24,32 @@ const handleComponent = () => {
   );
 };
 
-export default function TestScreen() {
+export default function TestScreen(props) {
   const state = useSelector(state => state.UserReducer);
   const bottomSheetRef = useRef();
-  return (
-    <View style={[styles.container]}>
-      <MapView
-        style={styles.map}
-        provider="google"
-        mapType="terrain"
-        showsUserLocation
-        initialRegion={{
-          latitude: state.userLocation.latitude,
-          longitude: state.userLocation.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
-      />
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={1}
-        snapPoints={['25%', '50%']}
-        backgroundStyle={{borderWidth: 1, borderColor: '#f2f2f2'}}
-        handleIndicatorStyle={{backgroundColor: 'red'}}
-        handleComponent={handleComponent}
+  const insets = useSafeAreaInsets();
+  const [goBack, setGoBack] = useState(false);
 
-        // onChange={handleSheetChanges}
-      >
-        <View style={styles.contentContainer}>
-          <Text>Awesome 🎉</Text>
-        </View>
+  useEffect(() => {
+    if (goBack) {
+      props.navigation.goBack();
+    }
+  }, [goBack]);
+  return (
+    <View style={styles.container}>
+      <BottomSheet ref={bottomSheetRef} snapPoints={['95%']} index={0}>
+        <WebView
+          // style={[styles.container, {marginTop: insets.top}]}
+          originWhitelist={['http://', 'https://', 'momo://']}
+          onLoadEnd={() =>
+            setTimeout(() => {
+              setGoBack(true);
+            }, 3000)
+          }
+          source={{
+            uri: 'https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3wxMWMzMjFhMC1mNTEyLTExZWMtYTFmZi1kNTg4NTU0MmJmYzM=',
+          }}
+        />
       </BottomSheet>
     </View>
   );

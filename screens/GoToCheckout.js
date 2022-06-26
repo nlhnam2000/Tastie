@@ -12,6 +12,7 @@ import {
   FlatList,
   Dimensions,
   Image,
+  LogBox,
 } from 'react-native';
 
 // components
@@ -25,7 +26,7 @@ import colors from '../colors/colors';
 // actions
 import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
 import {InitSocket} from '../store/action/auth';
-import {IP_ADDRESS, convertDollar, currentDateString} from '../global';
+import {IP_ADDRESS, convertDollar, currentDateString, countTotalPrice, convertVND} from '../global';
 
 // libraries
 import axios from 'axios';
@@ -38,8 +39,11 @@ import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
 import {Modalize} from 'react-native-modalize';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import {WebView} from 'react-native-webview';
 
 export const GoToCheckout = props => {
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const state = useSelector(state => state.UserReducer);
   const tabs = ['Delivery', 'Pickup'];
@@ -63,12 +67,14 @@ export const GoToCheckout = props => {
     latitude: state.userLocation.latitude,
     longitude: state.userLocation.longitude,
   });
+  const [webviewURL, setWebviewURL] = useState('');
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
   const deliveryAddressModalize = useRef();
   const promoSnapPoint = useMemo(() => ['90%'], []);
   const paymentSnapPoint = useMemo(() => ['50%', '90%'], []);
+  const webviewBottomSheetRef = useRef();
 
   const dispatch = useDispatch();
 
@@ -81,6 +87,17 @@ export const GoToCheckout = props => {
     return price.toFixed(2);
   };
 
+  useEffect(() => {
+    if (webviewURL !== '') {
+      console.log(webviewURL);
+    }
+  }, [webviewURL]);
+
+  useEffect(() => {
+    console.log(selectedPayment);
+    console.log(orderForm.total);
+  }, [selectedPayment]);
+
   const PlaceOrder = async () => {
     try {
       let res = await axios.post(
@@ -90,34 +107,69 @@ export const GoToCheckout = props => {
       if (res.data.status && res.data.order_code) {
         const orderCode = res.data.order_code;
         // console.log('order_code from api', orderCode);
-        // let listProduct = state.userCart.cart.map((item, index) => ({
-        //   ...item,
-        //   additional_option: [],
-        //   additionalOptions: [],
-        //   special_instruction: '',
-        // }));
-        const body = {
-          order_code: orderCode,
-          customer_id: state.user_id,
-          // list_product: listProduct,
-        };
-        console.log(body);
-        try {
-          let submitOrder = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
-            body,
+
+        if (selectedPayment === 'Momo') {
+          console.log('payment momo');
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-momo`,
+            {
+              order_code: orderCode,
+              orderInfo: 'Thanh toan tra sua',
+              amount: convertVND(orderForm.total),
+            },
           );
-          if (submitOrder.data.status) {
-            // dispatch(InitSocket());
-            dispatch(SubmitOrder(orderCode));
-            setTimeout(() => {
-              props.navigation.navigate('OrderStatus', {order_code: orderCode});
-            }, 100);
-          } else {
-            console.error('Cannot submit order items !');
+          console.log(res.data);
+          if (res.data.status) {
+            setWebviewURL(res.data.url);
+            console.log(res.data.url);
+            setTimeout(async () => {
+              const body = {
+                order_code: orderCode,
+                customer_id: state.user_id,
+              };
+              console.log(body);
+              try {
+                let submitOrder = await axios.post(
+                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  body,
+                );
+                if (submitOrder.data.status) {
+                  // dispatch(InitSocket());
+                  dispatch(SubmitOrder(orderCode));
+                  setTimeout(() => {
+                    props.navigation.navigate('OrderStatus', {order_code: orderCode});
+                  }, 100);
+                } else {
+                  console.error('Cannot submit order items !');
+                }
+              } catch (error) {
+                console.error(error);
+              }
+            }, 4000);
           }
-        } catch (error) {
-          console.error(error);
+        } else {
+          const body = {
+            order_code: orderCode,
+            customer_id: state.user_id,
+          };
+          console.log(body);
+          try {
+            let submitOrder = await axios.post(
+              `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+              body,
+            );
+            if (submitOrder.data.status) {
+              // dispatch(InitSocket());
+              dispatch(SubmitOrder(orderCode));
+              setTimeout(() => {
+                props.navigation.navigate('OrderStatus', {order_code: orderCode});
+              }, 100);
+            } else {
+              console.error('Cannot submit order items !');
+            }
+          } catch (error) {
+            console.error(error);
+          }
         }
       }
     } catch (error) {
@@ -166,6 +218,7 @@ export const GoToCheckout = props => {
       if (res.data.delivery_fee) {
         setDeliveryfee(convertDollar(res.data.delivery_fee));
       }
+      console.log(countTotalPrice(state.userCart.cart, 0, 0, 0));
       setLoading(false);
     };
 
@@ -205,7 +258,7 @@ export const GoToCheckout = props => {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, {justifyContent: 'center', paddingTop: insets.top}]}>
         <ActivityIndicator size={'large'} color={colors.red} />
       </View>
     );
@@ -434,7 +487,15 @@ export const GoToCheckout = props => {
                 }}>
                 <Text style={{fontSize: 17, fontWeight: '500'}}>Promotion</Text>
                 <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
-                  ${promoCode.value}
+                  $
+                  {
+                    countTotalPrice(
+                      state.userCart.cart,
+                      deliveryfee,
+                      promoCode.value,
+                      promoCode.max_discount_value ?? 0,
+                    ).discountedValue
+                  }
                 </Text>
               </View>
             ) : null}
@@ -523,22 +584,24 @@ export const GoToCheckout = props => {
                   }}>
                   $
                   {selectedTab === 'Delivery'
-                    ? (
-                        parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
-                      ).toFixed(2)
-                    : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
+                    ? countTotalPrice(state.userCart.cart, deliveryfee, 0, 0).finalPrice
+                    : countTotalPrice(state.userCart.cart, 0.0, 0.0, 0).finalPrice}
                 </Text>
                 <Text style={styles.heading}>
                   $
                   {selectedTab === 'Delivery'
-                    ? (
-                        parseFloat(totalCartPrice(state.userCart.cart)) +
-                        parseFloat(deliveryfee) -
-                        parseFloat(promoCode.value)
-                      ).toFixed(2)
-                    : parseFloat(
-                        totalCartPrice(state.userCart.cart) - parseFloat(promoCode.value),
-                      ).toFixed(2)}
+                    ? countTotalPrice(
+                        state.userCart.cart,
+                        deliveryfee,
+                        promoCode.value,
+                        promoCode.max_discount_value ?? 0,
+                      ).finalPrice
+                    : countTotalPrice(
+                        state.userCart.cart,
+                        0.0,
+                        promoCode.value,
+                        promoCode.max_discount_value ?? 0,
+                      ).finalPrice}
                 </Text>
               </>
             ) : (
@@ -547,10 +610,8 @@ export const GoToCheckout = props => {
                 <Text style={{marginTop: 10, fontSize: 17, fontWeight: '500'}}>
                   $
                   {selectedTab === 'Delivery'
-                    ? (
-                        parseFloat(totalCartPrice(state.userCart.cart)) + parseFloat(deliveryfee)
-                      ).toFixed(2)
-                    : parseFloat(totalCartPrice(state.userCart.cart)).toFixed(2)}
+                    ? countTotalPrice(state.userCart.cart, deliveryfee, 0.0, 0.0).finalPrice
+                    : countTotalPrice(state.userCart.cart, 0, 0, 0).finalPrice}
                 </Text>
               </>
             )}
@@ -628,6 +689,17 @@ export const GoToCheckout = props => {
           setOpenSchedule(false);
         }}
       />
+      {webviewURL !== '' && (
+        <BottomSheet ref={webviewBottomSheetRef} snapPoints={['95%']} index={0}>
+          <WebView
+            // style={[styles.container, {marginTop: insets.top}]}
+            originWhitelist={['http://', 'https://']}
+            source={{
+              uri: webviewURL,
+            }}
+          />
+        </BottomSheet>
+      )}
     </SafeAreaView>
   );
 };

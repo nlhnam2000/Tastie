@@ -46,6 +46,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>test-payment.momo.vn</string>
+		<string>momo</string>
+		<string>zalo</string>
+	</array>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string/>
 	<key>NSLocationAlwaysUsageDescription</key>

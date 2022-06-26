@@ -26,6 +26,9 @@ export const getAccessToken = async refreshToken => {
 export const convertDollar = vnd => {
   return parseFloat((vnd / 22862.0).toFixed(2));
 };
+export const convertVND = dollar => {
+  return parseInt((dollar * 22862.0).toFixed(0));
+};
 
 export const shuffle = array => {
   let currentIndex = array.length,
@@ -102,4 +105,30 @@ export const OpenStatus = operation_time => {
   }
 
   return 'OPEN';
+};
+
+export const countTotalPrice = (items, delivery_fee, discount, maxDiscountValue) => {
+  const totalPrice = items.reduce((acc, curr) => {
+    return acc + curr.totalProductPrice;
+  }, 0.0);
+
+  // const totalPrice = 100;
+  const discountedValue = totalPrice * (discount / 100);
+  if (discountedValue <= maxDiscountValue) {
+    return {
+      finalPrice: parseFloat((totalPrice - discountedValue + delivery_fee).toFixed(2)),
+      discountedValue: parseFloat(discountedValue.toFixed(2)),
+    };
+  } else if (discountedValue > maxDiscountValue && maxDiscountValue === 0.0) {
+    return {
+      finalPrice: parseFloat((totalPrice - discountedValue + delivery_fee).toFixed(2)),
+      discountedValue: parseFloat(discountedValue.toFixed(2)),
+    };
+  }
+  return {
+    finalPrice: parseFloat((totalPrice - maxDiscountValue + delivery_fee).toFixed(2)),
+    discountedValue: maxDiscountValue,
+  };
+
+  // return ((totalPrice + delivery_fee) * (1 - discount)).toFixed(2);
 };

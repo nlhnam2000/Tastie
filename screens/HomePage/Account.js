@@ -168,7 +168,7 @@ export const Account = props => {
                 Promotions
               </Text>
             </TouchableOpacity>
-            {/* <TouchableOpacity
+            <TouchableOpacity
               style={styles.menuWrapper}
               onPress={() => props.navigation.navigate('TestScreen')}>
               <MaterialCommunity color={'black'} name="ticket-percent" size={26} />
@@ -181,7 +181,7 @@ export const Account = props => {
                 }}>
                 Test Screen
               </Text>
-            </TouchableOpacity> */}
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </SafeAreaView>

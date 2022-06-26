@@ -22,14 +22,16 @@ export const PromotionList = props => {
           paddingVertical: 10,
           opacity: item.isAvailable ? 1 : 0.5,
           borderRadius: 8,
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 0,
-          },
-          // shadowRadius: 8,
-          shadowOpacity: 0.5,
-          elevation: 3,
+          borderWidth: 1,
+          borderColor: '#c4c4c4',
+          // shadowColor: '#000',
+          // shadowOffset: {
+          //   width: 0,
+          //   height: 0,
+          // },
+          // // shadowRadius: 8,
+          // shadowOpacity: 0.5,
+          // elevation: 3,
         }}>
         <TouchableOpacity style={styles.promotionName}>
           <Text style={{fontSize: 17, fontWeight: '500'}}>{item.code}</Text>
