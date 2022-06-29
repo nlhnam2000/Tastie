@@ -131,16 +131,16 @@ export default function App(props) {
       }
     }, 100);
 
-    return notifee.onForegroundEvent(({type, detail}) => {
-      switch (type) {
-        case EventType.DISMISSED:
-          console.log('User dismissed notification', detail);
-          break;
-        case EventType.PRESS:
-          console.log('User pressed notification', detail);
-          break;
-      }
-    });
+    // return notifee.onForegroundEvent(({type, detail}) => {
+    //   switch (type) {
+    //     case EventType.DISMISSED:
+    //       console.log('User dismissed notification', detail);
+    //       break;
+    //     case EventType.PRESS:
+    //       console.log('User pressed notification', detail);
+    //       break;
+    //   }
+    // });
   }, []);
 
   if (state.isLoading) {

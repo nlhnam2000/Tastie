@@ -72,7 +72,7 @@ export const ChatScreen = props => {
   useEffect(() => {
     state.socketServer.host.emit('join-room', order_code);
     state.socketServer.host.on('receive-shipper-inbox', message => {
-      setMessages(prev => [...prev, {sender: 'shipper', message: message}]);
+      setMessages(prev => [...prev, {sender: 'shipper', message: message.content}]);
       console.log('Received: ', message);
     });
     // inputRef.current.focus();

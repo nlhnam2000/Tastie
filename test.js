@@ -1,18 +1,3 @@
-const b = [
-  {
-    name: 'A',
-    products: [{label: 'A'}],
-  },
-  {
-    name: 'B',
-    products: [{label: 'B'}, {label: 'C'}],
-  },
-];
-// const reducer = (r,s) => r.products.length + s.products.length;
-// const number = b.reduce(reducer, 1);
-// const c = [...a].map(item => item.menu_category_name);
-// console.log(c);
-
 const items = [
   {
     product_id: 1002441,
@@ -69,4 +54,9 @@ const countTotalPrice = (items, delivery_fee, discount, maxDiscountValue) => {
   // return ((totalPrice + delivery_fee) * (1 - discount)).toFixed(2);
 };
 
-console.log(countTotalPrice(items, 0.0, 50, 0));
+// console.log(countTotalPrice(items, 0.0, 50, 0));
+
+const a = [1, 2];
+const b = [2, 3];
+
+console.log(a.concat(b));

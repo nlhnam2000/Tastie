@@ -24,14 +24,6 @@ export const PromotionList = props => {
           borderRadius: 8,
           borderWidth: 1,
           borderColor: '#c4c4c4',
-          // shadowColor: '#000',
-          // shadowOffset: {
-          //   width: 0,
-          //   height: 0,
-          // },
-          // // shadowRadius: 8,
-          // shadowOpacity: 0.5,
-          // elevation: 3,
         }}>
         <TouchableOpacity style={styles.promotionName}>
           <Text style={{fontSize: 17, fontWeight: '500'}}>{item.code}</Text>
@@ -63,7 +55,11 @@ export const PromotionList = props => {
           item =>
             (item['isAvailable'] = props.currentSubtotal < item.min_order_value ? false : true),
         );
-        setPromos(res.data.response.promotion);
+        res.data.response.ecoupon.map(
+          item =>
+            (item['isAvailable'] = props.currentSubtotal < item.min_order_value ? false : true),
+        );
+        setPromos(res.data.response.promotion.concat(res.data.response.ecoupon));
       }
     } catch (error) {
       console.error('Cannot get promotion list', error);

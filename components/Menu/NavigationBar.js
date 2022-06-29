@@ -32,7 +32,7 @@ import colors from '../../colors/colors';
 import {RetrieveCart} from '../../store/action/cart';
 import {InitSocket, ToggleNotification, CheckedNotification} from '../../store/action/auth';
 import PushNotification from 'react-native-push-notification';
-import notifee from '@notifee/react-native';
+import notifee, {EventType} from '@notifee/react-native';
 
 export const NavigationBar = props => {
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ export const NavigationBar = props => {
     dispatch(RetrieveCart(state.user_id));
   }
 
-  async function onDisplayNotification(message) {
+  async function onDisplayNotification(message, data) {
     // Create a channel
     const channelId = await notifee.createChannel({
       id: 'default',
@@ -60,6 +60,9 @@ export const NavigationBar = props => {
       body: message.content,
       ios: {
         channelId,
+      },
+      data: {
+        room: data ?? 'None',
       },
     });
 
@@ -94,7 +97,7 @@ export const NavigationBar = props => {
       //   state.socketServer.host.on('join-room', room);
       // });
 
-      state.socketServer.host.on('receive-shipper-inbox', async message => {
+      state.socketServer.host.on('receive-shipper-inbox', async (message, room) => {
         console.log('shipper inbox: ', message);
         if (Platform.OS === 'android') {
           PushNotification.cancelAllLocalNotifications();
@@ -104,7 +107,7 @@ export const NavigationBar = props => {
             message: message.content,
           });
         } else {
-          onDisplayNotification(message);
+          onDisplayNotification(message, room);
         }
       });
 
@@ -136,6 +139,18 @@ export const NavigationBar = props => {
     } else {
       dispatch(InitSocket());
     }
+
+    return notifee.onForegroundEvent(({type, detail}) => {
+      switch (type) {
+        case EventType.DISMISSED:
+          console.log('User dismissed notification', detail);
+          break;
+        case EventType.PRESS:
+          console.log('User pressed notification', detail);
+          props.navigation.navigate('ChatScreen', {order_code: detail.notification.data.room});
+          break;
+      }
+    });
   }, [state.socketServer.host]);
 
   useEffect(() => {

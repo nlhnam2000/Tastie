@@ -5,7 +5,7 @@ import axios from 'axios';
 import {IP_ADDRESS} from '../../global';
 import moment from 'moment';
 
-export const PromotionDetail = props => {
+export const PromotionDetail = ({data, onClose}) => {
   const [loading, setLoading] = useState(true);
   const [promotion, setPromotion] = useState({});
 
@@ -25,16 +25,16 @@ export const PromotionDetail = props => {
     }
   };
 
-  //   useEffect(() => {
-  //     // LoadPromotionDetail(props.code);
-  //     setLoading(false);
-  //   }, []);
-
   useEffect(() => {
-    if (props.code) {
-      LoadPromotionDetail(props.code);
-    }
-  }, [props.code]);
+    // LoadPromotionDetail(props.code);
+    setLoading(false);
+  }, []);
+
+  // useEffect(() => {
+  //   if (props.code) {
+  //     LoadPromotionDetail(props.code);
+  //   }
+  // }, [props.code]);
 
   if (loading) {
     return (
@@ -47,19 +47,19 @@ export const PromotionDetail = props => {
   return (
     <View style={[styles.container]}>
       <View style={{paddingHorizontal: 20, width: '100%'}}>
-        <Text style={styles.heading}>{props.code}</Text>
-        <Text style={[styles.smallheading, {marginTop: 10}]}>{promotion.promos_name}</Text>
+        <Text style={styles.heading}>{data.code}</Text>
+        <Text style={[styles.smallheading, {marginTop: 10}]}>{data.name}</Text>
         <Text style={{marginTop: 40, fontSize: 19, fontWeight: '500'}}>Details</Text>
-        <Text style={{fontSize: 17, marginVertical: 10}}>• {promotion.promos_description}</Text>
+        <Text style={{fontSize: 17, marginVertical: 10}}>• {data.description}</Text>
         <Text style={{fontSize: 17, marginBottom: 10}}>
-          • Minimun order: ${promotion.promos_min_order_value}
+          • Minimun order: ${data.min_order_value}
         </Text>
         <Text style={{fontSize: 17, marginBottom: 10}}>
-          • Maximunm discount: ${promotion.promos_max_discount_value}
+          • Maximunm discount: ${data.max_discount_value}
         </Text>
-        <Text style={{fontSize: 17, marginBottom: 10}}>
-          • Payment method: {promotion.promos_methode_payment}
-        </Text>
+        {/* <Text style={{fontSize: 17, marginBottom: 10}}>
+          • Payment method: {data.promos_methode_payment}
+        </Text> */}
         <View
           style={{
             paddingVertical: 15,
@@ -86,7 +86,7 @@ export const PromotionDetail = props => {
         </View>
         <TouchableOpacity
           style={{padding: 15, width: '100%', backgroundColor: 'black'}}
-          onPress={() => props.onClose()}>
+          onPress={() => onClose()}>
           <Text style={[styles.heading, {color: 'white', textAlign: 'center'}]}>GOT IT</Text>
         </TouchableOpacity>
       </View>

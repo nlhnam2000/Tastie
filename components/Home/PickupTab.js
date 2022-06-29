@@ -310,6 +310,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
               scrollToIndex(index);
             }}
             key={index}
+            zIndex={index}
             coordinate={{
               latitude: parseFloat(provider.latitude),
               longitude: parseFloat(provider.longitude),

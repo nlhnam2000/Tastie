@@ -153,7 +153,7 @@ export const Review = props => {
   return (
     <View style={[styles.container]}>
       <Header title="Rating and Reviews" goBack {...props} />
-      <ScrollView style={styles.contentWrapper}>
+      <ScrollView style={styles.contentWrapper} contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.flexRowBetween}>
           <RatingSummary star={detailReview.averageRating} total={detailReview.numberOfRating} />
           <RatingChart />

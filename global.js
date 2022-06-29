@@ -7,6 +7,8 @@ export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const GEOAPIFY = '936151db693c4437aefc3ab950f1c033';
 export const MAPBOXGS_ACCESS_TOKEN =
   'pk.eyJ1IjoiaG9hbmduYW0yNDMiLCJhIjoiY2t1dHJxdjdlMHg5ZDJwbnlpcmo0a2NnMiJ9.DUrlIOzvO6-kWt-VCKZW1g';
+export const LATITUDE_DELTA = 0.015;
+export const LONGITUDE_DELTA = 0.0121;
 
 export const getAccessToken = async refreshToken => {
   try {

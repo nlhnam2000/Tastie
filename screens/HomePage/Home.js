@@ -62,7 +62,7 @@ export const Home = props => {
       </Stack.Navigator> */}
       <HomeContent {...props} />
 
-      <NavigationBar active={props.tabname} {...props} />
+      <NavigationBar {...props} active={props.tabname} {...props} />
     </>
   );
 };

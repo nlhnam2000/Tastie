@@ -14,8 +14,8 @@ import {
 import colors from '../colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
 import io from 'socket.io-client';
-import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN} from '../global';
-import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
+import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN, countTotalPrice, sleep} from '../global';
+import MapView, {Marker, PROVIDER_GOOGLE, Polyline, Animated} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {SimpleAlertDialog, SingleDialog} from '../components/Error/AlertDialog';
 import {useSelector, useDispatch} from 'react-redux';
@@ -57,6 +57,8 @@ export const OrderStatus = props => {
     items: [],
     num_items: 0,
     delivery_fee: 0,
+    address: '',
+    paymentMethod: 'Cash',
   });
   const [trackingMessage, setTrackingMessage] = useState({
     title: '',
@@ -122,8 +124,6 @@ export const OrderStatus = props => {
 
   useEffect(() => {
     if (!assignedStatus && orderData.items.length > 0) {
-      // state.socket = io(`http://${IP_ADDRESS}:3015`);
-      // socket.emit('join-room', order_code);
       state.socketServer.host.emit(
         'customer-submit-order',
         orderData.items,
@@ -148,8 +148,9 @@ export const OrderStatus = props => {
         },
         order_code,
         {
-          delivery_fee: orderData.delivery_fee.toFixed(2),
+          delivery_fee: parseFloat(orderData.delivery_fee.toFixed(2)),
           total: parseFloat(totalCartPrice(orderData.items)),
+          paymentMethod: orderData.paymentMethod,
         },
       );
     } else {
@@ -199,6 +200,7 @@ export const OrderStatus = props => {
           longitude: data.longitude,
           shipperName: data.shipperName,
         }));
+        // shipperLocation.timing()
       });
       state.socketServer.host.on('shipper-has-arrived', message => {
         setNotification('The shipper has arrived to your place');
@@ -290,6 +292,8 @@ export const OrderStatus = props => {
             num_items: data[0].response.num_items,
             delivery_fee: data[1].response.delivery_fee,
             order_id: data[1].response.order_id,
+            address: data[1].response.customer_address,
+            paymentMethod: data[1].response.payment_name,
           }));
           setTrackingMessage({
             title: 'Order submitted',
@@ -459,15 +463,14 @@ export const OrderStatus = props => {
             />
           </Marker>
           {shipperLocation.latitude ? (
-            <Marker
+            <Marker.Animated
               coordinate={{
                 latitude: shipperLocation.latitude,
                 longitude: shipperLocation.longitude,
               }}
-              title={shipperLocation.shipperName}
-              description="Your order will be comming soon !">
+              title={shipperLocation.shipperName}>
               <ShipperMarker />
-            </Marker>
+            </Marker.Animated>
           ) : null}
           {polyline ? (
             <Polyline
@@ -693,7 +696,9 @@ export const OrderStatus = props => {
                     }}>
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Paid by</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>Cash</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        {orderData.paymentMethod}
+                      </Text>
                     </View>
                   </View>
                 </View>

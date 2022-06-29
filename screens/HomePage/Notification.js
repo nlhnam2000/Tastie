@@ -113,7 +113,7 @@ export const Notification = props => {
             />
           </SkeletonPlaceholder>
         </SafeAreaView>
-        <NavigationBar active={props.tabname} />
+        <NavigationBar {...props} active={props.tabname} />
       </View>
     );
   }
@@ -145,7 +145,7 @@ export const Notification = props => {
           />
         </View>
       </View>
-      <NavigationBar active={props.tabname} />
+      <NavigationBar {...props} active={props.tabname} />
     </View>
   );
 };

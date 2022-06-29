@@ -87,16 +87,28 @@ export const GoToCheckout = props => {
     return price.toFixed(2);
   };
 
-  useEffect(() => {
-    if (webviewURL !== '') {
-      console.log(webviewURL);
+  const getSelectedPaymentID = () => {
+    if (selectedPayment === 'Cash') {
+      return 1;
+    } else if (selectedPayment === 'Momo') {
+      return 2;
+    } else if (selectedPayment === 'Credit or debit card') {
+      return 3;
+    } else if (selectedPayment === 'Zalo Pay') {
+      return 4;
     }
-  }, [webviewURL]);
+  };
 
-  useEffect(() => {
-    console.log(selectedPayment);
-    console.log(orderForm.total);
-  }, [selectedPayment]);
+  // useEffect(() => {
+  //   if (webviewURL !== '') {
+  //     console.log(webviewURL);
+  //   }
+  // }, [webviewURL]);
+
+  // useEffect(() => {
+  //   console.log(selectedPayment);
+  //   console.log(orderForm.total);
+  // }, [selectedPayment]);
 
   const PlaceOrder = async () => {
     try {
@@ -116,6 +128,46 @@ export const GoToCheckout = props => {
               order_code: orderCode,
               orderInfo: 'Thanh toan tra sua',
               amount: convertVND(orderForm.total),
+            },
+          );
+          console.log(res.data);
+          if (res.data.status) {
+            setWebviewURL(res.data.url);
+            console.log(res.data.url);
+            setTimeout(async () => {
+              const body = {
+                order_code: orderCode,
+                customer_id: state.user_id,
+              };
+              console.log(body);
+              try {
+                let submitOrder = await axios.post(
+                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  body,
+                );
+                if (submitOrder.data.status) {
+                  // dispatch(InitSocket());
+                  dispatch(SubmitOrder(orderCode));
+                  setTimeout(() => {
+                    props.navigation.navigate('OrderStatus', {order_code: orderCode});
+                  }, 100);
+                } else {
+                  console.error('Cannot submit order items !');
+                }
+              } catch (error) {
+                console.error(error);
+              }
+            }, 4000);
+          }
+        } else if (selectedPayment === 'Zalo Pay') {
+          console.log('payment zalo');
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-zalo`,
+            {
+              customer_id: state.user_id,
+              customer_name: `${state.first_name} ${state.last_name}`,
+              amount: convertVND(orderForm.total),
+              description: orderCode,
             },
           );
           console.log(res.data);
@@ -218,7 +270,7 @@ export const GoToCheckout = props => {
       if (res.data.delivery_fee) {
         setDeliveryfee(convertDollar(res.data.delivery_fee));
       }
-      console.log(countTotalPrice(state.userCart.cart, 0, 0, 0));
+      // console.log(countTotalPrice(state.userCart.cart, 0, 0, 0));
       setLoading(false);
     };
 
@@ -232,7 +284,7 @@ export const GoToCheckout = props => {
       customer_id: state.user_id,
       delivery_address: deliveryLocation.address,
       customer_phone: state.phone,
-      payment_method: selectedPayment === 'Cash' ? 1 : selectedPayment === 'Momo' ? 2 : 3,
+      payment_method: getSelectedPaymentID(),
       payment_status: 1,
       promotion_code: promoCode.code ?? '',
       ecoupon_code: '',
@@ -485,7 +537,7 @@ export const GoToCheckout = props => {
                   alignItems: 'center',
                   marginTop: 10,
                 }}>
-                <Text style={{fontSize: 17, fontWeight: '500'}}>Promotion</Text>
+                <Text style={{fontSize: 17, fontWeight: '500'}}>Promotion/Ecoupon</Text>
                 <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
                   $
                   {
@@ -530,6 +582,8 @@ export const GoToCheckout = props => {
                   return <Image source={paymentMethod[1].logo} style={{width: 20, height: 20}} />;
                 case 'Credit or debit card':
                   return <Image source={paymentMethod[2].logo} style={{width: 20, height: 20}} />;
+                case 'Zalo Pay':
+                  return <Image source={paymentMethod[3].logo} style={{width: 20, height: 20}} />;
                 default:
                   return <Image source={paymentMethod[0].logo} style={{width: 20, height: 20}} />;
               }

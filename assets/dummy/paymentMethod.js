@@ -14,4 +14,9 @@ export const paymentMethod = [
     name: 'Credit or debit card',
     logo: require('../image/debit-card.png'),
   },
+  {
+    id: 4,
+    name: 'Zalo Pay',
+    logo: require('../image/zalopay.png'),
+  },
 ];

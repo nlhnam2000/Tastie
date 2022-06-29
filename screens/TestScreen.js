@@ -1,10 +1,20 @@
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, Button, Platform} from 'react-native';
 import React, {useRef, useEffect, useState} from 'react';
-import MapView from 'react-native-maps';
 import {useSelector} from 'react-redux';
 import BottomSheet, {BottomSheetModalProvider, BottomSheetModal} from '@gorhom/bottom-sheet';
+import {LONGITUDE_DELTA, LATITUDE_DELTA, sleep} from '../global';
 import {WebView} from 'react-native-webview';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
+import MapView, {
+  Marker,
+  AnimatedRegion,
+  MarkerAnimated,
+  Animated,
+  PROVIDER_DEFAULT,
+  PROVIDER_GOOGLE,
+} from 'react-native-maps';
+import {UserMarker, ProviderMarker} from '../components/Marker/Marker';
+import {ShipperLocation} from '../assets/dummy/ShipperLocations';
 
 const handleComponent = () => {
   return (
@@ -26,31 +36,111 @@ const handleComponent = () => {
 
 export default function TestScreen(props) {
   const state = useSelector(state => state.UserReducer);
+  const [location, setLocation] = useState(
+    new AnimatedRegion({
+      latitude: ShipperLocation[0].latitude,
+      longitude: ShipperLocation[0].longitude,
+    }),
+  );
+  const [currentLocation, setCurrentLocation] = useState({
+    latitude: location.latitude.__getValue(),
+    longitude: location.longitude.__getValue(),
+  });
+  const [mapProvider, setMapProvider] = useState(PROVIDER_DEFAULT);
   const bottomSheetRef = useRef();
   const insets = useSafeAreaInsets();
-  const [goBack, setGoBack] = useState(false);
+  const mapRef = useRef();
+  const markerRef = useRef();
 
-  useEffect(() => {
-    if (goBack) {
-      props.navigation.goBack();
+  // useEffect(() => {
+  //   if (mapRef.current) {
+  //     mapRef.current.fitToCoordinates(
+  //       [
+  //         {
+  //           latitude: currentLocation.latitude,
+  //           longitude: currentLocation.longitude,
+  //         },
+  //         {
+  //           latitude: ShipperLocation.at(-1).latitude,
+  //           longitude: ShipperLocation.at(-1).longitude,
+  //         },
+  //       ],
+  //       {
+  //         edgePadding: {top: 20, right: 20, bottom: 20, left: 20},
+  //         animated: true,
+  //       },
+  //     );
+  //   }
+  // }, [currentLocation]);
+
+  var newLocation = {
+    latitude: 10.762496634175468,
+    longitude: 106.68274002633785,
+    // latitudeDelta: LATITUDE_DELTA,
+    // longitudeDelta: LONGITUDE_DELTA,
+  };
+
+  const animateMarker = async () => {
+    if (Platform.OS === 'android') {
+      markerRef.current.animateMarkerToCoordinate(newLocation, 4000); //  number of duration between points
+    } else {
+      for (let i = 1; i < ShipperLocation.length; i++) {
+        setCurrentLocation(ShipperLocation[i]);
+        location.timing({...ShipperLocation[i], duration: 500}).start();
+
+        await sleep(3000);
+      }
     }
-  }, [goBack]);
+  };
+
   return (
     <View style={styles.container}>
-      <BottomSheet ref={bottomSheetRef} snapPoints={['95%']} index={0}>
-        <WebView
-          // style={[styles.container, {marginTop: insets.top}]}
-          originWhitelist={['http://', 'https://', 'momo://']}
-          onLoadEnd={() =>
-            setTimeout(() => {
-              setGoBack(true);
-            }, 3000)
-          }
-          source={{
-            uri: 'https://test-payment.momo.vn/v2/gateway/pay?t=TU9NT3wxMWMzMjFhMC1mNTEyLTExZWMtYTFmZi1kNTg4NTU0MmJmYzM=',
-          }}
-        />
-      </BottomSheet>
+      <MapView
+        ref={mapRef}
+        style={styles.map}
+        showsUserLocation
+        provider={mapProvider}
+        initialRegion={{
+          latitude: ShipperLocation[0].latitude,
+          longitude: ShipperLocation[0].longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }}
+        region={{
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+          latitudeDelta: LATITUDE_DELTA,
+          longitudeDelta: LONGITUDE_DELTA,
+        }}
+        onMapReady={() => setMapProvider(PROVIDER_GOOGLE)}
+        // onMapLoaded={() => {
+        //   mapRef.current.fitToCoordinates(
+        //     [
+        //       {
+        //         latitude: location.latitude.__getValue(),
+        //         longitude: location.longitude.__getValue(),
+        //       },
+        //       {
+        //         latitude: newLocation.latitude,
+        //         longitude: newLocation.longitude,
+        //       },
+        //     ],
+        //     {
+        //       edgePadding: {top: 40, right: 20, bottom: 20, left: 20},
+        //       animated: true,
+        //     },
+        //   );
+        // }}
+      >
+        <MarkerAnimated zIndex={0} ref={markerRef} coordinate={location}></MarkerAnimated>
+        {/* <Marker.Animated zIndex={1} coordinate={newLocation}>
+          <ProviderMarker />
+        </Marker.Animated> */}
+        <Marker coordinate={ShipperLocation.at(-1)} zIndex={1}>
+          <UserMarker />
+        </Marker>
+      </MapView>
+      <Button title="Move" onPress={() => animateMarker()} />
     </View>
   );
 }
@@ -62,7 +152,7 @@ const styles = StyleSheet.create({
   },
   map: {
     width: '100%',
-    height: '99%',
+    height: '90%',
   },
   remainingTime: {
     padding: 15,

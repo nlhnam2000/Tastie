@@ -71,7 +71,7 @@ export const Account = props => {
         <View style={styles.content}>
           <ActivityIndicator size={'large'} color={'red'} />
         </View>
-        <NavigationBar active={props.tabname} />
+        <NavigationBar active={props.tabname} {...props} />
       </View>
     );
   }
@@ -186,7 +186,7 @@ export const Account = props => {
         </ScrollView>
       </SafeAreaView>
 
-      <NavigationBar active={props.tabname} />
+      <NavigationBar active={props.tabname} {...props} />
     </View>
   );
 };

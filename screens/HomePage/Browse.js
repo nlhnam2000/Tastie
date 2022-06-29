@@ -122,7 +122,7 @@ export const Browse = props => {
           />
         </View>
 
-        <NavigationBar active={props.tabname} />
+        <NavigationBar active={props.tabname} {...props} />
       </View>
     );
   }

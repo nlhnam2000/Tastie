@@ -82,7 +82,7 @@ export const Cart = props => {
         <View style={styles.content}>
           <ActivityIndicator size={'large'} color={colors.red} />
         </View>
-        <NavigationBar active={props.tabname} />
+        <NavigationBar {...props} active={props.tabname} />
       </View>
     );
   }
@@ -104,7 +104,7 @@ export const Cart = props => {
           </TouchableOpacity>
         </SafeAreaView>
 
-        <NavigationBar active={props.tabname} />
+        <NavigationBar {...props} active={props.tabname} />
       </View>
     );
   }
@@ -322,7 +322,7 @@ export const Cart = props => {
           </Text>
         </TouchableOpacity> */}
       </SafeAreaView>
-      <NavigationBar active={props.tabname} />
+      <NavigationBar {...props} active={props.tabname} />
     </View>
   );
 };
