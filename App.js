@@ -54,7 +54,8 @@ import {EditCustomerAddress} from './screens/EditCustomerAddress';
 import {OrderHistoryTab} from './screens/HomePage/Account/OrderHistoryTab';
 import {MapScreen} from './screens/MapScreen';
 import {Review} from './screens/HomePage/Detail/Reviews/review';
-import TestScreen from './screens/TestScreen';
+import {TestScreen} from './screens/TestScreen';
+import {PickupTracking} from './screens/PickupTracking';
 
 // redux
 import {useSelector, useDispatch} from 'react-redux';
@@ -270,6 +271,11 @@ export default function App(props) {
               />
               <Stack.Screen name="MapScreen" component={MapScreen} options={{headerShown: false}} />
               <Stack.Screen name="Review" component={Review} options={{headerShown: false}} />
+              <Stack.Screen
+                name="PickupTracking"
+                component={PickupTracking}
+                options={{headerShown: false}}
+              />
               <Stack.Screen
                 name="TestScreen"
                 component={TestScreen}

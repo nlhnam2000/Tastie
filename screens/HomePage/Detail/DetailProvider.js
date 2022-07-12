@@ -435,6 +435,10 @@ export const DetailProvider = props => {
                         data: item,
                         provider_id: info.data.provider_id,
                         provider_name: info.data.merchant_name,
+                        location: {
+                          latitude: parseFloat(info.data.latitude),
+                          longitude: parseFloat(info.data.longitude),
+                        },
                       })
                     }
                     style={styles.foodWrapper}>

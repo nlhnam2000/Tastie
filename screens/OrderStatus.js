@@ -34,7 +34,7 @@ export const OrderStatus = props => {
   const state = useSelector(state => state.UserReducer);
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
-  const {order_code} = props.route.params;
+  const {order_code, scheduleTime} = props.route.params;
   const [location, setLocation] = useState({
     latitude: state.userLocation.latitude,
     longitude: state.userLocation.longitude,
@@ -59,6 +59,9 @@ export const OrderStatus = props => {
     delivery_fee: 0,
     address: '',
     paymentMethod: 'Cash',
+    deliveryMode: 1, // Delivery or Pickup
+    deliveryMethod: '', // Standard or Schedule
+    scheduleTime: '',
   });
   const [trackingMessage, setTrackingMessage] = useState({
     title: '',
@@ -151,6 +154,9 @@ export const OrderStatus = props => {
           delivery_fee: parseFloat(orderData.delivery_fee.toFixed(2)),
           total: parseFloat(totalCartPrice(orderData.items)),
           paymentMethod: orderData.paymentMethod,
+          deliveryMode: orderData.deliveryMode,
+          deliveryMethod: orderData.deliveryMethod,
+          scheduleTime: scheduleTime, // orderData.scheduleTime,
         },
       );
     } else {
@@ -294,6 +300,9 @@ export const OrderStatus = props => {
             order_id: data[1].response.order_id,
             address: data[1].response.customer_address,
             paymentMethod: data[1].response.payment_name,
+            deliveryMode: data[1].response.delivery_mode,
+            deliveryMethod: data[1].response.delivery_method,
+            scheduleTime: data[1].response.schedule_time,
           }));
           setTrackingMessage({
             title: 'Order submitted',

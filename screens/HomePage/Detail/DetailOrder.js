@@ -285,17 +285,20 @@ export const DetailOrder = props => {
                 <Text style={{fontSize: 16}}>Subtotal</Text>
                 <Text style={{fontSize: 16}}>${countSubtotal(orderDetail.items)}</Text>
               </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  width: '100%',
-                  marginTop: 15,
-                }}>
-                <Text style={{fontSize: 16}}>Delivery fee</Text>
-                <Text style={{fontSize: 16}}>${orderDetail.delivery_fee.toFixed(2)}</Text>
-              </View>
+              {orderDetail.delivery_fee && (
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    width: '100%',
+                    marginTop: 15,
+                  }}>
+                  <Text style={{fontSize: 16}}>Delivery fee</Text>
+                  <Text style={{fontSize: 16}}>${orderDetail.delivery_fee.toFixed(2)}</Text>
+                </View>
+              )}
+
               <View
                 style={{
                   flexDirection: 'row',

@@ -119,6 +119,91 @@ export const OrderProgressBar = props => {
   );
 };
 
+export const OrderProgressBarPickup = ({status}) => {
+  return (
+    <View style={styles.progress}>
+      <View style={{alignItems: 'center', position: 'relative'}}>
+        <View
+          style={{
+            padding: 7,
+            backgroundColor: status >= 1 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
+            position: 'absolute',
+            left: '5%',
+          }}>
+          <Feather name={status >= 1 ? 'check' : 'loader'} size={10} color="white" />
+        </View>
+
+        <View
+          style={{
+            padding: 7,
+            backgroundColor: status >= 2 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 20,
+            position: 'absolute',
+            left: '47%',
+          }}>
+          <Feather name={status >= 2 ? 'check' : 'loader'} size={10} color="white" />
+        </View>
+
+        <View
+          style={{
+            padding: 7,
+            backgroundColor: status === 3 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            borderRadius: 40,
+            position: 'absolute',
+            left: '87%',
+          }}>
+          <Feather name={status === 3 ? 'check' : 'loader'} size={10} color="white" />
+        </View>
+        {/* Line Progress */}
+        <View
+          style={{
+            width: '39%',
+            padding: 2,
+            position: 'absolute',
+            top: 10,
+            left: '8%',
+            backgroundColor: status >= 1 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            zIndex: -10,
+          }}></View>
+
+        <View
+          style={{
+            width: '37%',
+            padding: 2,
+            position: 'absolute',
+            top: 10,
+            left: '51%',
+            backgroundColor: status >= 2 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            zIndex: -10,
+          }}></View>
+        <View
+          style={{
+            width: '20%',
+            padding: 2,
+            position: 'absolute',
+            top: 10,
+            left: '73%',
+            backgroundColor: status === 3 ? colors.boldred : 'rgba(200,200,200,1.0)',
+            zIndex: -10,
+          }}></View>
+        {/* Text Progress */}
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '2%'}}>
+          Submitted
+        </Text>
+
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '42%'}}>
+          Confirmed
+        </Text>
+
+        <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '82%'}}>
+          Completed
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   progress: {
     width: '100%',

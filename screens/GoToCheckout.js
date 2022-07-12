@@ -99,17 +99,6 @@ export const GoToCheckout = props => {
     }
   };
 
-  // useEffect(() => {
-  //   if (webviewURL !== '') {
-  //     console.log(webviewURL);
-  //   }
-  // }, [webviewURL]);
-
-  // useEffect(() => {
-  //   console.log(selectedPayment);
-  //   console.log(orderForm.total);
-  // }, [selectedPayment]);
-
   const PlaceOrder = async () => {
     try {
       let res = await axios.post(
@@ -149,7 +138,10 @@ export const GoToCheckout = props => {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
                   setTimeout(() => {
-                    props.navigation.navigate('OrderStatus', {order_code: orderCode});
+                    props.navigation.navigate('OrderStatus', {
+                      order_code: orderCode,
+                      scheduleTime: scheduleTime,
+                    });
                   }, 100);
                 } else {
                   console.error('Cannot submit order items !');
@@ -189,7 +181,10 @@ export const GoToCheckout = props => {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
                   setTimeout(() => {
-                    props.navigation.navigate('OrderStatus', {order_code: orderCode});
+                    props.navigation.navigate('OrderStatus', {
+                      order_code: orderCode,
+                      scheduleTime: scheduleTime,
+                    });
                   }, 100);
                 } else {
                   console.error('Cannot submit order items !');
@@ -214,7 +209,135 @@ export const GoToCheckout = props => {
               // dispatch(InitSocket());
               dispatch(SubmitOrder(orderCode));
               setTimeout(() => {
-                props.navigation.navigate('OrderStatus', {order_code: orderCode});
+                props.navigation.navigate('OrderStatus', {
+                  order_code: orderCode,
+                  scheduleTime: scheduleTime,
+                });
+              }, 100);
+            } else {
+              console.error('Cannot submit order items !');
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const PlaceOrderPickup = async () => {
+    try {
+      let res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-pickup`,
+        orderForm,
+      );
+      if (res.data.status && res.data.order_code) {
+        const orderCode = res.data.order_code;
+        // console.log('order_code from api', orderCode);
+
+        if (selectedPayment === 'Momo') {
+          console.log('payment momo');
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-momo`,
+            {
+              order_code: orderCode,
+              orderInfo: 'Thanh toan tra sua',
+              amount: convertVND(orderForm.total),
+            },
+          );
+          console.log(res.data);
+          if (res.data.status) {
+            setWebviewURL(res.data.url);
+            console.log(res.data.url);
+            setTimeout(async () => {
+              const body = {
+                order_code: orderCode,
+                customer_id: state.user_id,
+              };
+              console.log(body);
+              try {
+                let submitOrder = await axios.post(
+                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  body,
+                );
+                if (submitOrder.data.status) {
+                  // dispatch(InitSocket());
+                  dispatch(SubmitOrder(orderCode));
+                  setTimeout(() => {
+                    props.navigation.navigate('PickupTracking', {
+                      order_code: orderCode,
+                    });
+                  }, 100);
+                } else {
+                  console.error('Cannot submit order items !');
+                }
+              } catch (error) {
+                console.error(error);
+              }
+            }, 4000);
+          }
+        } else if (selectedPayment === 'Zalo Pay') {
+          console.log('payment zalo');
+          const res = await axios.post(
+            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-zalo`,
+            {
+              customer_id: state.user_id,
+              customer_name: `${state.first_name} ${state.last_name}`,
+              amount: convertVND(orderForm.total),
+              description: orderCode,
+            },
+          );
+          console.log(res.data);
+          if (res.data.status) {
+            setWebviewURL(res.data.url);
+            console.log(res.data.url);
+            setTimeout(async () => {
+              const body = {
+                order_code: orderCode,
+                customer_id: state.user_id,
+              };
+              console.log(body);
+              try {
+                let submitOrder = await axios.post(
+                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  body,
+                );
+                if (submitOrder.data.status) {
+                  // dispatch(InitSocket());
+                  dispatch(SubmitOrder(orderCode));
+                  setTimeout(() => {
+                    props.navigation.navigate('PickupTracking', {
+                      order_code: orderCode,
+                    });
+                  }, 100);
+                } else {
+                  console.error('Cannot submit order items !');
+                }
+              } catch (error) {
+                console.error(error);
+              }
+            }, 4000);
+          }
+        } else {
+          const body = {
+            order_code: orderCode,
+            customer_id: state.user_id,
+          };
+          console.log(body);
+          try {
+            let submitOrder = await axios.post(
+              `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+              body,
+            );
+            if (submitOrder.data.status) {
+              // dispatch(InitSocket());
+              dispatch(SubmitOrder(orderCode));
+              setTimeout(() => {
+                props.navigation.navigate('PickupTracking', {
+                  order_code: orderCode,
+                });
               }, 100);
             } else {
               console.error('Cannot submit order items !');
@@ -270,7 +393,6 @@ export const GoToCheckout = props => {
       if (res.data.delivery_fee) {
         setDeliveryfee(convertDollar(res.data.delivery_fee));
       }
-      // console.log(countTotalPrice(state.userCart.cart, 0, 0, 0));
       setLoading(false);
     };
 
@@ -672,7 +794,11 @@ export const GoToCheckout = props => {
           </View>
           <TouchableOpacity
             onPress={() => {
-              PlaceOrder();
+              if (selectedTab === 'Delivery') {
+                PlaceOrder();
+              } else {
+                PlaceOrderPickup();
+              }
             }}
             style={{width: '70%', backgroundColor: 'black', padding: 15}}>
             <Text style={{color: 'white', fontWeight: 'bold', fontSize: 18, textAlign: 'center'}}>

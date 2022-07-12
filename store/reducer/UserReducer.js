@@ -79,6 +79,7 @@ const initialState = {
     date: null,
     cart: [],
     status: null,
+    location: {},
     // totalPrice: 0.0,
   },
   /* 
@@ -259,6 +260,10 @@ export const UserReducer = (state = initialState, action) => {
           provider_name: payload.userCart.providerName,
           cart: payload.userCart.items,
           item_code: payload.userCart.item_code,
+          location: {
+            latitude: parseFloat(payload.userCart.latitude),
+            longitude: parseFloat(payload.userCart.longitude),
+          },
           // status: 'ADDED',
         },
       };
@@ -302,6 +307,10 @@ export const UserReducer = (state = initialState, action) => {
           provider_name: payload.cartForm.provider_name,
           // date: null,
           cart: [...state.userCart.cart, payload.cartForm.cartItem],
+          location: {
+            latitude: payload.cartForm.location.latitude,
+            longitude: payload.cartForm.location.longitude,
+          },
           // status: null,
         },
       };

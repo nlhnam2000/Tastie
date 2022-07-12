@@ -1,40 +1,49 @@
 import {View, Text, StyleSheet, Button, Platform, TouchableOpacity} from 'react-native';
 import React, {useRef, useEffect, useState} from 'react';
 import {useSelector} from 'react-redux';
-import BottomSheet, {
-  BottomSheetModalProvider,
-  BottomSheetModal,
-  BottomSheetScrollView,
-} from '@gorhom/bottom-sheet';
-import {LONGITUDE_DELTA, LATITUDE_DELTA, sleep, MAPBOXGS_ACCESS_TOKEN} from '../global';
-import {WebView} from 'react-native-webview';
+import BottomSheet, {BottomSheetScrollView} from '@gorhom/bottom-sheet';
+import {LONGITUDE_DELTA, LATITUDE_DELTA, MAPBOXGS_ACCESS_TOKEN, IP_ADDRESS} from '../global';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
-import MapView, {
-  Marker,
-  AnimatedRegion,
-  MarkerAnimated,
-  Animated,
-  PROVIDER_DEFAULT,
-  PROVIDER_GOOGLE,
-  Polyline,
-} from 'react-native-maps';
+import MapView, {Marker, PROVIDER_GOOGLE, Polyline} from 'react-native-maps';
 import {UserMarker, ProviderMarker} from '../components/Marker/Marker';
-import {ShipperLocation} from '../assets/dummy/ShipperLocations';
-import {ActivityIndicator, Provider} from 'react-native-paper';
+import {ActivityIndicator} from 'react-native-paper';
 import colors from '../colors/colors';
-import {Header} from '../components/Layout/Header/Header';
 import Feather from 'react-native-vector-icons/Feather';
-import {OrderProgressBar, OrderProgressBarPickup} from '../components/Progress/OrderProgressBar';
+import {OrderProgressBarPickup} from '../components/Progress/OrderProgressBar';
 import axios from 'axios';
-import {ScrollView} from 'react-native-gesture-handler';
 
-export const TestScreen = ({navigation}) => {
+export const PickupTracking = ({navigation, route}) => {
+  const {order_code} = route.params;
   const state = useSelector(state => state.UserReducer);
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [polyline, setPolyline] = useState([]);
+  const [orderData, setOrderData] = useState({
+    merchant_name: null,
+    order_id: 0,
+    items: [],
+    num_items: 0,
+    delivery_fee: 0,
+    address: '',
+    paymentMethod: 'Cash',
+    deliveryMode: 1,
+    deliveryMethod: '',
+    scheduleTime: '',
+  });
+  // 0: default, 1: submitted, 2: confirmed, 3: completed
+  const [orderStatus, setOrderStatus] = useState(0);
+
   const bottomsheetRef = useRef();
   const mapref = useRef();
+
+  const totalCartPrice = cart => {
+    let price = 0.0;
+    for (let i = 0; i < cart.length; i++) {
+      price += parseFloat(cart[i].price);
+    }
+
+    return price.toFixed(2);
+  };
 
   const onMapLoaded = () => {
     mapref.current?.fitToCoordinates(
@@ -44,8 +53,6 @@ export const TestScreen = ({navigation}) => {
           longitude: state.userLocation.longitude,
         },
         {
-          // latitude: 10.766575409142378,
-          // longitude: 106.69510799782778,
           latitude: 10.762496634175468,
           longitude: 106.68274002633785,
         },
@@ -75,8 +82,182 @@ export const TestScreen = ({navigation}) => {
       .catch(err => console.error(err));
   };
 
+  const ListenSocketEvent = () => {
+    state.socketServer.host.on('order-confirmed-from-provider', () => {
+      setOrderStatus(2); //
+    });
+  };
+
+  const OrderCompleted = async () => {
+    try {
+      await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`, {
+        order_code: order_code,
+        status: 5, // completed
+        shipper_id: null,
+        update_at: '2022-04-21 20:11:11',
+      });
+      setOrderStatus(3); // completed
+      setTimeout(() => {
+        navigation.navigate('RatingProvider', {order_id: orderData.order_id});
+      }, 2000);
+    } catch (error) {
+      console.error('Cannot complete order', error);
+    }
+  };
+
+  const handleCancelOrder = async () => {
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`,
+        {
+          order_code: order_code,
+          status: 6,
+          shipper_id: null,
+          update_at: '2022-04-21 20:11:11',
+        },
+      );
+      if (res.data.status) {
+        // alert('Your order has been canceled !');
+        // setNotification('Your order has been canceled !');
+        // setOpenModal(true);
+        // dispatch(DisconnectSocket());
+
+        setTimeout(() => {
+          navigation.navigate('Home Page');
+        }, 2000);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
-    setLoading(false);
+    const SubmitPickupOrder = async () => {
+      const customerData = {
+        name: state.first_name + ' ' + state.last_name,
+        phone: state.phone,
+        address: state.userLocation.address,
+        user_id: state.user_id,
+        location: {
+          latitude: state.userLocation.latitude,
+          longitude: state.userLocation.longitude,
+        },
+      };
+      const providerData = {
+        name: state.userCart.provider_name,
+        address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+        provider_id: state.userCart.provider_id,
+        location: {
+          latitude: 10.770426270078108,
+          longitude: 106.69433674255707,
+        },
+      };
+      const pricing = {
+        delivery_fee: 0,
+        total: parseFloat(totalCartPrice(orderData.items)),
+        paymentMethod: orderData.paymentMethod,
+        deliveryMethod: orderData.deliveryMethod,
+        scheduleTime: orderData.scheduleTime,
+        deliveryMode: orderData.deliveryMode,
+      };
+
+      let providerNotificationForm = {
+        user_id: null,
+        provider_id: state.userCart.provider_id,
+        role: 2,
+        subject: state.userCart.provider_name,
+        content: 'A new pickup order is coming',
+        order_code: order_code,
+        read_status: false,
+        type: 2,
+      };
+
+      // api add notification
+      try {
+        const res = await axios.post(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-notification`,
+          providerNotificationForm,
+        );
+
+        if (res.data.status) {
+          providerNotificationForm.data = res.data.notification_id;
+          pricing.providerNotificationForm = providerNotificationForm; // attach providerNotificationForm to pricing
+          console.log('notification done');
+        }
+      } catch (error) {
+        console.error('Cannot add provider notification', error);
+      }
+
+      state.socketServer.host.emit(
+        'customer-submit-order',
+        orderData.items,
+        customerData,
+        providerData,
+        order_code,
+        pricing,
+      );
+    };
+    if (orderStatus === 1 && orderData.items.length > 0) {
+      console.log('Submit order pickup');
+      SubmitPickupOrder();
+    }
+  }, [orderData, orderStatus]);
+
+  useEffect(() => {
+    const LoadScreen = async () => {
+      ListenSocketEvent();
+
+      const fetchOrderItems = async order_code => {
+        let res = await axios.get(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+        );
+
+        return res.data;
+      };
+
+      const getOrderStatus = async order_code => {
+        let res = await axios.get(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-summary/${order_code}`,
+        );
+
+        return res.data;
+      };
+
+      const res1 = fetchOrderItems(order_code);
+      const res2 = getOrderStatus(order_code);
+      Promise.all([res1, res2]).then(data => {
+        if (data[0].response && data[1].response) {
+          setOrderData(prev => ({
+            ...prev,
+            merchant_name: data[0].response.merchant_name,
+            items: data[0].response.items,
+            num_items: data[0].response.num_items,
+            delivery_fee: data[1].response.delivery_fee,
+            order_id: data[1].response.order_id,
+            address: data[1].response.customer_address,
+            paymentMethod: data[1].response.payment_name,
+            deliveryMode: data[1].response.delivery_mode,
+            deliveryMethod: data[1].response.delivery_method,
+            // scheduleTime: data[1].response.schedule_time,
+          }));
+
+          switch (data[1].response.order_status.at(-1).order_status_name) {
+            case 'Submitted':
+              setOrderStatus(1);
+              break;
+            case 'Confirmed':
+              setOrderStatus(3);
+              break;
+            case 'Completed':
+              setOrderStatus(5);
+              break;
+          }
+        }
+      });
+      setLoading(false);
+    };
+
+    LoadScreen();
   }, []);
 
   if (loading) {
@@ -147,11 +328,7 @@ export const TestScreen = ({navigation}) => {
               <Text style={{textAlign: 'center'}}>Your order has been sent to the restaurant</Text>
             </View>
 
-            <OrderProgressBarPickup
-              submittedStatus={true}
-              confirmedStatus={true}
-              completedStatus={true}
-            />
+            <OrderProgressBarPickup status={orderStatus} />
 
             <View
               style={{
@@ -169,7 +346,7 @@ export const TestScreen = ({navigation}) => {
                     paddingHorizontal: 20,
                     marginTop: 15,
                   }}>
-                  {[1, 2, 3].map((item, index) => (
+                  {orderData.items.map((item, index) => (
                     <View
                       key={index}
                       style={{
@@ -179,7 +356,7 @@ export const TestScreen = ({navigation}) => {
                         marginBottom: 15,
                       }}>
                       <View style={{flexDirection: 'row', alignItems: 'center', width: '80%'}}>
-                        <Text style={{fontSize: 16}}>{1}x</Text>
+                        <Text style={{fontSize: 16}}>{item.quantity}x</Text>
                         <View style={{width: '85%'}}>
                           <Text
                             style={{
@@ -188,7 +365,7 @@ export const TestScreen = ({navigation}) => {
                               fontWeight: '600',
                             }}
                             numberOfLines={3}>
-                            {'lorem ipsum'}
+                            {item.product_name}
                           </Text>
                           {/* {additionalOptions[index] && (
                             <Text
@@ -202,11 +379,13 @@ export const TestScreen = ({navigation}) => {
                             </Text>
                           )} */}
                           {item.special_instruction !== '' && (
-                            <Text style={{marginTop: 10}}>Note: {'note'}</Text>
+                            <Text style={{marginTop: 10}}>Note: {item.SpecialInstructions}</Text>
                           )}
                         </View>
                       </View>
-                      <Text style={{fontWeight: '600', fontSize: 17}}>$10.00</Text>
+                      <Text style={{fontWeight: '600', fontSize: 17}}>
+                        ${parseFloat(item.price).toFixed(2)}
+                      </Text>
                     </View>
                   ))}
                   <View
@@ -219,13 +398,19 @@ export const TestScreen = ({navigation}) => {
                       borderBottomWidth: 1,
                     }}>
                     <View style={styles.flexRowBetween}>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>Subtotal ({2} items)</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>$10</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        Subtotal ({orderData.items.length} items)
+                      </Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${totalCartPrice(orderData.items)}
+                      </Text>
                     </View>
-                    <View style={styles.flexRowBetween}>
+                    {/* <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Delivery fee: 2.8km</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>$10</Text>
-                    </View>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${parseFloat(orderData.delivery_fee).toFixed(2)}
+                      </Text>
+                    </View> */}
                     {/* <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500', color: '#AB2E15'}}>
                         Coupon
@@ -244,7 +429,9 @@ export const TestScreen = ({navigation}) => {
                     }}>
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Total</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>$ 10</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        ${parseFloat(totalCartPrice(orderData.items)).toFixed(2)}
+                      </Text>
                     </View>
                   </View>
                   <View
@@ -258,7 +445,9 @@ export const TestScreen = ({navigation}) => {
                     }}>
                     <View style={styles.flexRowBetween}>
                       <Text style={{fontSize: 16, fontWeight: '500'}}>Paid by</Text>
-                      <Text style={{fontSize: 16, fontWeight: '500'}}>Cash</Text>
+                      <Text style={{fontSize: 16, fontWeight: '500'}}>
+                        {orderData.paymentMethod}
+                      </Text>
                     </View>
                   </View>
                 </View>
@@ -276,24 +465,45 @@ export const TestScreen = ({navigation}) => {
             justifyContent: 'center',
             paddingBottom: 30,
           }}>
-          <TouchableOpacity
-            onPress={() => handleCancelOrder()}
-            style={{
-              paddingHorizontal: 15,
-              paddingVertical: 15,
-              backgroundColor: colors.boldred,
-              width: '40%',
-            }}>
-            <Text
+          {orderStatus === 0 ? (
+            <TouchableOpacity
+              onPress={() => handleCancelOrder()}
               style={{
-                fontWeight: 'bold',
-                textAlign: 'center',
-                color: 'white',
-                fontSize: 16,
+                paddingHorizontal: 15,
+                paddingVertical: 15,
+                backgroundColor: colors.boldred,
+                width: '40%',
               }}>
-              Cancel order
-            </Text>
-          </TouchableOpacity>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: 'white',
+                  fontSize: 16,
+                }}>
+                Cancel order
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => OrderCompleted()}
+              style={{
+                paddingHorizontal: 15,
+                paddingVertical: 15,
+                backgroundColor: 'black',
+                width: '40%',
+              }}>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  textAlign: 'center',
+                  color: 'white',
+                  fontSize: 16,
+                }}>
+                Completed
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
       </BottomSheet>
     </View>

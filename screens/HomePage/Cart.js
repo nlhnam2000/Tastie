@@ -60,6 +60,7 @@ export const Cart = props => {
     //   additionalOption: [],
     //   additionalOptions: [],
     // }));
+    console.log(state.userCart.location);
     setLoading(false);
   }, []);
 

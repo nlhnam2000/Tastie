@@ -38,6 +38,7 @@ export const RetrieveCart = user_id => async dispatch => {
             date: null,
             cart: [],
             status: null,
+            location: {},
           },
         },
       });
