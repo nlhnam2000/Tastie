@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 // components
 import {UpcomingProduct} from '../../../components/Modal/UpcomingProduct';
-import {IP_ADDRESS, cleanOperationTime} from '../../../global';
+import {IP_ADDRESS, cleanOperationTime, discount} from '../../../global';
 import {DetailProviderSkeleton} from '../../../components/Skeleton/DetailProviderSkeleton';
 import {ProviderMarker, UserMarker} from '../../../components/Marker/Marker';
 
@@ -426,36 +426,53 @@ export const DetailProvider = props => {
             onScrollToIndexFailed={onScrollToIndexFailed}
             onViewableItemsChanged={onViewableItemsChanged}
             viewabilityConfig={onViewChangeConfigRef.current}
-            renderItem={({item}) => (
-              <View style={styles.menuContentWrapper}>
-                <View style={styles.menuContent}>
-                  <TouchableOpacity
-                    onPress={() =>
-                      props.navigation.navigate('ProductOptions', {
-                        data: item,
-                        provider_id: info.data.provider_id,
-                        provider_name: info.data.merchant_name,
-                        location: {
-                          latitude: parseFloat(info.data.latitude),
-                          longitude: parseFloat(info.data.longitude),
-                        },
-                      })
-                    }
-                    style={styles.foodWrapper}>
-                    <View style={[styles.foodInfo, {width: '70%'}]}>
-                      <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
-                        {item.product_name}
-                      </Text>
-                      <Text>${item.price.toFixed(2)}</Text>
-                      <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
-                        {item.description}
-                      </Text>
-                    </View>
-                    <FastImage style={styles.foodImage} source={{uri: item.product_image}} />
-                  </TouchableOpacity>
+            renderItem={({item}) =>
+              item.product_status !== 3 ? (
+                <View style={styles.menuContentWrapper}>
+                  <View style={styles.menuContent}>
+                    <TouchableOpacity
+                      disabled={item.product_status === 2 ? true : false}
+                      onPress={() =>
+                        props.navigation.navigate('ProductOptions', {
+                          data: item,
+                          provider_id: info.data.provider_id,
+                          provider_name: info.data.merchant_name,
+                          location: {
+                            latitude: parseFloat(info.data.latitude),
+                            longitude: parseFloat(info.data.longitude),
+                          },
+                        })
+                      }
+                      style={styles.foodWrapper}>
+                      <View
+                        style={[
+                          styles.foodInfo,
+                          {width: '70%', opacity: item.product_status === 2 ? 0.6 : 1},
+                        ]}>
+                        <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
+                          {item.product_name}
+                        </Text>
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                          <MaterialIcon name="sale" color={colors.boldred} size={17} />
+                          <Text style={{color: colors.boldred, marginHorizontal: 5}}>50%</Text>
+                          <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
+                            ${item.price.toFixed(2)}
+                          </Text>
+                        </View>
+                        <Text style={{marginTop: 10}}>${discount(item.price, 0.5).toFixed(2)}</Text>
+                        <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
+                          {item.description}
+                        </Text>
+                      </View>
+                      <FastImage
+                        style={[styles.foodImage, {opacity: item.product_status === 2 ? 0.6 : 1}]}
+                        source={{uri: item.product_image}}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            )}
+              ) : null
+            }
             renderSectionHeader={({section: {menu_category_name}}) => (
               <Text
                 style={{

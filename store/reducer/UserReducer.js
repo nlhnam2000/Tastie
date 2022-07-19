@@ -64,7 +64,7 @@ const initialState = {
   alertMessage: null,
   currentTab: 'Home',
   socketServer: {
-    host: io(`http://${'localhost'}:3015`),
+    host: io(`http://${IP_ADDRESS}:3015`),
     rooms: [],
   },
   toggleNotification: false,
@@ -80,6 +80,7 @@ const initialState = {
     cart: [],
     status: null,
     location: {},
+    address: '',
     // totalPrice: 0.0,
   },
   /* 

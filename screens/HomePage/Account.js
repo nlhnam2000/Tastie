@@ -21,7 +21,6 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IP_ADDRESS, getAccessToken} from '../../global';
-import notifee from '@notifee/react-native';
 
 const {width, height} = Dimensions.get('window');
 
@@ -30,24 +29,6 @@ export const Account = props => {
   const state = useSelector(state => state.UserReducer);
   const [loading, setLoading] = useState(true);
 
-  async function onDisplayNotification() {
-    // Create a channel
-    const channelId = await notifee.createChannel({
-      id: 'default',
-      name: 'Default Channel',
-    });
-
-    await notifee.cancelAllNotifications();
-
-    // Display a notification
-    await notifee.displayNotification({
-      title: 'Notification Title',
-      body: 'Main body content of the notification',
-      ios: {
-        channelId,
-      },
-    });
-  }
 
   useEffect(() => {
     // setTimeout(async () => {

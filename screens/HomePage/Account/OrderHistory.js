@@ -279,7 +279,13 @@ export const OrderHistory = props => {
                           });
                         }
                       } else {
-                        props.navigation.navigate('OrderStatus', {order_code: order.order_code});
+                        if (order.delivery_mode === 1) {
+                          props.navigation.navigate('OrderStatus', {order_code: order.order_code});
+                        } else {
+                          props.navigation.navigate('PickupTracking', {
+                            order_code: order.order_code,
+                          });
+                        }
                       }
                     }}
                     style={styles.orderContent}>

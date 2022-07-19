@@ -74,11 +74,15 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   }, []);
 
   const scrollToIndex = index => {
-    providerHorizontalListRef.current.scrollToIndex({
-      animated: true,
-      index: index,
-      viewOffset: 30,
-    });
+    try {
+      providerHorizontalListRef.current.scrollToIndex({
+        animated: true,
+        index: index,
+        viewOffset: 30,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const onViewableItemsChanged = ({viewableItems, changed}) => {

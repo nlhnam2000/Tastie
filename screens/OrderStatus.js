@@ -13,19 +13,30 @@ import {
 } from 'react-native';
 import colors from '../colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
-import io from 'socket.io-client';
-import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN, countTotalPrice, sleep} from '../global';
-import MapView, {Marker, PROVIDER_GOOGLE, Polyline, Animated} from 'react-native-maps';
+import {
+  IP_ADDRESS,
+  MAPBOXGS_ACCESS_TOKEN,
+  countTotalPrice,
+  sleep,
+  LATITUDE_DELTA,
+  LONGITUDE_DELTA,
+} from '../global';
+import MapView, {
+  Marker,
+  PROVIDER_GOOGLE,
+  Polyline,
+  Animated,
+  AnimatedRegion,
+} from 'react-native-maps';
 import Geolocation from 'react-native-geolocation-service';
 import {SimpleAlertDialog, SingleDialog} from '../components/Error/AlertDialog';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
-import {ScrollView} from 'react-native-gesture-handler';
 import {OrderCompleted} from '../store/action/cart';
 import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
 import {DisconnectSocket} from '../store/action/auth';
 import BottomSheet, {BottomSheetScrollView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
-import {ShipperMarker} from '../components/Marker/Marker';
+import {ShipperMarker, ProviderMarker} from '../components/Marker/Marker';
 
 // let socket;
 const {width, height} = Dimensions.get('window');
@@ -39,7 +50,15 @@ export const OrderStatus = props => {
     latitude: state.userLocation.latitude,
     longitude: state.userLocation.longitude,
   });
-  const [shipperLocation, setShipperLocation] = useState({});
+  const [shipperLocation, setShipperLocation] = useState(null);
+  const [shipperInfo, setShipperInfo] = useState({
+    name: 'John Doe',
+    phone: 123123123,
+    bikeNumber: '79N1 - 1234',
+    estimatedTime: 14,
+    latitude: null,
+    longitude: null,
+  });
   const [notification, setNotification] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [polyline, setPolyline] = useState(null);
@@ -53,6 +72,10 @@ export const OrderStatus = props => {
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const [orderData, setOrderData] = useState({
     merchant_name: null,
+    merchant_location: {
+      latitude: 12.215482848373497,
+      longitude: 109.193544129014,
+    },
     order_id: 0,
     items: [],
     num_items: 0,
@@ -74,6 +97,7 @@ export const OrderStatus = props => {
   const mapRef = useRef();
   const scrollRef = useRef();
   const bottomSheetRef = useRef();
+  const shipperMarkerRef = useRef();
 
   const getGeolocation = () => {
     Geolocation.getCurrentPosition(
@@ -126,86 +150,50 @@ export const OrderStatus = props => {
   };
 
   useEffect(() => {
-    if (!assignedStatus && orderData.items.length > 0) {
-      state.socketServer.host.emit(
-        'customer-submit-order',
-        orderData.items,
-        {
-          name: state.first_name + ' ' + state.last_name,
-          phone: state.phone,
-          address: state.userLocation.address,
-          user_id: state.user_id,
-          location: {
-            latitude: state.userLocation.latitude,
-            longitude: state.userLocation.longitude,
-          },
-        },
-        {
-          name: state.userCart.provider_name,
-          address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
-          provider_id: state.userCart.provider_id,
-          location: {
-            latitude: 10.770426270078108,
-            longitude: 106.69433674255707,
-          },
-        },
-        order_code,
-        {
-          delivery_fee: parseFloat(orderData.delivery_fee.toFixed(2)),
-          total: parseFloat(totalCartPrice(orderData.items)),
-          paymentMethod: orderData.paymentMethod,
-          deliveryMode: orderData.deliveryMode,
-          deliveryMethod: orderData.deliveryMethod,
-          scheduleTime: scheduleTime, // orderData.scheduleTime,
-        },
-      );
-    } else {
-      console.log('no');
-    }
-  }, [assignedStatus, orderData]);
-
-  useEffect(() => {
     const initialMap = () => {
       state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
-      /* 
-        Check if the order has been registered to db or not
-        If it is not in the db, submit the order through the socket server
-      */
-
-      // if (orderData.items.length > 0) {
-      //   socket.emit(
-      //     'customer-submit-order',
-      //     orderData.items,
-      //     {
-      //       name: state.first_name + ' ' + state.last_name,
-      //       phone: state.phone,
-      //       address: state.userLocation.address,
-      //       location: {
-      //         latitude: state.userLocation.latitude,
-      //         longitude: state.userLocation.longitude,
-      //       },
-      //     },
-      //     {
-      //       name: state.userCart.provider_name,
-      //       address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
-      //       location: {
-      //         latitude: 10.770426270078108,
-      //         longitude: 106.69433674255707,
-      //       },
-      //     },
-      //     order_code,
-      //   );
-      // }
 
       state.socketServer.host.on('shipperLocation', data => {
         console.log('Shipper location:', data);
         setAssignedStatus(true);
-        setShipperLocation(prevState => ({
-          ...prevState,
+        setShipperInfo(prev => ({
+          ...prev,
+          name: data.shipperName,
+          estimatedTime: data.estimatedTime,
           latitude: data.latitude,
           longitude: data.longitude,
-          shipperName: data.shipperName,
         }));
+
+        if (shipperLocation === null) {
+          setShipperLocation(
+            new AnimatedRegion({
+              latitude: data.latitude,
+              longitude: data.longitude,
+              latitudeDelta: LATITUDE_DELTA,
+              longitudeDelta: LONGITUDE_DELTA,
+            }),
+          );
+        } else {
+          const newLocation = {
+            latitude: data.latitude,
+            longitude: data.longitude,
+            latitudeDelta: LATITUDE_DELTA,
+            longitudeDelta: LONGITUDE_DELTA,
+          };
+          if (Platform.OS === 'ios') {
+            shipperLocation.timing({...newLocation, duration: 500}).start();
+          } else {
+            shipperMarkerRef.current?.animateMarkerToCoordinate(newLocation, 500);
+          }
+        }
+
+        // setShipperLocation(prevState => ({
+        //   ...prevState,
+        //   latitude: data.latitude,
+        //   longitude: data.longitude,
+        //   shipperName: data.shipperName,
+        //   estimatedTime: data.estimatedTime !== null ? data.estimatedTime : prevState.estimatedTime,
+        // }));
         // shipperLocation.timing()
       });
       state.socketServer.host.on('shipper-has-arrived', message => {
@@ -294,6 +282,11 @@ export const OrderStatus = props => {
           setOrderData(prev => ({
             ...prev,
             merchant_name: data[0].response.merchant_name,
+            merchant_location: {
+              ...prev.merchant_location,
+              latitude: parseFloat(data[0].response.latitude),
+              longitude: parseFloat(data[0].response.longitude),
+            },
             items: data[0].response.items,
             num_items: data[0].response.num_items,
             delivery_fee: data[1].response.delivery_fee,
@@ -387,10 +380,10 @@ export const OrderStatus = props => {
   }, []);
 
   useEffect(() => {
-    if (shipperLocation.latitude && shipperLocation.longitude) {
+    if (shipperInfo.latitude && shipperInfo.longitude) {
       axios
         .get(
-          `https://api.mapbox.com/directions/v5/mapbox/driving/${shipperLocation.longitude},${shipperLocation.latitude};${location.longitude},${location.latitude}?geometries=geojson&access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+          `https://api.mapbox.com/directions/v5/mapbox/driving/${shipperInfo.longitude},${shipperInfo.latitude};${location.longitude},${location.latitude}?geometries=geojson&access_token=${MAPBOXGS_ACCESS_TOKEN}`,
         )
         .then(res => {
           let array = [];
@@ -404,14 +397,14 @@ export const OrderStatus = props => {
         })
         .catch(err => console.error(err));
     }
-  }, [shipperLocation]);
+  }, [shipperInfo]);
 
   useEffect(() => {
     if (completedStatus) {
       dispatch(OrderCompleted(order_code));
       setTimeout(() => {
         props.navigation.navigate('RatingShipper', {
-          shipperName: shipperLocation.shipperName,
+          shipperName: shipperInfo.name,
           order_id: orderData.order_id,
         });
       }, 3000);
@@ -446,10 +439,10 @@ export const OrderStatus = props => {
             longitudeDelta: 0.0121,
           }}
           region={
-            shipperLocation.shipperName
+            shipperInfo.latitude
               ? {
-                  latitude: shipperLocation.latitude,
-                  longitude: shipperLocation.longitude,
+                  latitude: shipperInfo.latitude,
+                  longitude: shipperInfo.longitude,
                   latitudeDelta: 0.015,
                   longitudeDelta: 0.0121,
                 }
@@ -460,24 +453,38 @@ export const OrderStatus = props => {
                   longitudeDelta: 0.0121,
                 }
           }
-          minZoomLevel={13}>
+          minZoomLevel={13}
+          // onMapLoaded={() => {
+          //   mapRef.current?.fitToCoordinates(
+          //     [
+          //       {
+          //         latitude: location.latitude,
+          //         longitude: location.longitude,
+          //       },
+          //       {
+          //         latitude: orderData.merchant_location.latitude,
+          //         longitude: orderData.merchant_location.longitude,
+          //       },
+          //     ],
+          //     {
+          //       edgePadding: {top: 40, right: 40, bottom: 40, left: 40},
+          //       animated: true,
+          //     },
+          //   );
+          // }}
+        >
           <Marker
             coordinate={{
-              latitude: 12.215482848373497,
-              longitude: 109.193544129014,
+              latitude: orderData.merchant_location.latitude,
+              longitude: orderData.merchant_location.longitude,
             }}>
-            <Image
-              source={require('../assets/image/providerMarker.png')}
-              style={{width: 30, height: 30}}
-            />
+            <ProviderMarker />
           </Marker>
-          {shipperLocation.latitude ? (
+          {shipperLocation ? (
             <Marker.Animated
-              coordinate={{
-                latitude: shipperLocation.latitude,
-                longitude: shipperLocation.longitude,
-              }}
-              title={shipperLocation.shipperName}>
+              coordinate={shipperLocation}
+              title={shipperInfo.name}
+              ref={shipperMarkerRef}>
               <ShipperMarker />
             </Marker.Animated>
           ) : null}
@@ -516,11 +523,17 @@ export const OrderStatus = props => {
               alignSelf: 'center',
             }}>
             <View style={styles.remainingTime}>
-              <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>14 mins</Text>
+              {pickedStatus ? (
+                <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>
+                  {shipperInfo.estimatedTime} mins
+                </Text>
+              ) : (
+                <Text style={{fontSize: 17, fontWeight: '500', textAlign: 'center'}}>14 mins</Text>
+              )}
             </View>
           </View>
         )}>
-        <BottomSheetScrollView>
+        <BottomSheetScrollView style={{height: '100%'}}>
           <View style={[styles.shipperInfo]}>
             <TouchableOpacity
               style={{
@@ -547,7 +560,7 @@ export const OrderStatus = props => {
                   />
                   <View>
                     <Text style={{fontSize: 17, fontWeight: '400', marginBottom: 10}}>
-                      Hoang Nam
+                      {shipperInfo.name ?? 'Hoang Nam'}
                     </Text>
                     <Text style={{fontSize: 17, fontWeight: '400'}}>12123123</Text>
                   </View>
@@ -648,7 +661,6 @@ export const OrderStatus = props => {
                   <View
                     style={{
                       width: '100%',
-                      paddingHorizontal: 20,
                       paddingVertical: 10,
                       borderColor: 'rgb(230,230,230)',
                       borderTopWidth: 1,
@@ -678,7 +690,6 @@ export const OrderStatus = props => {
                   <View
                     style={{
                       width: '100%',
-                      paddingHorizontal: 20,
                       paddingVertical: 10,
                       borderColor: 'rgb(230,230,230)',
                       borderTopWidth: 1,
@@ -697,7 +708,6 @@ export const OrderStatus = props => {
                   <View
                     style={{
                       width: '100%',
-                      paddingHorizontal: 20,
                       paddingVertical: 10,
                       borderColor: 'rgb(230,230,230)',
                       borderTopWidth: 1,

@@ -20,6 +20,10 @@ export const PickupTracking = ({navigation, route}) => {
   const [polyline, setPolyline] = useState([]);
   const [orderData, setOrderData] = useState({
     merchant_name: null,
+    merchant_location: {
+      latitude: 10.762496634175468,
+      longitude: 106.68274002633785,
+    },
     order_id: 0,
     items: [],
     num_items: 0,
@@ -53,8 +57,8 @@ export const PickupTracking = ({navigation, route}) => {
           longitude: state.userLocation.longitude,
         },
         {
-          latitude: 10.762496634175468,
-          longitude: 106.68274002633785,
+          latitude: orderData.merchant_location.latitude,
+          longitude: orderData.merchant_location.longitude,
         },
       ],
       {
@@ -65,9 +69,7 @@ export const PickupTracking = ({navigation, route}) => {
 
     axios
       .get(
-        `https://api.mapbox.com/directions/v5/mapbox/driving/${state.userLocation.longitude},${
-          state.userLocation.latitude
-        };${106.68274002633785},${10.762496634175468}?geometries=geojson&access_token=${MAPBOXGS_ACCESS_TOKEN}`,
+        `https://api.mapbox.com/directions/v5/mapbox/driving/${state.userLocation.longitude},${state.userLocation.latitude};${orderData.merchant_location.longitude},${orderData.merchant_location.latitude}?geometries=geojson&access_token=${MAPBOXGS_ACCESS_TOKEN}`,
       )
       .then(res => {
         let array = [];
@@ -132,78 +134,6 @@ export const PickupTracking = ({navigation, route}) => {
   };
 
   useEffect(() => {
-    const SubmitPickupOrder = async () => {
-      const customerData = {
-        name: state.first_name + ' ' + state.last_name,
-        phone: state.phone,
-        address: state.userLocation.address,
-        user_id: state.user_id,
-        location: {
-          latitude: state.userLocation.latitude,
-          longitude: state.userLocation.longitude,
-        },
-      };
-      const providerData = {
-        name: state.userCart.provider_name,
-        address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
-        provider_id: state.userCart.provider_id,
-        location: {
-          latitude: 10.770426270078108,
-          longitude: 106.69433674255707,
-        },
-      };
-      const pricing = {
-        delivery_fee: 0,
-        total: parseFloat(totalCartPrice(orderData.items)),
-        paymentMethod: orderData.paymentMethod,
-        deliveryMethod: orderData.deliveryMethod,
-        scheduleTime: orderData.scheduleTime,
-        deliveryMode: orderData.deliveryMode,
-      };
-
-      let providerNotificationForm = {
-        user_id: null,
-        provider_id: state.userCart.provider_id,
-        role: 2,
-        subject: state.userCart.provider_name,
-        content: 'A new pickup order is coming',
-        order_code: order_code,
-        read_status: false,
-        type: 2,
-      };
-
-      // api add notification
-      try {
-        const res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-notification`,
-          providerNotificationForm,
-        );
-
-        if (res.data.status) {
-          providerNotificationForm.data = res.data.notification_id;
-          pricing.providerNotificationForm = providerNotificationForm; // attach providerNotificationForm to pricing
-          console.log('notification done');
-        }
-      } catch (error) {
-        console.error('Cannot add provider notification', error);
-      }
-
-      state.socketServer.host.emit(
-        'customer-submit-order',
-        orderData.items,
-        customerData,
-        providerData,
-        order_code,
-        pricing,
-      );
-    };
-    if (orderStatus === 1 && orderData.items.length > 0) {
-      console.log('Submit order pickup');
-      SubmitPickupOrder();
-    }
-  }, [orderData, orderStatus]);
-
-  useEffect(() => {
     const LoadScreen = async () => {
       ListenSocketEvent();
 
@@ -230,6 +160,11 @@ export const PickupTracking = ({navigation, route}) => {
           setOrderData(prev => ({
             ...prev,
             merchant_name: data[0].response.merchant_name,
+            merchant_location: {
+              ...prev.merchant_location,
+              latitude: parseFloat(data[0].response.latitude),
+              longitude: parseFloat(data[0].response.longitude),
+            },
             items: data[0].response.items,
             num_items: data[0].response.num_items,
             delivery_fee: data[1].response.delivery_fee,
@@ -293,8 +228,8 @@ export const PickupTracking = ({navigation, route}) => {
 
         <Marker
           coordinate={{
-            latitude: 10.762496634175468,
-            longitude: 106.68274002633785,
+            latitude: orderData.merchant_location.latitude,
+            longitude: orderData.merchant_location.longitude,
           }}>
           <ProviderMarker />
         </Marker>

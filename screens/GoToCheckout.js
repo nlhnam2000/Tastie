@@ -68,6 +68,7 @@ export const GoToCheckout = props => {
     longitude: state.userLocation.longitude,
   });
   const [webviewURL, setWebviewURL] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
@@ -99,8 +100,80 @@ export const GoToCheckout = props => {
     }
   };
 
+  const SubmitOrderViaSocket = orderCode => {
+    const customerData = {
+      name: state.first_name + ' ' + state.last_name,
+      phone: state.phone,
+      address: state.userLocation.address,
+      user_id: state.user_id,
+      location: {
+        latitude: state.userLocation.latitude,
+        longitude: state.userLocation.longitude,
+      },
+    };
+    const providerData = {
+      name: state.userCart.provider_name,
+      address: '135B Tran Hung Dao, Cau Ong Lanh, District 1',
+      provider_id: state.userCart.provider_id,
+      location: state.userCart.location,
+    };
+    const pricing = {
+      delivery_fee: deliveryfee,
+      total: parseFloat(totalCartPrice(state.userCart.cart)),
+      paymentMethod: selectedPayment,
+      deliveryMode: selectedTab === 'Delivery' ? 1 : 2,
+      deliveryMethod: selectedMethod,
+      scheduleTime: scheduleTime, // orderData.scheduleTime,
+    };
+
+    if (selectedTab === 'Delivery') {
+      state.socketServer.host.emit(
+        'customer-submit-order',
+        state.userCart.cart,
+        customerData,
+        providerData,
+        orderCode,
+        pricing,
+      );
+    } else {
+      let providerNotificationForm = {
+        user_id: null,
+        provider_id: state.userCart.provider_id,
+        role: 2,
+        subject: state.userCart.provider_name,
+        content: 'A new pickup order is coming',
+        order_code: orderCode,
+        read_status: false,
+        type: 2,
+      };
+
+      // api add notification
+      axios
+        .post(
+          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-notification`,
+          providerNotificationForm,
+        )
+        .then(res => {
+          providerNotificationForm.data = res.data.notification_id;
+          pricing.providerNotificationForm = providerNotificationForm; // attach providerNotificationForm to pricing
+          console.log('notification done');
+
+          state.socketServer.host.emit(
+            'customer-submit-order',
+            state.userCart.cart,
+            customerData,
+            providerData,
+            orderCode,
+            pricing,
+          );
+        })
+        .catch(error => console.error('Cannot add provider notification', error));
+    }
+  };
+
   const PlaceOrder = async () => {
     try {
+      setIsProcessing(true);
       let res = await axios.post(
         `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-delivery`,
         orderForm,
@@ -137,6 +210,7 @@ export const GoToCheckout = props => {
                 if (submitOrder.data.status) {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
+                  SubmitOrderViaSocket(orderCode);
                   setTimeout(() => {
                     props.navigation.navigate('OrderStatus', {
                       order_code: orderCode,
@@ -180,6 +254,7 @@ export const GoToCheckout = props => {
                 if (submitOrder.data.status) {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
+                  SubmitOrderViaSocket(orderCode);
                   setTimeout(() => {
                     props.navigation.navigate('OrderStatus', {
                       order_code: orderCode,
@@ -208,6 +283,7 @@ export const GoToCheckout = props => {
             if (submitOrder.data.status) {
               // dispatch(InitSocket());
               dispatch(SubmitOrder(orderCode));
+              SubmitOrderViaSocket(orderCode);
               setTimeout(() => {
                 props.navigation.navigate('OrderStatus', {
                   order_code: orderCode,
@@ -229,6 +305,7 @@ export const GoToCheckout = props => {
 
   const PlaceOrderPickup = async () => {
     try {
+      setIsProcessing(true);
       let res = await axios.post(
         `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-pickup`,
         orderForm,
@@ -265,6 +342,7 @@ export const GoToCheckout = props => {
                 if (submitOrder.data.status) {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
+                  SubmitOrderViaSocket(orderCode);
                   setTimeout(() => {
                     props.navigation.navigate('PickupTracking', {
                       order_code: orderCode,
@@ -307,6 +385,7 @@ export const GoToCheckout = props => {
                 if (submitOrder.data.status) {
                   // dispatch(InitSocket());
                   dispatch(SubmitOrder(orderCode));
+                  SubmitOrderViaSocket(orderCode);
                   setTimeout(() => {
                     props.navigation.navigate('PickupTracking', {
                       order_code: orderCode,
@@ -334,6 +413,7 @@ export const GoToCheckout = props => {
             if (submitOrder.data.status) {
               // dispatch(InitSocket());
               dispatch(SubmitOrder(orderCode));
+              SubmitOrderViaSocket(orderCode);
               setTimeout(() => {
                 props.navigation.navigate('PickupTracking', {
                   order_code: orderCode,
@@ -879,6 +959,15 @@ export const GoToCheckout = props => {
             }}
           />
         </BottomSheet>
+      )}
+      {isProcessing && (
+        <View
+          style={[
+            styles.container,
+            {backgroundColor: 'transparent', position: 'absolute', top: '50%'},
+          ]}>
+          <ActivityIndicator size={'large'} color={colors.red} />
+        </View>
       )}
     </SafeAreaView>
   );

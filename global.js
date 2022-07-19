@@ -134,3 +134,7 @@ export const countTotalPrice = (items, delivery_fee, discount, maxDiscountValue)
 
   // return ((totalPrice + delivery_fee) * (1 - discount)).toFixed(2);
 };
+
+export const discount = (price, percentage) => {
+  return price - price * percentage;
+};
