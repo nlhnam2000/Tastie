@@ -125,6 +125,7 @@ export const signout = () => async dispatch => {
   try {
     await AsyncStorage.removeItem('user_token');
     await AsyncStorage.removeItem('@userLocation');
+    await AsyncStorage.removeItem('@userAvatar');
     dispatch({
       type: SIGN_OUT,
       payload: {

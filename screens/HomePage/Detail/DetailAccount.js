@@ -11,6 +11,7 @@ import {
   Modal,
   ActivityIndicator,
   Platform,
+  Image,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -24,10 +25,17 @@ import {
 } from '../../../components/Error/AlertDialog';
 import {Header} from '../../../components/Layout/Header/Header';
 import {IP_ADDRESS, getAccessToken} from '../../../global';
-import {clearAlertMessage, UpdateProfile, retrieveToken} from '../../../store/action/auth';
+import {
+  clearAlertMessage,
+  UpdateProfile,
+  retrieveToken,
+  DisplayAlertMessage,
+} from '../../../store/action/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {ScrollView} from 'react-native-gesture-handler';
+import {launchImageLibrary} from 'react-native-image-picker';
+
 const {width, height} = Dimensions.get('window');
 
 const ACCOUNT_FORM_HEIGHT = height - 250;
@@ -48,6 +56,8 @@ export const DetailAccount = props => {
     isChanged: false,
   });
   const [showUpdateButton, setShowUpdateButton] = useState(false);
+  const [avatar, setAvatar] = useState(null);
+  const [assetAvatar, setAssetAvatar] = useState(null);
 
   const submitForm = () => {
     const form = {
@@ -69,12 +79,86 @@ export const DetailAccount = props => {
   const lastnameInputRef = useRef();
   const emailInputRef = useRef();
 
+  const handleSetAvatar = () => {
+    launchImageLibrary({}, response => {
+      setAssetAvatar(response.assets[0].uri);
+      console.log(response.assets);
+    });
+  };
+
+  const handleUploadAvatar = async () => {
+    const data = new FormData();
+    data.append('user_id', state.user_id);
+    data.append('image_name', `${new Date()}_avatar`);
+    data.append('image', {
+      uri: assetAvatar,
+      name: `${new Date()}_avatar`,
+      type: 'image/png',
+    });
+
+    try {
+      const res = await axios.post(
+        `http://${'localhost'}:3777/upload/image-user-cloudinary`,
+        data,
+        {
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+
+      if (res.data.status) {
+        // success
+        setAvatar(res.data.url);
+        setAssetAvatar(null);
+        // await AsyncStorage.setItem('@userAvatar', assetAvatar);
+        alert('Upload image successfully !');
+      }
+    } catch (error) {
+      console.error('Cannot upload avatar', error);
+    }
+  };
+
+  const RetrieveAvatar = async () => {
+    try {
+      const res = await axios.get(`http://${IP_ADDRESS}:3777/upload/image-user/${state.user_id}`);
+      if (res.data.status) {
+        setAvatar(`data:image/png;base64,${res.data.response.at(-1).url_str}`);
+
+        // cache avatar using AsyncStorage
+        // await AsyncStorage.setItem(
+        //   '@userAvatar',
+        //   `data:image/png;base64,${res.data.response.at(-1).url_str}`,
+        // );
+      }
+    } catch (error) {
+      console.error('cannot get user image', error);
+    }
+  };
+
+  const RetrieveAvatarCloudinary = async () => {
+    try {
+      const res = await axios.get(
+        `http://${'localhost'}:3777/upload/image-user-cloudinary/${state.user_id}`,
+      );
+      if (res.data.url) {
+        setAvatar(res.data.url);
+      }
+    } catch (error) {
+      console.log('cannot get user image', error);
+    }
+  };
+
   useEffect(() => {
     setTimeout(async () => {
       let refreshToken = await AsyncStorage.getItem('user_token');
       let accessToken = await getAccessToken(refreshToken);
       dispatch(retrieveToken(accessToken));
-      console.log(state);
+
+      await RetrieveAvatarCloudinary();
+
+      // console.log(state);
       setLoading(false);
     }, 200);
     // setLoading(false);
@@ -108,7 +192,21 @@ export const DetailAccount = props => {
                 borderRadius: 40,
                 justifyContent: 'center',
               }}>
-              <MaterialIcon name="account" size={45} color="black" style={{alignSelf: 'center'}} />
+              <TouchableOpacity onPress={() => handleSetAvatar()}>
+                {avatar ? (
+                  <Image
+                    source={{uri: assetAvatar ? assetAvatar : avatar}}
+                    style={{width: 80, height: 80, overflow: 'hidden', borderRadius: 40}}
+                  />
+                ) : (
+                  <MaterialIcon
+                    name="account"
+                    size={45}
+                    color="black"
+                    style={{alignSelf: 'center'}}
+                  />
+                )}
+              </TouchableOpacity>
             </View>
             <Text
               style={{
@@ -116,6 +214,7 @@ export const DetailAccount = props => {
                 fontWeight: '600',
                 marginTop: 10,
               }}>{`${state.first_name} ${state.last_name}`}</Text>
+            {assetAvatar ? <Button title="Upload" onPress={() => handleUploadAvatar()} /> : null}
           </View>
           <View style={styles.formWrapper}>
             <View>

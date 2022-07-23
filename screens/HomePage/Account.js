@@ -10,8 +10,9 @@ import {
   TouchableOpacity,
   TextInput,
   Dimensions,
-  ActivityIndicator,
+  Image,
 } from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
 import {useDispatch, useSelector} from 'react-redux';
 import {signout, retrieveToken, TokenNotFound} from '../../store/action/auth';
@@ -21,6 +22,8 @@ import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons';
 import {IP_ADDRESS, getAccessToken} from '../../global';
+import axios from 'axios';
+import colors from '../../colors/colors';
 
 const {width, height} = Dimensions.get('window');
 
@@ -28,7 +31,7 @@ export const Account = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
   const [loading, setLoading] = useState(true);
-
+  const [avatar, setAvatar] = useState(null);
 
   useEffect(() => {
     // setTimeout(async () => {
@@ -43,14 +46,59 @@ export const Account = props => {
     //   // console.log(state.userCart.cart[0].additionalOptions);
     //   setLoading(false);
     // }, 200);
-    setLoading(false);
+
+    const getUserAvatar = async () => {
+      let cachedAavatar = await AsyncStorage.getItem('@userAvatar');
+      if (cachedAavatar) {
+        console.log('Cached available');
+        setAvatar(cachedAavatar);
+        setLoading(false);
+      } else {
+        console.log('There is no cached image');
+        try {
+          const res = await axios.get(
+            `http://${IP_ADDRESS}:3777/upload/image-user/${state.user_id}`,
+          );
+          if (res.data.status && res.data.response.length > 0) {
+            setAvatar(`data:image/png;base64,${res.data.response.at(-1).url_str}`);
+
+            // await AsyncStorage.setItem(
+            //   '@userAvatar',
+            //   `data:image/png;base64,${res.data.response.at(-1).url_str}`,
+            // );
+          }
+        } catch (error) {
+          console.error('cannot get user image', error);
+        } finally {
+          setLoading(false);
+        }
+      }
+    };
+
+    const getUserAvatarCloudinary = async () => {
+      try {
+        const res = await axios.get(
+          `http://${'localhost'}:3777/upload/image-user-cloudinary/${state.user_id}`,
+        );
+        if (res.data.url) {
+          setAvatar(res.data.url);
+        }
+      } catch (error) {
+        console.log('cannot get user image', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    getUserAvatarCloudinary();
+
+    // setLoading(false);
   }, []);
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <View style={styles.content}>
-          <ActivityIndicator size={'large'} color={'red'} />
+        <View style={styles.container}>
+          <ActivityIndicator size={'small'} color={colors.boldred} />
         </View>
         <NavigationBar active={props.tabname} {...props} />
       </View>
@@ -68,12 +116,20 @@ export const Account = props => {
             source={require('../../assets/image/anonymous.png')}
             style={styles.avatar}
           /> */}
-          <MaterialCommunity
-            name="account-circle"
-            size={30}
-            color={'gray'}
-            style={{marginRight: 15}}
-          />
+          {avatar ? (
+            <Image
+              source={{uri: avatar}}
+              style={{width: 30, height: 30, borderRadius: 40, marginRight: 15}}
+            />
+          ) : (
+            <MaterialCommunity
+              name="account-circle"
+              size={30}
+              color={'gray'}
+              style={{marginRight: 15}}
+            />
+          )}
+
           <Text style={{fontWeight: '500', fontSize: 17}}>
             {state.first_name} {state.last_name}
           </Text>

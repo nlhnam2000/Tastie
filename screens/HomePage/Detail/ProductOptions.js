@@ -34,7 +34,7 @@ export const ProductOptions = props => {
   const [productOptions, setProductOptions] = useState([]);
   const [note, setNote] = useState('');
   const [quantity, setQuantity] = useState(1);
-  const {data, provider_id, provider_name, location} = props.route.params;
+  const {data, provider_id, provider_name, location, address} = props.route.params;
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
@@ -109,6 +109,7 @@ export const ProductOptions = props => {
         totalProductPrice: totalPrice,
       },
       location: location,
+      address: address,
     }));
   }, [productOptions, quantity, totalPrice, note]);
 

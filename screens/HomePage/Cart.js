@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,11 @@ import {
   Button,
   ScrollView,
 } from 'react-native';
+import BottomSheet, {
+  BottomSheetModalProvider,
+  BottomSheetModal,
+  BottomSheetBackdrop,
+} from '@gorhom/bottom-sheet';
 import {useFocusEffect, useIsFocused} from '@react-navigation/native';
 import {useSelector, useDispatch} from 'react-redux';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
@@ -28,7 +33,7 @@ import {
   ClearCart,
 } from '../../store/action/cart';
 import {DuoAlertDialog} from '../../components/Error/AlertDialog';
-import io from 'socket.io-client';
+import {RecommendedProducts} from '../../components/Modal/RecommendedProducts';
 
 const {width} = Dimensions.get('screen');
 
@@ -39,6 +44,8 @@ export const Cart = props => {
   const [openModal, setOpenModal] = useState(false);
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const isFocus = useIsFocused();
+  const bottomSheetRef = useRef();
+  const snapPoints = useMemo(() => ['70%', '90%'], []);
 
   useEffect(() => {
     // if (state.userCart.provider_name !== null) {
@@ -60,7 +67,7 @@ export const Cart = props => {
     //   additionalOption: [],
     //   additionalOptions: [],
     // }));
-    console.log(state.userCart.location);
+    bottomSheetRef.current?.present();
     setLoading(false);
   }, []);
 
@@ -134,15 +141,31 @@ export const Cart = props => {
               {state.userCart.date}
             </Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => dispatch(ClearCart(state.user_id))}
+          <View
             style={{
-              paddingHorizontal: 20,
-              borderRadius: 10,
-              alignSelf: 'flex-end',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              width: '100%',
+              paddingHorizontal: 0,
             }}>
-            <Text style={{fontWeight: '500', color: colors.red}}>Clear all</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => bottomSheetRef.current?.present()}
+              style={{
+                paddingHorizontal: 20,
+                borderRadius: 10,
+              }}>
+              <Text style={{fontWeight: '500', color: 'black'}}>Show recommended products</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => dispatch(ClearCart(state.user_id))}
+              style={{
+                paddingHorizontal: 20,
+                borderRadius: 10,
+              }}>
+              <Text style={{fontWeight: '500', color: colors.red}}>Clear all</Text>
+            </TouchableOpacity>
+          </View>
           <View style={styles.cartWrapper}>
             {state.userCart.cart.map((item, index) => (
               <View
@@ -323,7 +346,19 @@ export const Cart = props => {
           </Text>
         </TouchableOpacity> */}
       </SafeAreaView>
+
       <NavigationBar {...props} active={props.tabname} />
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={bottomSheetRef}
+          index={0}
+          snapPoints={snapPoints}
+          backdropComponent={props => (
+            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+          )}>
+          <RecommendedProducts user_id={state.user_id} />
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
     </View>
   );
 };

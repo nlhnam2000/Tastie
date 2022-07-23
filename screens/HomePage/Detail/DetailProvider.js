@@ -441,6 +441,7 @@ export const DetailProvider = props => {
                             latitude: parseFloat(info.data.latitude),
                             longitude: parseFloat(info.data.longitude),
                           },
+                          address: `${info.data.address} ${info.data.road}`,
                         })
                       }
                       style={styles.foodWrapper}>

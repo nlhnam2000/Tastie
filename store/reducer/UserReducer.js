@@ -64,7 +64,7 @@ const initialState = {
   alertMessage: null,
   currentTab: 'Home',
   socketServer: {
-    host: io(`http://${IP_ADDRESS}:3015`),
+    host: io(`http://${'localhost'}:3015`),
     rooms: [],
   },
   toggleNotification: false,
@@ -313,6 +313,7 @@ export const UserReducer = (state = initialState, action) => {
             longitude: payload.cartForm.location.longitude,
           },
           // status: null,
+          address: payload.cartForm.address,
         },
       };
     }

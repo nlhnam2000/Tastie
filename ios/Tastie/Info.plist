@@ -46,6 +46,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>test-payment.momo.vn</string>

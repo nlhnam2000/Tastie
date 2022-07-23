@@ -136,6 +136,19 @@ export const NavigationBar = props => {
           onDisplayNotification(message);
         }
       });
+
+      state.socketServer.host.on('order-timeout', message => {
+        if (Platform.OS === 'android') {
+          PushNotification.cancelAllLocalNotifications();
+          PushNotification.localNotification({
+            channelId: 'homescreen-channel',
+            title: 'The shipper has arrived at your place',
+            message: message,
+          });
+        } else {
+          onDisplayNotification(message);
+        }
+      });
     } else {
       dispatch(InitSocket());
     }

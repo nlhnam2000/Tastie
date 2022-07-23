@@ -32,9 +32,9 @@ import Geolocation from 'react-native-geolocation-service';
 import {SimpleAlertDialog, SingleDialog} from '../components/Error/AlertDialog';
 import {useSelector, useDispatch} from 'react-redux';
 import axios from 'axios';
-import {OrderCompleted} from '../store/action/cart';
 import {OrderProgressBar} from '../components/Progress/OrderProgressBar';
 import {DisconnectSocket} from '../store/action/auth';
+import {OrderCompleted} from '../store/action/cart';
 import BottomSheet, {BottomSheetScrollView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {ShipperMarker, ProviderMarker} from '../components/Marker/Marker';
 
@@ -138,7 +138,7 @@ export const OrderStatus = props => {
         // alert('Your order has been canceled !');
         setNotification('Your order has been canceled !');
         setOpenModal(true);
-        dispatch(DisconnectSocket());
+        dispatch(OrderCompleted(order_code));
 
         setTimeout(() => {
           props.navigation.navigate('Home Page');
@@ -243,6 +243,10 @@ export const OrderStatus = props => {
           message: 'We have found the shipper for you. Please wait for a moment',
         }));
       });
+      state.socketServer.host.on('order-timeout', message => {
+        console.log(message);
+        handleCancelOrder();
+      });
       state.socketServer.host.on('shipper-on-the-way', message => {
         // setNotification(message);
         // setOpenModal(true);
@@ -254,6 +258,7 @@ export const OrderStatus = props => {
           message: 'The shipper is on the way to your place. Your order will come to you soon',
         }));
       });
+
       // socket.on('shipper-almost-arrived', message => {
       //   setNotification(message);
       //   setOpenModal(true);
