@@ -168,6 +168,7 @@ export const retrieveToken = token => async dispatch => {
       accessToken: token,
     });
     if (res.data.status === true) {
+      // console.log(res.data.profile);
       await AsyncStorage.setItem('user_token', res.data.profile.user_token);
       dispatch({
         type: RETRIEVE_TOKEN,
@@ -178,6 +179,7 @@ export const retrieveToken = token => async dispatch => {
           email: res.data.profile.email,
           phone: res.data.profile.phone,
           role: res.data.profile.role,
+          avatar: res.data.profile.avatar,
           gender: res.data.profile.gender,
           birthday: res.data.profile.birthday,
           registered_at: res.data.profile.registered_at,

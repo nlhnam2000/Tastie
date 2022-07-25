@@ -16,7 +16,6 @@ import {
   ImageBackground,
   Animated,
   Platform,
-  ActivityIndicator,
   Modal,
   Switch,
   TouchableWithoutFeedback,
@@ -28,6 +27,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {DeliveryTab} from '../../../components/Home/DeliveryTab';
 import {PickupTab} from '../../../components/Home/PickupTab';
 import PushNotification from 'react-native-push-notification';
+import {ActivityIndicator} from 'react-native-paper';
 
 const {width} = Dimensions.get('window');
 
@@ -54,7 +54,7 @@ export const HomeContent = props => {
     return (
       <View style={styles.content}>
         <StatusBar barStyle="dark-content" />
-        <ActivityIndicator size={'large'} color={colors.red} />
+        <ActivityIndicator size={'large'} color={colors.boldred} />
       </View>
     );
   } else {

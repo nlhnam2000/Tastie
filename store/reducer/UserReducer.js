@@ -52,6 +52,7 @@ const initialState = {
   gender: null,
   birthday: null,
   gender: null,
+  avatar: null,
   registered_at: null,
   last_login_at: null,
   delete_at: null,
@@ -64,7 +65,7 @@ const initialState = {
   alertMessage: null,
   currentTab: 'Home',
   socketServer: {
-    host: io(`http://${'localhost'}:3015`),
+    host: io(`http://${IP_ADDRESS}:3015`),
     rooms: [],
   },
   toggleNotification: false,

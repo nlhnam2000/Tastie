@@ -12,8 +12,8 @@ import {
   ImageBackground,
   Animated,
   Platform,
-  ActivityIndicator,
 } from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../colors/colors';
@@ -245,7 +245,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
         <StatusBar barStyle="dark-content" />
-        <ActivityIndicator size={'large'} color={colors.red} />
+        <ActivityIndicator size={'small'} color={colors.red} />
       </View>
     );
   }

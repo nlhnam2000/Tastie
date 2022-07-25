@@ -153,7 +153,7 @@ export const OrderStatus = props => {
     const initialMap = () => {
       state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
 
-      state.socketServer.host.on('shipperLocation', data => {
+      state.socketServer.host.off('shipperLocation').on('shipperLocation', data => {
         console.log('Shipper location:', data);
         setAssignedStatus(true);
         setShipperInfo(prev => ({
@@ -196,7 +196,7 @@ export const OrderStatus = props => {
         // }));
         // shipperLocation.timing()
       });
-      state.socketServer.host.on('shipper-has-arrived', message => {
+      state.socketServer.host.off('shipper-has-arrived').on('shipper-has-arrived', message => {
         setNotification('The shipper has arrived to your place');
         setOpenModal(true);
         setCompletedStatus(true);
@@ -213,29 +213,33 @@ export const OrderStatus = props => {
         // setOpenModal(true);
         setSubmittedStatus(true);
       });
-      state.socketServer.host.on('shipper-arrived-provider', message => {
-        // setNotification(message);
-        // setOpenModal(true);
-        // setPrepairingStatus(true);
-        setConfirmedStatus(true);
-        setTrackingMessage(prev => ({
-          ...prev,
-          title: 'Order confirmed',
-          message: 'The restaurant had confirmed your order and is prepairing your order. ',
-        }));
-      });
+      state.socketServer.host
+        .off('shipper-arrived-provider')
+        .on('shipper-arrived-provider', message => {
+          // setNotification(message);
+          // setOpenModal(true);
+          // setPrepairingStatus(true);
+          setConfirmedStatus(true);
+          setTrackingMessage(prev => ({
+            ...prev,
+            title: 'Order confirmed',
+            message: 'The restaurant had confirmed your order and is prepairing your order. ',
+          }));
+        });
 
       // provider confirmed order
-      state.socketServer.host.on('order-confirmed-from-provider', () => {
-        setConfirmedStatus(true);
-        setTrackingMessage(prev => ({
-          ...prev,
-          title: 'Order confirmed',
-          message: 'The restaurant had confirmed your order and is prepairing your order. ',
-        }));
-      });
+      state.socketServer.host
+        .off('order-confirmed-from-provider')
+        .on('order-confirmed-from-provider', () => {
+          setConfirmedStatus(true);
+          setTrackingMessage(prev => ({
+            ...prev,
+            title: 'Order confirmed',
+            message: 'The restaurant had confirmed your order and is prepairing your order. ',
+          }));
+        });
 
-      state.socketServer.host.on('order-assigned', () => {
+      state.socketServer.host.off('order-assigned').on('order-assigned', () => {
         setAssignedStatus(true);
         setTrackingMessage(prev => ({
           ...prev,
@@ -243,11 +247,11 @@ export const OrderStatus = props => {
           message: 'We have found the shipper for you. Please wait for a moment',
         }));
       });
-      state.socketServer.host.on('order-timeout', message => {
+      state.socketServer.host.off('order-timeout').on('order-timeout', message => {
         console.log(message);
         handleCancelOrder();
       });
-      state.socketServer.host.on('shipper-on-the-way', message => {
+      state.socketServer.host.off('shipper-on-the-way').on('shipper-on-the-way', message => {
         // setNotification(message);
         // setOpenModal(true);
         // setInDeliveryStatus(true);

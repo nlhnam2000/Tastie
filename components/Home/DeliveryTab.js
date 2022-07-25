@@ -16,7 +16,6 @@ import {
   ImageBackground,
   Animated,
   Platform,
-  ActivityIndicator,
   Modal,
   Switch,
   TouchableWithoutFeedback,
@@ -39,6 +38,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import MapView, {PROVIDER_GOOGLE, Marker} from 'react-native-maps';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
+import {ActivityIndicator} from 'react-native-paper';
 
 const {width, height} = Dimensions.get('window');
 

@@ -9,10 +9,10 @@ import {
   Dimensions,
   TextInput,
   Modal,
-  ActivityIndicator,
   Platform,
   Image,
 } from 'react-native';
+import {ActivityIndicator} from 'react-native-paper';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useSelector, useDispatch} from 'react-redux';
@@ -33,7 +33,6 @@ import {
 } from '../../../store/action/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
-import {ScrollView} from 'react-native-gesture-handler';
 import {launchImageLibrary} from 'react-native-image-picker';
 
 const {width, height} = Dimensions.get('window');
@@ -56,8 +55,9 @@ export const DetailAccount = props => {
     isChanged: false,
   });
   const [showUpdateButton, setShowUpdateButton] = useState(false);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(state.avatar);
   const [assetAvatar, setAssetAvatar] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const submitForm = () => {
     const form = {
@@ -81,72 +81,43 @@ export const DetailAccount = props => {
 
   const handleSetAvatar = () => {
     launchImageLibrary({}, response => {
-      setAssetAvatar(response.assets[0].uri);
-      console.log(response.assets);
+      if (!response.didCancel) {
+        setAssetAvatar(response.assets[0].uri);
+        console.log(response.assets);
+      }
     });
   };
 
   const handleUploadAvatar = async () => {
     const data = new FormData();
     data.append('user_id', state.user_id);
-    data.append('image_name', `${new Date()}_avatar`);
-    data.append('image', {
+    // data.append('image_name', `${new Date()}_avatar`);
+    data.append('upload', {
       uri: assetAvatar,
       name: `${new Date()}_avatar`,
       type: 'image/png',
     });
 
+    setIsUploading(true);
+
     try {
-      const res = await axios.post(
-        `http://${'localhost'}:3777/upload/image-user-cloudinary`,
-        data,
-        {
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'multipart/form-data',
-          },
+      const res = await axios.post(`http://${IP_ADDRESS}:3777/upload/user/avatar`, data, {
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'multipart/form-data',
         },
-      );
+      });
 
       if (res.data.status) {
         // success
         setAvatar(res.data.url);
         setAssetAvatar(null);
+        setIsUploading(false);
         // await AsyncStorage.setItem('@userAvatar', assetAvatar);
-        alert('Upload image successfully !');
+        // alert(res.data.message);
       }
     } catch (error) {
       console.error('Cannot upload avatar', error);
-    }
-  };
-
-  const RetrieveAvatar = async () => {
-    try {
-      const res = await axios.get(`http://${IP_ADDRESS}:3777/upload/image-user/${state.user_id}`);
-      if (res.data.status) {
-        setAvatar(`data:image/png;base64,${res.data.response.at(-1).url_str}`);
-
-        // cache avatar using AsyncStorage
-        // await AsyncStorage.setItem(
-        //   '@userAvatar',
-        //   `data:image/png;base64,${res.data.response.at(-1).url_str}`,
-        // );
-      }
-    } catch (error) {
-      console.error('cannot get user image', error);
-    }
-  };
-
-  const RetrieveAvatarCloudinary = async () => {
-    try {
-      const res = await axios.get(
-        `http://${'localhost'}:3777/upload/image-user-cloudinary/${state.user_id}`,
-      );
-      if (res.data.url) {
-        setAvatar(res.data.url);
-      }
-    } catch (error) {
-      console.log('cannot get user image', error);
     }
   };
 
@@ -156,7 +127,7 @@ export const DetailAccount = props => {
       let accessToken = await getAccessToken(refreshToken);
       dispatch(retrieveToken(accessToken));
 
-      await RetrieveAvatarCloudinary();
+      // await RetrieveAvatarCloudinary();
 
       // console.log(state);
       setLoading(false);
@@ -174,7 +145,7 @@ export const DetailAccount = props => {
     return (
       <View style={styles.container}>
         <SafeAreaView style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-          <ActivityIndicator size={'large'} color={colors.red} />
+          <ActivityIndicator size={'small'} color={colors.red} />
         </SafeAreaView>
       </View>
     );
@@ -196,7 +167,12 @@ export const DetailAccount = props => {
                 {avatar ? (
                   <Image
                     source={{uri: assetAvatar ? assetAvatar : avatar}}
-                    style={{width: 80, height: 80, overflow: 'hidden', borderRadius: 40}}
+                    style={{
+                      width: 80,
+                      height: 80,
+                      overflow: 'hidden',
+                      borderRadius: 40,
+                    }}
                   />
                 ) : (
                   <MaterialIcon
@@ -214,7 +190,26 @@ export const DetailAccount = props => {
                 fontWeight: '600',
                 marginTop: 10,
               }}>{`${state.first_name} ${state.last_name}`}</Text>
-            {assetAvatar ? <Button title="Upload" onPress={() => handleUploadAvatar()} /> : null}
+            {assetAvatar ? (
+              <TouchableOpacity
+                onPress={() => handleUploadAvatar()}
+                style={{
+                  backgroundColor: colors.boldred,
+                  alignSelf: 'center',
+                  paddingVertical: 5,
+                  paddingHorizontal: 20,
+                  marginTop: 10,
+                  width: '30%',
+                }}>
+                {isUploading ? (
+                  <ActivityIndicator size={'small'} color={'white'} />
+                ) : (
+                  <Text style={{textAlign: 'center', color: 'white', fontWeight: '500'}}>
+                    Upload
+                  </Text>
+                )}
+              </TouchableOpacity>
+            ) : null}
           </View>
           <View style={styles.formWrapper}>
             <View>
@@ -471,7 +466,9 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
     justifyContent: 'space-between',
     position: 'relative',
-    height: ACCOUNT_FORM_HEIGHT,
+    // height: ACCOUNT_FORM_HEIGHT,
+    flex: 1,
+    paddingBottom: 40,
   },
   formGroup: {
     marginBottom: Platform.OS === 'ios' ? 10 : 0,

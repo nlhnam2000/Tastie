@@ -12,6 +12,7 @@ import {
   Dimensions,
   Image,
 } from 'react-native';
+import {useIsFocused} from '@react-navigation/native';
 import {ActivityIndicator} from 'react-native-paper';
 import {NavigationBar} from '../../components/Menu/NavigationBar';
 import {useDispatch, useSelector} from 'react-redux';
@@ -31,21 +32,21 @@ export const Account = props => {
   const dispatch = useDispatch();
   const state = useSelector(state => state.UserReducer);
   const [loading, setLoading] = useState(true);
-  const [avatar, setAvatar] = useState(null);
+  const [avatar, setAvatar] = useState(state.avatar);
 
   useEffect(() => {
-    // setTimeout(async () => {
-    //   let refreshToken = await AsyncStorage.getItem('user_token');
-    //   let accessToken = await getAccessToken(refreshToken);
-    //   dispatch(retrieveToken(accessToken));
-    //   // if (state.userCart.cart.length > 0) {
-    //   //   state.userCart.cart.additionalOptions.forEach(c => {
-    //   //     console.log(c);
-    //   //   });
-    //   // }
-    //   // console.log(state.userCart.cart[0].additionalOptions);
-    //   setLoading(false);
-    // }, 200);
+    setTimeout(async () => {
+      let refreshToken = await AsyncStorage.getItem('user_token');
+      let accessToken = await getAccessToken(refreshToken);
+      dispatch(retrieveToken(accessToken));
+      // if (state.userCart.cart.length > 0) {
+      //   state.userCart.cart.additionalOptions.forEach(c => {
+      //     console.log(c);
+      //   });
+      // }
+      // console.log(state.userCart.cart[0].additionalOptions);
+      setLoading(false);
+    }, 200);
 
     const getUserAvatar = async () => {
       let cachedAavatar = await AsyncStorage.getItem('@userAvatar');
@@ -89,7 +90,7 @@ export const Account = props => {
         setLoading(false);
       }
     };
-    getUserAvatarCloudinary();
+    // getUserAvatarCloudinary();
 
     // setLoading(false);
   }, []);
@@ -116,9 +117,9 @@ export const Account = props => {
             source={require('../../assets/image/anonymous.png')}
             style={styles.avatar}
           /> */}
-          {avatar ? (
+          {state.avatar ? (
             <Image
-              source={{uri: avatar}}
+              source={{uri: state.avatar}}
               style={{width: 30, height: 30, borderRadius: 40, marginRight: 15}}
             />
           ) : (
