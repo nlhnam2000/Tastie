@@ -164,7 +164,10 @@ export const NavigationBar = props => {
           break;
         case EventType.PRESS:
           console.log('User pressed notification', detail);
-          props.navigation.navigate('ChatScreen', {order_code: detail.notification.data.room});
+          props.navigation.navigate('ChatScreen', {
+            order_code: detail.notification.data.room,
+            previousMsg: detail.notification.body, // the recent message
+          });
           break;
       }
     });

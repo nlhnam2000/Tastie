@@ -2,7 +2,6 @@ import React, {useEffect, useState, useRef, useMemo} from 'react';
 import {
   View,
   Text,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -41,6 +40,7 @@ import SelectDropdown from 'react-native-select-dropdown';
 import {Modalize} from 'react-native-modalize';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import {WebView} from 'react-native-webview';
+import {ActivityIndicator} from 'react-native-paper';
 
 export const GoToCheckout = props => {
   const insets = useSafeAreaInsets();
@@ -513,7 +513,7 @@ export const GoToCheckout = props => {
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'center', paddingTop: insets.top}]}>
-        <ActivityIndicator size={'large'} color={colors.red} />
+        <ActivityIndicator size={'small'} color={colors.red} />
       </View>
     );
   }

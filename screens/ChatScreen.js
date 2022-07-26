@@ -57,7 +57,7 @@ export const ChatScreen = props => {
     // },
   ]);
   const [message, setMessage] = useState('');
-  const {order_code} = props.route.params;
+  const {order_code, previousMsg} = props.route.params;
   const scrollRef = useRef();
   const inputRef = useRef();
 
@@ -98,6 +98,32 @@ export const ChatScreen = props => {
           width: '100%',
         }}>
         <View style={{width: '100%'}}>
+          {previousMsg ? (
+            <View
+              style={{
+                minWidth: '30%',
+                maxWidth: '90%',
+                paddingEnd: 20,
+                paddingStart: 10,
+                paddingVertical: 5,
+                backgroundColor: 'rgb(200,200,200)',
+                borderRadius: 12,
+                marginBottom: 10,
+                alignSelf: 'flex-start',
+              }}>
+              <Text
+                style={{
+                  marginVertical: 10,
+                  // textAlign: obj.sender === 'shipper' ? 'left' : 'right',
+                  color: 'black',
+                  fontWeight: '500',
+                  // width: '100%',
+                }}>
+                {previousMsg}
+              </Text>
+            </View>
+          ) : null}
+
           {messages.map((obj, index) => (
             <View
               key={index}

@@ -8,7 +8,7 @@
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View, ActivityIndicator} from 'react-native';
+import {StyleSheet, View} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -18,6 +18,7 @@ import fontAwesome from 'react-native-vector-icons/FontAwesome';
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {ActionAlertDialog} from './components/Error/AlertDialog';
+import {ActivityIndicator} from 'react-native-paper';
 
 // import components
 import {SignupScreen2} from './components/UserAdmission/Signup/SignupScreen2';
@@ -147,7 +148,7 @@ export default function App(props) {
   if (state.isLoading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color={colors.red} />
+        <ActivityIndicator size="small" color={colors.red} />
       </View>
     );
   } else {

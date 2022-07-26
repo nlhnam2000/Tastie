@@ -47,6 +47,10 @@ export const Cart = props => {
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => ['70%', '90%'], []);
 
+  const openRecommendProducts = useCallback(() => {
+    bottomSheetRef.current?.present();
+  }, []);
+
   useEffect(() => {
     // if (state.userCart.provider_name !== null) {
     //   let list = [];
@@ -67,7 +71,7 @@ export const Cart = props => {
     //   additionalOption: [],
     //   additionalOptions: [],
     // }));
-    bottomSheetRef.current?.present();
+    openRecommendProducts();
     setLoading(false);
   }, []);
 
@@ -150,7 +154,7 @@ export const Cart = props => {
               paddingHorizontal: 0,
             }}>
             <TouchableOpacity
-              onPress={() => bottomSheetRef.current?.present()}
+              onPress={openRecommendProducts}
               style={{
                 paddingHorizontal: 20,
                 borderRadius: 10,

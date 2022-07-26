@@ -88,7 +88,7 @@ export const DeliveryAddressBottomSheet = props => {
         <Text style={{fontSize: 17, fontWeight: '500'}}>Or choose your saved address</Text>
         {customerAddress.user_address ? (
           customerAddress.user_address
-            .sort((a, b) => a.type - b.type)
+            // .sort((a, b) => a.type - b.type)
             .map((item, index) => (
               <View key={index} style={styles.sectionWrapper}>
                 <TouchableOpacity
