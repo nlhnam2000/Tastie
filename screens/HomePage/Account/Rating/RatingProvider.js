@@ -53,6 +53,10 @@ export const RatingProvider = props => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    setComment(selectedTags.toString().split(',').join(', '));
+  }, [selectedTags]);
+
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
@@ -168,6 +172,7 @@ export const RatingProvider = props => {
           placeholder="Share review about taste, package or each item"
           placeholderTextColor={'#c4c4c4'}
           onChangeText={text => setComment(text)}
+          value={comment}
         />
         <TouchableOpacity
           style={{

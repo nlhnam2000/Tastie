@@ -50,6 +50,10 @@ export const RatingShipper = props => {
     setLoading(false);
   }, []);
 
+  useEffect(() => {
+    setComment(selectedTags.toString().split(',').join(', '));
+  }, [selectedTags]);
+
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
@@ -183,6 +187,7 @@ export const RatingShipper = props => {
           placeholder="Share review about taste, package or each item"
           placeholderTextColor={'#c4c4c4'}
           onChangeText={text => setComment(text)}
+          value={comment}
         />
         <Text style={{color: 'gray', position: 'absolute', right: 30, bottom: 10}}>
           {comment.length}/150
