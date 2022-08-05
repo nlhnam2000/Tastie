@@ -50,7 +50,7 @@ export const DetailProvider = props => {
   const [openAddress, setOpenAddress] = useState(false);
   const [openRating, setOpenRating] = useState(false);
   const [firstScroll, setFirstScroll] = useState(true);
-  const {data} = props.route.params;
+  const {data, productTarget} = props.route.params;
   const scrollY = useRef(new Animated.Value(0)).current;
   const state = useSelector(state => state.UserReducer);
   const mapref = useRef();
@@ -169,12 +169,15 @@ export const DetailProvider = props => {
       }
 
       setLoading(false);
+      // if (productTarget) {
+      //   scrollToProduct(productTarget);
+      // }
     });
   };
 
   useEffect(() => {
-    console.log(data.provider_id);
-    loadDetailProvider(data.provider_id);
+    console.log(data);
+    loadDetailProvider(data);
   }, []);
 
   useEffect(() => {
@@ -182,6 +185,15 @@ export const DetailProvider = props => {
       setOperation_time(cleanOperationTime(info.operation_time));
     }
   }, [info]);
+
+  useEffect(() => {
+    if (!loading && productTarget && item.length > 0) {
+      scrollToProduct(productTarget);
+      setTimeout(() => {
+        scrollToProduct(productTarget);
+      }, 1000);
+    }
+  }, [loading, productTarget, item]);
 
   useEffect(() => {
     if (item.length > 0) {
@@ -241,6 +253,24 @@ export const DetailProvider = props => {
 
   const [tabPosition, setTabPosition] = useState([]);
   const ref = useRef();
+
+  const scrollToProduct = product_id => {
+    let sectionIndex = 0;
+    let itemIndex = 0;
+
+    for (let i = 0; i < item.length; i++) {
+      let index = item[i].data.findIndex(p => p.product_id === product_id);
+      if (index !== -1) {
+        sectionIndex = i;
+        itemIndex = index + 1;
+        scrollToSection(sectionIndex, itemIndex);
+        break;
+      } else {
+        continue;
+      }
+    }
+    console.log({sectionIndex, itemIndex});
+  };
 
   const scrollToIndex = (index, categoryTitle) => {
     // if (tabPosition.length > index) {
@@ -421,7 +451,7 @@ export const DetailProvider = props => {
               useNativeDriver: false,
             })}
             removeClippedSubviews={true}
-            initialNumToRender={5}
+            initialNumToRender={1000}
             ref={ref}
             onScrollToIndexFailed={onScrollToIndexFailed}
             onViewableItemsChanged={onViewableItemsChanged}
@@ -453,14 +483,15 @@ export const DetailProvider = props => {
                         <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
                           {item.product_name}
                         </Text>
-                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                        {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
                           <MaterialIcon name="sale" color={colors.boldred} size={17} />
                           <Text style={{color: colors.boldred, marginHorizontal: 5}}>50%</Text>
                           <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
                             ${item.price.toFixed(2)}
                           </Text>
                         </View>
-                        <Text style={{marginTop: 10}}>${discount(item.price, 0.5).toFixed(2)}</Text>
+                        <Text style={{marginTop: 10}}>${discount(item.price, 0.5).toFixed(2)}</Text> */}
+                        <Text style={{marginTop: 10}}>${item.price.toFixed(2)}</Text>
                         <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
                           {item.description}
                         </Text>
@@ -952,7 +983,10 @@ export const DetailProvider = props => {
           </View>
         </Modalize>
         <Modalize ref={modalizeRef}>
-          <UpcomingProduct data={selectedUpcomingProduct} />
+          <UpcomingProduct
+            data={selectedUpcomingProduct}
+            dismiss={() => modalizeRef.current?.close()}
+          />
         </Modalize>
       </View>
     );

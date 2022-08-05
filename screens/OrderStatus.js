@@ -436,8 +436,8 @@ export const OrderStatus = props => {
           showsMyLocationButton
           pitchEnabled={false}
           rotateEnabled={false}
-          scrollEnabled={false}
-          zoomEnabled={false}
+          // scrollEnabled={false}
+          // zoomEnabled={false}
           style={styles.map}
           showsUserLocation
           provider={PROVIDER_GOOGLE}

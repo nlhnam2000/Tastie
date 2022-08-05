@@ -129,7 +129,7 @@ export const DetailAccount = props => {
 
       // await RetrieveAvatarCloudinary();
 
-      // console.log(state);
+      console.log(state);
       setLoading(false);
     }, 200);
     // setLoading(false);

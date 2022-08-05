@@ -45,47 +45,47 @@ export const DetailEcoupon = props => {
     }
   };
 
-  // const notify = async (title, message) => {
-  //   // PushNotification.localNotification({
-  //   //   channelId: 'homescreen-channel',
-  //   //   title: 'Test notification',
-  //   //   message: 'test123',
-  //   // });
+  const notify = async (title, message) => {
+    // PushNotification.localNotification({
+    //   channelId: 'homescreen-channel',
+    //   title: 'Test notification',
+    //   message: 'test123',
+    // });
 
-  //   const channelId = await notifee.createChannel({
-  //     id: 'default',
-  //     name: 'Default Channel',
-  //   });
+    const channelId = await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+    });
 
-  //   if (Platform.OS === 'ios') {
-  //     await notifee.cancelAllNotifications();
+    // if (Platform.OS === 'ios') {
+    // await notifee.cancelAllNotifications();
 
-  //     // Display a notification
-  //     await notifee.displayNotification({
-  //       title: title,
-  //       body: message,
-  //       data: {
-  //         provider_id: '1000085',
-  //       },
-  //       ios: {
-  //         foregroundPresentationOptions: {
-  //           alert: true,
-  //           badge: true,
-  //           sound: true,
-  //         },
-  //       },
-  //       android: {
-  //         channelId,
-  //       },
-  //     });
-  //   } else {
-  //     PushNotification.localNotification({
-  //       channelId: 'default',
-  //       title: title,
-  //       message: message,
-  //     });
-  //   }
-  // };
+    // Display a notification
+    await notifee.displayNotification({
+      title: title,
+      body: message,
+      data: {
+        provider_id: '1000085',
+      },
+      ios: {
+        foregroundPresentationOptions: {
+          alert: true,
+          badge: true,
+          sound: true,
+        },
+      },
+      android: {
+        channelId,
+      },
+    });
+    // } else {
+    //   PushNotification.localNotification({
+    //     channelId: 'default',
+    //     title: title,
+    //     message: message,
+    //   });
+    // }
+  };
 
   return (
     <View style={styles.container}>
@@ -124,7 +124,7 @@ export const DetailEcoupon = props => {
               title: item.ecoupon_name,
               ecoupon_id: item.ecoupon_id,
             })
-          // notify('Hi', 'test')
+          //  notify('Hi', 'test')
         }>
         <Text
           style={{

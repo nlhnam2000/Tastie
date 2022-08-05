@@ -22,8 +22,12 @@ import {
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import colors from '../../colors/colors';
+import {useSelector} from 'react-redux';
+import axios from 'axios';
+import {IP_ADDRESS} from '../../global';
 
 export const UpcomingProduct = props => {
+  const state = useSelector(state => state.UserReducer);
   const [selected, setSelected] = useState(null);
   const options = [
     'Absolutely yes! I cannot wait to try this!',
@@ -33,6 +37,28 @@ export const UpcomingProduct = props => {
     'It is not my thing!',
     'Other',
   ];
+
+  const Submit = async () => {
+    const form = {
+      upcoming_product_id: props.data.upcoming_product_id,
+      customer_id: state.user_id,
+      response: selected,
+    };
+
+    try {
+      const res = await axios.post(
+        `http://${IP_ADDRESS}:3007/v1/api/tastie/home/submit-upcoming-product-review`,
+        form,
+      );
+
+      if (res.data.status) {
+        console.log('Submit review successfully');
+        props.dismiss();
+      }
+    } catch (error) {
+      console.log('Cannot submit review', error);
+    }
+  };
 
   return (
     <>
@@ -100,7 +126,8 @@ export const UpcomingProduct = props => {
               backgroundColor: 'black',
               marginTop: 15,
               width: '100%',
-            }}>
+            }}
+            onPress={() => Submit()}>
             <Text style={{color: 'white', fontWeight: '500', textAlign: 'center', fontSize: 18}}>
               Submit
             </Text>

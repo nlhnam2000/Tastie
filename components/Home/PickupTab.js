@@ -282,16 +282,16 @@ export const PickupTab = gestureHandlerRootHOC(props => {
           latitudeDelta: 0.015,
           longitudeDelta: 0.0121,
         }}
-        region={{
-          latitude: selectedMarker
-            ? parseFloat(selectedMarker.latitude)
-            : state.userLocation.latitude,
-          longitude: selectedMarker
-            ? parseFloat(selectedMarker.longitude)
-            : state.userLocation.longitude,
-          latitudeDelta: 0.015,
-          longitudeDelta: 0.0121,
-        }}
+        // region={{
+        //   latitude: selectedMarker
+        //     ? parseFloat(selectedMarker.latitude)
+        //     : state.userLocation.latitude,
+        //   longitude: selectedMarker
+        //     ? parseFloat(selectedMarker.longitude)
+        //     : state.userLocation.longitude,
+        //   latitudeDelta: 0.015,
+        //   longitudeDelta: 0.0121,
+        // }}
         showsUserLocation
         mapType="terrain"
         // onMapReady={() => {

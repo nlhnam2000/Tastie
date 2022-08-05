@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -61,8 +61,7 @@ export const Home = props => {
         />
       </Stack.Navigator> */}
       <HomeContent {...props} />
-
-      <NavigationBar {...props} active={props.tabname} {...props} />
+      {state.toggleNavigationBar ? <NavigationBar {...props} active={props.tabname} /> : null}
     </>
   );
 };

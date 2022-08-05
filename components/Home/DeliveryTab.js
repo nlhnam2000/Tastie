@@ -29,9 +29,10 @@ import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIc
 import colors from '../../colors/colors';
 import {BrowseCategory} from '../../components/Menu/BrowseCatergory';
 import {CategoryList} from '../../components/Provider/CategoryList';
+import {RecommendedProducts} from '../Menu/RecommendedProducts';
 
 // reducer
-import {SetUserLocation, AutoSetLocation} from '../../store/action/auth';
+import {SetUserLocation, AutoSetLocation, ToggleNavigationBar} from '../../store/action/auth';
 
 // libraries
 import {useDispatch, useSelector} from 'react-redux';
@@ -189,6 +190,8 @@ export const DeliveryTab = props => {
           <ScrollView
             style={{width}}
             contentContainerStyle={{backgroundColor: '#f2f2f2'}}
+            // onScrollBeginDrag={() => dispatch(ToggleNavigationBar())}
+            // onMomentumScrollEnd={() => dispatch(ToggleNavigationBar())}
             refreshControl={
               <RefreshControl
                 tintColor={colors.boldred}
@@ -209,12 +212,15 @@ export const DeliveryTab = props => {
               <BrowseCategory {...props} />
             </View>
             <View style={{width}}>
+              <RecommendedProducts {...props} />
+            </View>
+            <View style={{width}}>
               <View style={{width}}>
                 <CategoryList
                   {...props}
                   groupID={1}
                   location={state.userLocation}
-                  offset={6}
+                  offset={1}
                   categoryTitle="Order near you"
                 />
               </View>
@@ -232,7 +238,7 @@ export const DeliveryTab = props => {
                   {...props}
                   groupID={3}
                   location={state.userLocation}
-                  offset={12}
+                  offset={1}
                   categoryTitle="Most rating"
                 />
               </View>
@@ -241,7 +247,7 @@ export const DeliveryTab = props => {
                   {...props}
                   groupID={4}
                   location={state.userLocation}
-                  offset={18}
+                  offset={1}
                   categoryTitle="In a rush"
                 />
               </View>

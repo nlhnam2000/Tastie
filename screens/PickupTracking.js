@@ -35,7 +35,7 @@ export const PickupTracking = ({navigation, route}) => {
     scheduleTime: '',
   });
   // 0: default, 1: submitted, 2: confirmed, 3: completed
-  const [orderStatus, setOrderStatus] = useState(0);
+  const [orderStatus, setOrderStatus] = useState(2);
 
   const bottomsheetRef = useRef();
   const mapref = useRef();
@@ -85,6 +85,7 @@ export const PickupTracking = ({navigation, route}) => {
   };
 
   const ListenSocketEvent = () => {
+    state.socketServer.host.emit('join-room', order_code);
     state.socketServer.host.on('order-confirmed-from-provider', () => {
       setOrderStatus(2); //
     });
@@ -92,12 +93,14 @@ export const PickupTracking = ({navigation, route}) => {
 
   const OrderCompleted = async () => {
     try {
+      console.log('completing ....');
       await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`, {
         order_code: order_code,
         status: 5, // completed
         shipper_id: null,
         update_at: '2022-04-21 20:11:11',
       });
+      console.log('completed');
       setOrderStatus(3); // completed
       setTimeout(() => {
         navigation.navigate('RatingProvider', {order_id: orderData.order_id});
@@ -181,10 +184,10 @@ export const PickupTracking = ({navigation, route}) => {
               setOrderStatus(1);
               break;
             case 'Confirmed':
-              setOrderStatus(3);
+              setOrderStatus(2);
               break;
             case 'Completed':
-              setOrderStatus(5);
+              setOrderStatus(3);
               break;
           }
         }

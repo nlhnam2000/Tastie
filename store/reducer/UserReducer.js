@@ -37,6 +37,7 @@ import {
   SOCKET_CONNECTION,
   SOCKET_DISCONNECTION,
   DISPLAY_ALERT_MESSAGE,
+  TOGGLE_NAVIGATION_BAR,
 } from '../action/types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS} from '../../global';
@@ -64,6 +65,7 @@ const initialState = {
   triggerAlertMessage: false,
   alertMessage: null,
   currentTab: 'Home',
+  toggleNavigationBar: true,
   socketServer: {
     host: io(`http://${IP_ADDRESS}:3015`),
     rooms: [],
@@ -463,6 +465,12 @@ export const UserReducer = (state = initialState, action) => {
       return {
         ...state,
         socket: null,
+      };
+    }
+    case TOGGLE_NAVIGATION_BAR: {
+      return {
+        ...state,
+        toggleNavigationBar: !state.toggleNavigationBar,
       };
     }
 

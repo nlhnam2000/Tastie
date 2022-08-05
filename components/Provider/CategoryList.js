@@ -24,8 +24,6 @@ const {width} = Dimensions.get('window');
 export const CategoryList = props => {
   const [loading, setLoading] = useState(true);
   const [providerList, setProviderList] = useState([]);
-  const [isError, setIsError] = useState(false);
-  const [imageSrc, setImageSrc] = useState({uri: 'image'});
   const state = useSelector(state => state.UserReducer);
 
   const loadProvider = async group_id => {
@@ -58,6 +56,89 @@ export const CategoryList = props => {
     }
   }, [props.location]);
 
+  const Item = ({item}) => {
+    const [isError, setIsError] = useState(false);
+    // const [imageSrc, setImageSrc] = useState({uri: item.profile_pic});
+    return (
+      <TouchableOpacity
+        onPress={() => props.navigation.navigate('DetailProvider', {data: item.provider_id})}
+        style={styles.providerWrapper}>
+        <FastImage
+          onError={() => setIsError(true)}
+          source={
+            isError || !item.profile_pic
+              ? require('../../assets/image/SlideShowImg/Picture1.jpg')
+              : {uri: item.profile_pic}
+          }
+          resizeMode={FastImage.resizeMode.cover}
+          style={{
+            height: 150,
+            width: width - 40,
+            alignItems: 'center',
+            justifyContent: 'center',
+            position: 'relative',
+          }}>
+          {item.operation_time[0].status !== 1 && (
+            <View
+              style={{
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                width: '100%',
+                height: 150,
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}>
+              <Feather name="moon" size={20} color="white" />
+              <Text style={{color: 'white', fontWeight: 'bold', marginTop: 10}}>
+                Currently unavaible
+              </Text>
+            </View>
+          )}
+          {item.isFavorite ? (
+            <MaterialIcon
+              name="heart"
+              size={22}
+              color={'white'}
+              style={{
+                position: 'absolute',
+                right: 5,
+                top: 5,
+              }}
+            />
+          ) : (
+            <Feather
+              name="heart"
+              size={22}
+              color="white"
+              style={{position: 'absolute', right: 5, top: 5}}
+            />
+          )}
+        </FastImage>
+        <View style={[styles.flexRowBetween]}>
+          <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
+            <View style={{width: width - 200, marginBottom: 5}}>
+              <Text numberOfLines={1} style={[styles.subheading]}>
+                {item.provider_name}
+              </Text>
+            </View>
+            <View style={{flexDirection: 'row', alignItems: 'center'}}>
+              <Text>{(item.distance / 1000).toFixed(2)} km • </Text>
+              <Text>${convertDollar(item.delivery_fee)} delivery fee • </Text>
+              <Text>{item.estimated_cooking_time} min</Text>
+            </View>
+          </View>
+          <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
+            <Text>{item.order_totals}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const MemoizedItem = React.memo(Item, (prevProps, nextProps) => {
+    console.log({prevProps, nextProps});
+    return prevProps.item.provider_id === nextProps.item.provider_id;
+  });
+
   if (loading || providerList.length === 0) {
     return (
       <View style={styles.container}>
@@ -85,78 +166,7 @@ export const CategoryList = props => {
         keyExtractor={item => item.provider_id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => {
-          return (
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
-              style={styles.providerWrapper}>
-              <FastImage
-                // onError={() => setIsError(true)}
-                source={{uri: item.profile_pic}}
-                resizeMode={FastImage.resizeMode.cover}
-                style={{
-                  height: 150,
-                  width: width - 40,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  position: 'relative',
-                }}>
-                {item.operation_time[0].status !== 1 && (
-                  <View
-                    style={{
-                      backgroundColor: 'rgba(0,0,0,0.5)',
-                      width: '100%',
-                      height: 150,
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                    }}>
-                    <Feather name="moon" size={20} color="white" />
-                    <Text style={{color: 'white', fontWeight: 'bold', marginTop: 10}}>
-                      Currently unavaible
-                    </Text>
-                  </View>
-                )}
-                {item.isFavorite ? (
-                  <MaterialIcon
-                    name="heart"
-                    size={22}
-                    color={'white'}
-                    style={{
-                      position: 'absolute',
-                      right: 5,
-                      top: 5,
-                    }}
-                  />
-                ) : (
-                  <Feather
-                    name="heart"
-                    size={22}
-                    color="white"
-                    style={{position: 'absolute', right: 5, top: 5}}
-                  />
-                )}
-              </FastImage>
-              <View style={[styles.flexRowBetween]}>
-                <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
-                  <View style={{width: width - 200, marginBottom: 5}}>
-                    <Text numberOfLines={1} style={[styles.subheading]}>
-                      {item.provider_name}
-                    </Text>
-                  </View>
-                  <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Text>{(item.distance / 1000).toFixed(2)} km • </Text>
-                    <Text>${convertDollar(item.delivery_fee)} delivery fee • </Text>
-                    <Text>{item.estimated_cooking_time} min</Text>
-                  </View>
-                </View>
-                <View
-                  style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-                  <Text>{item.order_totals}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        }}
+        renderItem={({item}) => <Item item={item} />}
       />
     </View>
   );

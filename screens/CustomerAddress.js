@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, {useEffect, useState} from 'react';
 import {
-  ActivityIndicator,
   Dimensions,
   SafeAreaView,
   ScrollView,
@@ -16,6 +15,7 @@ import {TextInput} from 'react-native-gesture-handler';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useDispatch, useSelector} from 'react-redux';
+import {ActivityIndicator} from 'react-native-paper';
 // assets
 import colors from '../colors/colors';
 import {IP_ADDRESS} from '../global';
@@ -71,7 +71,7 @@ export const CustomerAddress = props => {
   if (loading) {
     return (
       <SafeAreaView style={[styles.container, {justifyContent: 'center'}]}>
-        <ActivityIndicator size={'large'} color={colors.red} />
+        <ActivityIndicator size={'small'} color={colors.boldred} />
       </SafeAreaView>
     );
   }

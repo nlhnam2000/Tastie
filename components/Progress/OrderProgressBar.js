@@ -169,7 +169,7 @@ export const OrderProgressBarPickup = ({status}) => {
 
         <View
           style={{
-            width: '37%',
+            width: '40%',
             padding: 2,
             position: 'absolute',
             top: 10,
@@ -177,7 +177,7 @@ export const OrderProgressBarPickup = ({status}) => {
             backgroundColor: status >= 2 ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
           }}></View>
-        <View
+        {/* <View
           style={{
             width: '20%',
             padding: 2,
@@ -186,7 +186,7 @@ export const OrderProgressBarPickup = ({status}) => {
             left: '73%',
             backgroundColor: status === 3 ? colors.boldred : 'rgba(200,200,200,1.0)',
             zIndex: -10,
-          }}></View>
+          }}></View> */}
         {/* Text Progress */}
         <Text style={{fontSize: 12, fontWeight: '400', position: 'absolute', top: 35, left: '2%'}}>
           Submitted

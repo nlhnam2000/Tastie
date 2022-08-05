@@ -24,6 +24,7 @@ import {
   CHECKED_NOTIFICATION,
   PLACED_ORDER,
   DISPLAY_ALERT_MESSAGE,
+  TOGGLE_NAVIGATION_BAR,
 } from './types';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {IP_ADDRESS, MAPBOXGS_ACCESS_TOKEN, GEOAPIFY} from '../../global';
@@ -494,6 +495,15 @@ export const CheckedNotification = () => dispatch => {
     type: CHECKED_NOTIFICATION,
     payload: {
       toggleNotification: false,
+    },
+  });
+};
+
+export const ToggleNavigationBar = () => dispatch => {
+  dispatch({
+    type: TOGGLE_NAVIGATION_BAR,
+    payload: {
+      // toggleNavigationBar: true,
     },
   });
 };

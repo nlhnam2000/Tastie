@@ -148,19 +148,19 @@ export const Cart = props => {
           <View
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
+              justifyContent: 'flex-end',
               alignItems: 'center',
               width: '100%',
               paddingHorizontal: 0,
             }}>
-            <TouchableOpacity
+            {/* <TouchableOpacity
               onPress={openRecommendProducts}
               style={{
                 paddingHorizontal: 20,
                 borderRadius: 10,
               }}>
               <Text style={{fontWeight: '500', color: 'black'}}>Show recommended products</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
             <TouchableOpacity
               onPress={() => dispatch(ClearCart(state.user_id))}
               style={{
@@ -352,7 +352,7 @@ export const Cart = props => {
       </SafeAreaView>
 
       <NavigationBar {...props} active={props.tabname} />
-      <BottomSheetModalProvider>
+      {/* <BottomSheetModalProvider>
         <BottomSheetModal
           ref={bottomSheetRef}
           index={0}
@@ -362,7 +362,7 @@ export const Cart = props => {
           )}>
           <RecommendedProducts user_id={state.user_id} />
         </BottomSheetModal>
-      </BottomSheetModalProvider>
+      </BottomSheetModalProvider> */}
     </View>
   );
 };

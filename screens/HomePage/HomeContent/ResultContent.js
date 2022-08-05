@@ -37,6 +37,7 @@ export const ResultContent = ({navigation, route}) => {
   const [data, setData] = useState([]);
   const [offset, setOffset] = useState(1);
   const state = useSelector(state => state.UserReducer);
+  const [imageError, setImageError] = useState(false);
 
   const scrollY = useRef(new Animated.Value(0)).current;
   const headerImageHeiht = scrollY.interpolate({
@@ -209,13 +210,20 @@ export const ResultContent = ({navigation, route}) => {
     }
   }, []);
 
-  const renderItem = ({item, index}) => {
+  const Item = ({item}) => {
+    const [isError, setIsError] = useState(false);
+
     return (
       <TouchableOpacity
-        onPress={() => navigation.navigate('DetailProvider', {data: item})}
+        onPress={() => navigation.navigate('DetailProvider', {data: item.provider_id})}
         style={[styles.providerWrapper, {marginTop: 20}]}>
         <FastImage
-          source={{uri: item.profile_pic ?? item.avatar}}
+          onError={() => setIsError(true)}
+          source={
+            isError
+              ? require('../../../assets/image/SlideShowImg/Picture1.jpg')
+              : {uri: item.profile_pic ?? item.avatar}
+          }
           resizeMode={FastImage.resizeMode.cover}
           style={{height: 100, width: 100}}
         />
@@ -240,6 +248,10 @@ export const ResultContent = ({navigation, route}) => {
         </View>
       </TouchableOpacity>
     );
+  };
+
+  const renderItem = ({item, index}) => {
+    return <Item item={item} />;
   };
 
   if (loading) {
