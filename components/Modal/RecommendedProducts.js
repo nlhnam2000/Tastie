@@ -5,13 +5,61 @@ import BottomSheet from '@gorhom/bottom-sheet';
 import colors from '../../colors/colors';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
+import {IP_ADDRESS} from '../../global';
+import {useSelector, useDispatch} from 'react-redux';
+import {AddToCart} from '../../store/action/cart';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 
-export const RecommendedProducts = ({user_id}) => {
+export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => {
   const [loading, setLoading] = useState(true);
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => ['90%'], []);
+  const dispatch = useDispatch();
+  const state = useSelector(state => state.UserReducer);
+  const [products, setProducts] = useState([]);
+
+  const LoadRecommendedProducts = async () => {
+    const productList = [...state.userCart.cart].map(item => item.product_id);
+    console.log(productList);
+    try {
+      const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
+        product_list: [1000665, 1000666],
+      });
+
+      if (res.data.status) {
+        setProducts(res.data.response);
+      }
+    } catch (error) {
+      console.log('Cannot get recommended products', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToCart = item => {
+    // const cartForm = {
+    //   user_id: state.user_id,
+    //   provider_id: item.provider_id,
+    //   provider_name: state.userCart.provider_name,
+    //   cartItem: {
+    //     product_id: item.product_id,
+    //     productName: item.product_name,
+    //     productPrice: item.price,
+    //     productImage: item.product_image,
+    //     quantity: 1,
+    //     special_instruction: null,
+    //     additional_option: [],
+    //     totalProductPrice: item.price * 1,
+    //   },
+    //   location: state.userCart.location,
+    //   address: state.userCart.address,
+    // };
+
+    // dispatch(AddToCart(cartForm));
+    // onClose();
+    onClick(item);
+  };
 
   const renderItem = ({item}) => (
     <View style={styles.menuContentWrapper}>
@@ -29,10 +77,12 @@ export const RecommendedProducts = ({user_id}) => {
           //       address: `${info.data.address} ${info.data.road}`,
           //     })
           //   }
+          // onPress={() => navigation.navigate('DetailProvider', {data: item.provider_id})}
+          onPress={() => onClick(item)}
           style={styles.foodWrapper}>
           <View style={[styles.foodInfo]}>
             <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
-              {'Product Name'}
+              {item.product_name}
             </Text>
             {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <MaterialIcon name="sale" color={colors.boldred} size={17} />
@@ -41,36 +91,33 @@ export const RecommendedProducts = ({user_id}) => {
                 ${item.price.toFixed(2)}
               </Text>
             </View> */}
-            <Text style={{marginTop: 10}}>$10.00</Text>
+            <Text style={{marginTop: 10}}>${item.price.toFixed(2)}</Text>
             <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit. Sapiente, nulla.
+              {item.description}
             </Text>
           </View>
-          <FastImage
-            style={styles.foodImage}
-            source={require('../../assets/image/SlideShowImg/Picture1.jpg')}
-          />
+          <FastImage style={styles.foodImage} source={{uri: item.product_image}} />
         </TouchableOpacity>
       </View>
     </View>
   );
 
   useEffect(() => {
-    setLoading(false);
+    LoadRecommendedProducts();
   }, []);
 
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size={'large'} color={colors.boldred} />
+        <ActivityIndicator size={'small'} color={colors.boldred} />
       </View>
     );
   }
 
   return (
     <FlatList
-      data={[1, 2, 3, 4, 5, 6, 7]}
-      keyExtractor={item => item.toString()}
+      data={products}
+      keyExtractor={item => item.product_id}
       renderItem={renderItem}
       ListHeaderComponent={
         <View style={{paddingHorizontal: 10, paddingTop: 10}}>
@@ -85,12 +132,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    width: '100%',
     justifyContent: 'center',
   },
   menuContentWrapper: {
     width: '100%',
-    paddingHorizontal: 20,
     marginBottom: 20,
     alignItems: 'center',
     // borderBottomColor: '#e6e6e6',
@@ -99,21 +144,22 @@ const styles = StyleSheet.create({
   },
   menuContent: {
     // flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: '100%',
+    paddingHorizontal: 20,
   },
   foodWrapper: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
-    paddingHorizontal: 20,
     marginTop: 20,
     borderTopColor: '#e6e6e6',
     borderTopWidth: 1,
     paddingTop: 20,
   },
-  foodInfo: {},
+  foodInfo: {
+    width: '70%',
+  },
   foodImage: {
     width: 90,
     height: 90,

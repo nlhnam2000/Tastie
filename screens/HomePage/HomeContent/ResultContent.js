@@ -243,7 +243,7 @@ export const ResultContent = ({navigation, route}) => {
             <Text>{item.promotionCode && ''}</Text>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-            <Text>{item.order_totals ?? 4.5}</Text>
+            <Text>{parseFloat(item.customer_rating).toFixed(1) ?? 4.5}</Text>
           </View>
         </View>
       </TouchableOpacity>

@@ -143,6 +143,75 @@ export const OrderHistory = props => {
     // createChannel();
   }, []);
 
+  // component
+  const Item = ({data}) => {
+    const [isImageError, setIsImageError] = useState(false);
+
+    return (
+      <View style={{width: '100%', borderBottomWidth: 1, borderBottomColor: '#f2f2f2'}}>
+        <View style={styles.orderHeader}>
+          <Text style={{color: 'gray', width: '50%'}} numberOfLines={1}>
+            {data.order_code}
+          </Text>
+          <Text style={{color: 'gray'}}>{data.completed_at}</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            if (data.order_status === 'Completed' || data.order_status === 'Canceled') {
+              if (props.filterStatus === 'ToRate') {
+                props.navigation.navigate('RatingProvider', {order_id: data.order_id});
+              } else {
+                props.navigation.navigate('DetailOrder', {
+                  order_code: data.order_code,
+                  total_price: data.total_amount,
+                  payment_method: data.payment_method,
+                });
+              }
+            } else {
+              if (data.delivery_mode === 1) {
+                props.navigation.navigate('OrderStatus', {order_code: data.order_code});
+              } else {
+                props.navigation.navigate('PickupTracking', {
+                  order_code: data.order_code,
+                });
+              }
+            }
+          }}
+          style={styles.orderContent}>
+          <FastImage
+            onError={() => setIsImageError(true)}
+            source={
+              isImageError
+                ? require('../../../assets/image/SlideShowImg/Picture1.jpg')
+                : {uri: data.provider_avatar}
+            }
+            style={{width: 100, height: 100, marginRight: 20}}
+          />
+          <View style={styles.orderContentDetail}>
+            <Text
+              numberOfLines={1}
+              style={{
+                fontSize: 17,
+                fontWeight: '500',
+                marginBottom: 10,
+                width: width - 10 - 100 - 10 - 20,
+              }}>
+              {data.provider_name}
+            </Text>
+            {/* <Text style={{color: 'gray', marginBottom: 10}}>135B Tran Hung Dao</Text> */}
+            <Text>
+              $ {parseFloat(data.total_amount).toFixed(2)} ( items) - {data.payment_method}
+            </Text>
+          </View>
+        </TouchableOpacity>
+        <View style={styles.orderFooter}>
+          <Text style={{fontSize: 14, fontWeight: '400'}}>{data.order_status}</Text>
+          <View style={styles.buttons}>{renderOrderStatus(data.order_status)}</View>
+        </View>
+      </View>
+    );
+  };
+
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'space-around'}]}>
@@ -253,69 +322,13 @@ export const OrderHistory = props => {
                   }}
                 />
               }
-              style={{width: '100%'}}
-              contentContainerStyle={{paddingBottom: Platform.OS === 'ios' ? 20 : 40}}
+              style={{width: '100%', height: '100%'}}
+              contentContainerStyle={{
+                paddingBottom: Platform.OS === 'ios' ? 0 : 20,
+              }}
               showsVerticalScrollIndicator={false}>
               {orderHistory?.map((order, index) => (
-                <View
-                  key={index}
-                  style={{width: '100%', borderBottomWidth: 1, borderBottomColor: '#f2f2f2'}}>
-                  <View style={styles.orderHeader}>
-                    <Text style={{color: 'gray', width: '50%'}} numberOfLines={1}>
-                      {order.order_code}
-                    </Text>
-                    <Text style={{color: 'gray'}}>{order.completed_at}</Text>
-                  </View>
-                  <TouchableOpacity
-                    onPress={() => {
-                      if (order.order_status === 'Completed' || order.order_status === 'Canceled') {
-                        if (props.filterStatus === 'ToRate') {
-                          props.navigation.navigate('RatingProvider', {order_id: order.order_id});
-                        } else {
-                          props.navigation.navigate('DetailOrder', {
-                            order_code: order.order_code,
-                            total_price: order.total_amount,
-                            payment_method: order.payment_method,
-                          });
-                        }
-                      } else {
-                        if (order.delivery_mode === 1) {
-                          props.navigation.navigate('OrderStatus', {order_code: order.order_code});
-                        } else {
-                          props.navigation.navigate('PickupTracking', {
-                            order_code: order.order_code,
-                          });
-                        }
-                      }
-                    }}
-                    style={styles.orderContent}>
-                    <FastImage
-                      source={{uri: order.provider_avatar}}
-                      style={{width: 100, height: 100, marginRight: 20}}
-                    />
-                    <View style={styles.orderContentDetail}>
-                      <Text
-                        numberOfLines={1}
-                        style={{
-                          fontSize: 17,
-                          fontWeight: '500',
-                          marginBottom: 10,
-                          width: width - 10 - 100 - 10 - 20,
-                        }}>
-                        {order.provider_name}
-                      </Text>
-                      {/* <Text style={{color: 'gray', marginBottom: 10}}>135B Tran Hung Dao</Text> */}
-                      <Text>
-                        $ {parseFloat(order.total_amount).toFixed(2)} ( items) -{' '}
-                        {order.payment_method}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                  <View style={styles.orderFooter}>
-                    <Text style={{fontSize: 14, fontWeight: '400'}}>{order.order_status}</Text>
-                    <View style={styles.buttons}>{renderOrderStatus(order.order_status)}</View>
-                  </View>
-                </View>
+                <Item data={order} key={index} />
               ))}
             </ScrollView>
           )}

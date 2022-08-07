@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef, useMemo} from 'react';
+import React, {useEffect, useState, useRef, useMemo, useCallback} from 'react';
 import {
   View,
   Text,
@@ -21,9 +21,10 @@ import {PromotionList} from '../components/BottomSheet/PromotionList';
 import {SchedulePickerModal} from '../components/Modal/SchedulePicker';
 import {DeliveryAddressBottomSheet} from '../components/BottomSheet/DeliveryAddress';
 import colors from '../colors/colors';
+import {RecommendedProducts} from '../components/Modal/RecommendedProducts';
 
 // actions
-import {SaveToHistoryCart, SubmitOrder, RetrieveCart} from '../store/action/cart';
+import {SaveToHistoryCart, SubmitOrder, RetrieveCart, AddToCart} from '../store/action/cart';
 import {InitSocket} from '../store/action/auth';
 import {IP_ADDRESS, convertDollar, currentDateString, countTotalPrice, convertVND} from '../global';
 
@@ -33,7 +34,11 @@ import {useSelector, useDispatch} from 'react-redux';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import BottomSheet, {BottomSheetBackdrop} from '@gorhom/bottom-sheet';
+import BottomSheet, {
+  BottomSheetBackdrop,
+  BottomSheetModalProvider,
+  BottomSheetModal,
+} from '@gorhom/bottom-sheet';
 import DatePicker from 'react-native-date-picker';
 import moment from 'moment';
 import SelectDropdown from 'react-native-select-dropdown';
@@ -69,15 +74,26 @@ export const GoToCheckout = props => {
   });
   const [webviewURL, setWebviewURL] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [toggleRecommendation, setToggleRecommendation] = useState(false);
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
   const deliveryAddressModalize = useRef();
   const promoSnapPoint = useMemo(() => ['90%'], []);
   const paymentSnapPoint = useMemo(() => ['50%', '90%'], []);
+  const recommendationSnapPoint = useMemo(() => ['60%', '90%'], []);
   const webviewBottomSheetRef = useRef();
+  const recommendationBottomSheetRef = useRef();
 
   const dispatch = useDispatch();
+
+  const openRecommendProducts = useCallback(() => {
+    recommendationBottomSheetRef.current?.present();
+  }, []);
+  const closeRecommendProducts = useCallback(() => {
+    recommendationBottomSheetRef.current?.dismiss();
+    // setToggleRecommendProducts(false);
+  }, []);
 
   const totalCartPrice = cart => {
     let price = 0.0;
@@ -432,6 +448,33 @@ export const GoToCheckout = props => {
     }
   };
 
+  const handleAddToCart = item => {
+    closeRecommendProducts();
+    setIsProcessing(true);
+    const cartForm = {
+      user_id: state.user_id,
+      provider_id: item.provider_id,
+      provider_name: state.userCart.provider_name,
+      cartItem: {
+        product_id: item.product_id,
+        productName: item.product_name,
+        productPrice: item.price,
+        productImage: item.product_image,
+        quantity: 1,
+        special_instruction: '',
+        additional_option: [],
+        totalProductPrice: item.price * 1,
+      },
+      location: state.userCart.location,
+      address: state.userCart.address,
+    };
+
+    dispatch(AddToCart(cartForm));
+    setTimeout(() => {
+      setIsProcessing(false);
+    }, 500);
+  };
+
   useEffect(() => {
     // const loadData = async () => {
     //   let list = [];
@@ -474,10 +517,17 @@ export const GoToCheckout = props => {
         setDeliveryfee(convertDollar(res.data.delivery_fee));
       }
       setLoading(false);
+      setToggleRecommendation(true);
     };
 
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (toggleRecommendation) {
+      openRecommendProducts();
+    }
+  }, [toggleRecommendation]);
 
   useEffect(() => {
     setOrderForm(prev => ({
@@ -960,13 +1010,30 @@ export const GoToCheckout = props => {
           />
         </BottomSheet>
       )}
+      <BottomSheetModalProvider>
+        <BottomSheetModal
+          ref={recommendationBottomSheetRef}
+          index={0}
+          snapPoints={recommendationSnapPoint}
+          onDismiss={() => setToggleRecommendation(false)}
+          backdropComponent={props => (
+            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+          )}>
+          <RecommendedProducts
+            user_id={state.user_id}
+            navigation={props.navigation}
+            onClose={closeRecommendProducts}
+            onClick={item => handleAddToCart(item)}
+          />
+        </BottomSheetModal>
+      </BottomSheetModalProvider>
       {isProcessing && (
         <View
           style={[
             styles.container,
             {backgroundColor: 'transparent', position: 'absolute', top: '50%'},
           ]}>
-          <ActivityIndicator size={'large'} color={colors.red} />
+          <ActivityIndicator size={'small'} color={colors.red} />
         </View>
       )}
     </SafeAreaView>

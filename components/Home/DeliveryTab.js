@@ -5,7 +5,6 @@ import {
   StatusBar,
   StyleSheet,
   Text,
-  useColorScheme,
   View,
   Button,
   TouchableOpacity,
@@ -14,13 +13,10 @@ import {
   FlatList,
   Image,
   ImageBackground,
-  Animated,
   Platform,
   Modal,
   Switch,
-  TouchableWithoutFeedback,
   RefreshControl,
-  TouchableHighlight,
 } from 'react-native';
 
 // components
@@ -192,6 +188,7 @@ export const DeliveryTab = props => {
             contentContainerStyle={{backgroundColor: '#f2f2f2'}}
             // onScrollBeginDrag={() => dispatch(ToggleNavigationBar())}
             // onMomentumScrollEnd={() => dispatch(ToggleNavigationBar())}
+            showsVerticalScrollIndicator={false}
             refreshControl={
               <RefreshControl
                 tintColor={colors.boldred}

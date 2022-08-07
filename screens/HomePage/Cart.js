@@ -44,12 +44,6 @@ export const Cart = props => {
   const [openModal, setOpenModal] = useState(false);
   const [additionalOptions, setAdditionalOptions] = useState([]);
   const isFocus = useIsFocused();
-  const bottomSheetRef = useRef();
-  const snapPoints = useMemo(() => ['70%', '90%'], []);
-
-  const openRecommendProducts = useCallback(() => {
-    bottomSheetRef.current?.present();
-  }, []);
 
   useEffect(() => {
     // if (state.userCart.provider_name !== null) {
@@ -71,7 +65,6 @@ export const Cart = props => {
     //   additionalOption: [],
     //   additionalOptions: [],
     // }));
-    openRecommendProducts();
     setLoading(false);
   }, []);
 
@@ -262,68 +255,8 @@ export const Cart = props => {
               ${totalCartPrice(state.userCart.cart)}
             </Text>
           </View>
-
-          {/* {state.userCart.status !== null ? (
-            <Button
-              title="Watch your order"
-              color={colors.primary}
-              onPress={() =>
-                props.navigation.navigate('OrderStatus', {order: null, customerData: null})
-              }
-            />
-          ) : (
-            <Button
-              title="Submit order"
-              color={colors.primary}
-              onPress={() => {
-                dispatch(SubmitOrder());
-                props.navigation.navigate('OrderStatus', {order: state.userCart});
-              }}
-            />
-          )} */}
         </ScrollView>
         <View style={{width, paddingHorizontal: 20, marginTop: -10}}>
-          {/* {state.userCart.status === null ? (
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('GoToCheckout')}
-              style={{
-                width: '100%',
-                backgroundColor: 'black',
-                paddingVertical: 15,
-                paddingHorizontal: 20,
-              }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                  textTransform: 'uppercase',
-                  textAlign: 'center',
-                }}>
-                Go to checkout
-              </Text>
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('OrderStatus', {order: state.userCart})}
-              style={{
-                width: '100%',
-                backgroundColor: 'black',
-                paddingVertical: 15,
-                paddingHorizontal: 20,
-              }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: '600',
-                  color: 'white',
-                  textTransform: 'uppercase',
-                  textAlign: 'center',
-                }}>
-                Order tracking
-              </Text>
-            </TouchableOpacity>
-          )} */}
           <TouchableOpacity
             onPress={() => props.navigation.navigate('GoToCheckout')}
             style={{
@@ -344,25 +277,9 @@ export const Cart = props => {
             </Text>
           </TouchableOpacity>
         </View>
-        {/* <TouchableOpacity style={styles.submitOrderButton}>
-          <Text style={{color: 'white', fontWeight: 'bold', fontSize: 20, textAlign: 'center'}}>
-            Submit order
-          </Text>
-        </TouchableOpacity> */}
       </SafeAreaView>
 
       <NavigationBar {...props} active={props.tabname} />
-      {/* <BottomSheetModalProvider>
-        <BottomSheetModal
-          ref={bottomSheetRef}
-          index={0}
-          snapPoints={snapPoints}
-          backdropComponent={props => (
-            <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
-          )}>
-          <RecommendedProducts user_id={state.user_id} />
-        </BottomSheetModal>
-      </BottomSheetModalProvider> */}
     </View>
   );
 };

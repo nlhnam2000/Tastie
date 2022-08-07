@@ -78,7 +78,7 @@ export const Browse = props => {
             <TextInput
               placeholder="Search"
               placeholderTextColor={'gray'}
-              style={{marginLeft: 15, width: '80%'}}
+              style={{marginLeft: 15, width: '90%'}}
               clearButtonMode="always"
               onSubmitEditing={event => {
                 if (searchKey && searchKey !== '') {
@@ -116,6 +116,7 @@ export const Browse = props => {
             numColumns={2}
             renderItem={renderCategory}
             style={{height: '70%'}}
+            showsVerticalScrollIndicator={false}
             // ListFooterComponent={() => (
             //   <Button title="Test" onPress={() => dispatch(DisplayAlertMessage('hihi'))} />
             // )}

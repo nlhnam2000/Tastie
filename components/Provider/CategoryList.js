@@ -9,7 +9,6 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-import {popularData} from '../../assets/dummy/popularData';
 import {shuffle, IP_ADDRESS, OpenStatus, convertDollar} from '../../global';
 import axios from 'axios';
 import {useSelector} from 'react-redux';
@@ -73,7 +72,7 @@ export const CategoryList = props => {
           resizeMode={FastImage.resizeMode.cover}
           style={{
             height: 150,
-            width: width - 40,
+            width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
             position: 'relative',
@@ -113,9 +112,9 @@ export const CategoryList = props => {
             />
           )}
         </FastImage>
-        <View style={[styles.flexRowBetween]}>
-          <View style={{paddingVertical: 10, paddingHorizontal: 15}}>
-            <View style={{width: width - 200, marginBottom: 5}}>
+        <View style={[styles.flexRowBetween, {paddingVertical: 10}]}>
+          <View style={{maxWidth: '70%'}}>
+            <View style={{marginBottom: 5}}>
               <Text numberOfLines={1} style={[styles.subheading]}>
                 {item.provider_name}
               </Text>
@@ -127,7 +126,7 @@ export const CategoryList = props => {
             </View>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-            <Text>{item.order_totals}</Text>
+            <Text>{parseFloat(item.customer_rating).toFixed(1) ?? 0.0}</Text>
           </View>
         </View>
       </TouchableOpacity>
@@ -166,7 +165,8 @@ export const CategoryList = props => {
         keyExtractor={item => item.provider_id}
         horizontal
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => <Item item={item} />}
+        renderItem={({item}) => <MemoizedItem item={item} />}
+        pagingEnabled
       />
     </View>
   );
@@ -180,6 +180,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingVertical: 10,
     marginTop: 10,
+    width,
   },
   heading: {
     fontSize: 20,
@@ -193,6 +194,7 @@ const styles = StyleSheet.create({
   },
   providerWrapper: {
     paddingHorizontal: 15,
+    width,
   },
   subheading: {
     fontWeight: '600',
