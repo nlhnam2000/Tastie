@@ -2,13 +2,13 @@
 // type=2: cuisine_category
 export const categoryData = [
   {
-    id: 1000002,
+    id: 1000000,
     title: 'American',
     image: require('../image/Category/american.png'),
     type: 2,
   },
   {
-    id: 1000004,
+    id: 1000001,
     title: 'Asian',
     image: require('../image/Category/asian.png'),
     type: 2,
@@ -38,7 +38,7 @@ export const categoryData = [
     type: 1,
   },
   {
-    id: 1000010,
+    id: 1000005,
     title: 'Chinese',
     image: require('../image/Category/chinese.png'),
     type: 2,
@@ -98,7 +98,7 @@ export const categoryData = [
     type: 2,
   },
   {
-    id: 1000020,
+    id: 1000013,
     title: 'Korean',
     image: require('../image/Category/korean.png'),
     type: 2,

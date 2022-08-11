@@ -14,18 +14,18 @@ import {
   Image,
   ImageBackground,
   Animated,
-  ActivityIndicator,
   Platform,
 } from 'react-native';
 import Feather from 'react-native-vector-icons/Feather';
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../../../colors/colors';
 import {useDispatch, useSelector} from 'react-redux';
-import moment from 'moment';
 import {AddToCart, ClearCart} from '../../../store/action/cart';
 import {DuoAlertDialog} from '../../../components/Error/AlertDialog';
-import {sleep} from '../../../global';
 import FastImage from 'react-native-fast-image';
+import axios from 'axios';
+import {IP_ADDRESS} from '../../../global';
+import {ActivityIndicator} from 'react-native-paper';
 
 const {width, height} = Dimensions.get('window');
 
@@ -40,26 +40,8 @@ export const ProductOptions = props => {
   const [totalPrice, setTotalPrice] = useState(parseFloat(data.price).toFixed(2));
   const [cartForm, setCartForm] = useState({});
   const [openModal, setOpenModal] = useState(false);
-  const [FBT, setFBT] = useState([
-    {
-      name: 'Poke Salad',
-      price: 10.0,
-      image: require('../../../assets/image/upcomingproduct.png'),
-      checked: false,
-    },
-    {
-      name: 'Chiraishi',
-      price: 10.0,
-      image: require('../../../assets/image/upcomingproduct.png'),
-      checked: false,
-    },
-    {
-      name: 'Hot Night',
-      price: 10.0,
-      image: require('../../../assets/image/upcomingproduct.png'),
-      checked: false,
-    },
-  ]);
+  const [FBT, setFBT] = useState([]);
+  const [selectedFBT, setSelectedFBT] = useState([]);
 
   const handleAddToCart = () => {
     if (state.userCart.provider_id && state.userCart.provider_id !== cartForm.provider_id) {
@@ -67,6 +49,29 @@ export const ProductOptions = props => {
       // dispatch(ClearCart(state.user_id));
     } else {
       dispatch(AddToCart(cartForm));
+      if (selectedFBT.length > 0) {
+        for (item of selectedFBT) {
+          dispatch(
+            AddToCart({
+              user_id: state.user_id,
+              provider_id: provider_id,
+              provider_name: provider_name,
+              cartItem: {
+                product_id: item.product_id,
+                productName: item.product_name,
+                productPrice: item.price,
+                productImage: item.product_image,
+                quantity: 1,
+                special_instruction: '',
+                additional_option: [],
+                totalProductPrice: item.price,
+              },
+              location: location,
+              address: address,
+            }),
+          );
+        }
+      }
       setTimeout(() => {
         props.navigation.goBack();
       }, 800);
@@ -81,16 +86,47 @@ export const ProductOptions = props => {
     setFBT(copy);
   };
 
+  const GetFBT = async () => {
+    try {
+      const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
+        provider_id: provider_id,
+        product_list: [data.product_id],
+      });
+
+      if (res.data.response.length > 0) {
+        setFBT(res.data.response);
+      }
+    } catch (error) {
+      console.log('Cannot get FBT', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // console.log(FBT.filter(f => f.checked === true));
+    setSelectedFBT(FBT.filter(f => f.checked === true));
+  }, [FBT]);
+
   useEffect(() => {
     if (data.product_options[0].option_name !== null) {
       setProductOptions(data.product_options);
     }
-    setLoading(false);
+    console.log(data.product_id);
+    // setLoading(false);
+    GetFBT();
   }, []);
 
   useEffect(() => {
-    setTotalPrice((parseFloat(data.price) * quantity).toFixed(2));
-  }, [quantity]);
+    let sum = 0;
+    if (selectedFBT.length > 0) {
+      sum = selectedFBT.reduce((prev, curr) => {
+        return prev + curr.price;
+      }, 0);
+      console.log(sum);
+    }
+    setTotalPrice(parseFloat(parseFloat(data.price) * quantity + parseFloat(sum)).toFixed(2));
+  }, [quantity, selectedFBT]);
 
   useEffect(() => {
     setCartForm(prev => ({
@@ -115,8 +151,8 @@ export const ProductOptions = props => {
 
   if (loading) {
     return (
-      <View style={[styles.container, {justifyContent: 'center'}]}>
-        <ActivityIndicator size={'large'} color={colors.red} />
+      <View style={[styles.container, {justifyContent: 'center', alignItems: 'center'}]}>
+        <ActivityIndicator size={'small'} color={colors.red} />
       </View>
     );
   }
@@ -175,7 +211,7 @@ export const ProductOptions = props => {
                 marginVertical: 10,
                 paddingHorizontal: 10,
               }}>
-              <View style={{flexDirection: 'row'}}>
+              <View style={{flexDirection: 'row', width: '70%'}}>
                 <TouchableOpacity onPress={() => handleTickFBT(index)}>
                   <MaterialCommunityIcon
                     name={item.checked ? 'checkbox-marked' : 'checkbox-blank-outline'}
@@ -184,14 +220,16 @@ export const ProductOptions = props => {
                   />
                 </TouchableOpacity>
                 <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item.name}</Text>
-                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>${item.price}</Text>
+                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item.product_name}</Text>
+                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>
+                    ${item.price.toFixed(2)}
+                  </Text>
                 </View>
               </View>
               <FastImage
-                source={item.image}
-                style={{width: 100, height: 100}}
-                resizeMode={FastImage.resizeMode.contain}
+                source={{uri: item.product_image}}
+                style={{width: 80, height: 80}}
+                resizeMode={FastImage.resizeMode.cover}
               />
             </View>
           ))}

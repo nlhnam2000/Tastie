@@ -8,7 +8,7 @@
 
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import React, {useState, useEffect} from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, View, LogBox} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createDrawerNavigator} from '@react-navigation/drawer';
@@ -77,6 +77,8 @@ import notifee, {AuthorizationStatus, EventType} from '@notifee/react-native';
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+
+LogBox.ignoreAllLogs();
 
 Feather.loadFont();
 fontAwesome.loadFont();

@@ -11,8 +11,16 @@ import {AddToCart} from '../../store/action/cart';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 
-export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => {
-  const [loading, setLoading] = useState(true);
+export const RecommendedProducts = ({
+  user_id,
+  navigation,
+  onClose,
+  onClick,
+  selfToggle,
+  data,
+  provider_id,
+}) => {
+  const [loading, setLoading] = useState(false);
   const bottomSheetRef = useRef();
   const snapPoints = useMemo(() => ['90%'], []);
   const dispatch = useDispatch();
@@ -22,9 +30,11 @@ export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => 
   const LoadRecommendedProducts = async () => {
     const productList = [...state.userCart.cart].map(item => item.product_id);
     console.log(productList);
+    console.log(provider_id);
     try {
       const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
-        product_list: [1000665, 1000666],
+        provider_id: provider_id,
+        product_list: productList,
       });
 
       if (res.data.status) {
@@ -37,29 +47,12 @@ export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => 
     }
   };
 
-  const handleAddToCart = item => {
-    // const cartForm = {
-    //   user_id: state.user_id,
-    //   provider_id: item.provider_id,
-    //   provider_name: state.userCart.provider_name,
-    //   cartItem: {
-    //     product_id: item.product_id,
-    //     productName: item.product_name,
-    //     productPrice: item.price,
-    //     productImage: item.product_image,
-    //     quantity: 1,
-    //     special_instruction: null,
-    //     additional_option: [],
-    //     totalProductPrice: item.price * 1,
-    //   },
-    //   location: state.userCart.location,
-    //   address: state.userCart.address,
-    // };
-
-    // dispatch(AddToCart(cartForm));
-    // onClose();
-    onClick(item);
-  };
+  useEffect(() => {
+    if (products.length > 0) {
+      selfToggle();
+      console.log(products.length);
+    }
+  }, [products]);
 
   const renderItem = ({item}) => (
     <View style={styles.menuContentWrapper}>
@@ -102,9 +95,9 @@ export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => 
     </View>
   );
 
-  useEffect(() => {
-    LoadRecommendedProducts();
-  }, []);
+  // useEffect(() => {
+  //   LoadRecommendedProducts();
+  // }, []);
 
   if (loading) {
     return (
@@ -116,12 +109,14 @@ export const RecommendedProducts = ({user_id, navigation, onClose, onClick}) => 
 
   return (
     <FlatList
-      data={products}
+      data={data}
       keyExtractor={item => item.product_id}
       renderItem={renderItem}
       ListHeaderComponent={
         <View style={{paddingHorizontal: 10, paddingTop: 10}}>
-          <Text style={{fontWeight: '600', fontSize: 16}}>Recommended products</Text>
+          <Text style={{fontWeight: '500', fontSize: 16, paddingHorizontal: 10}}>
+            Maybe you would like one of these
+          </Text>
         </View>
       }
     />

@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useCallback, useMemo} from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -39,6 +39,11 @@ import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps';
 import {Modalize} from 'react-native-modalize';
 import axios from 'axios';
 import FastImage from 'react-native-fast-image';
+import BottomSheet, {
+  BottomSheetModalProvider,
+  BottomSheetBackdrop,
+  BottomSheetModal,
+} from '@gorhom/bottom-sheet';
 
 const FULL_WIDTH = Dimensions.get('screen').width;
 const NAVBAR_VERTICAL_PADDING = 10;
@@ -65,6 +70,36 @@ export const DetailProvider = props => {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [operation_time, setOperation_time] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  const searchBottomSheetRef = useRef();
+  const searchBottomSheetSnapPoint = useMemo(() => ['95%'], []);
+  const searchInputRef = useRef();
+  const openSearchBottomSheet = useCallback(() => {
+    searchBottomSheetRef.current?.present();
+    setTimeout(() => {
+      searchInputRef.current?.focus();
+    }, 500);
+  }, []);
+  const closeSearchBottomSheet = useCallback(() => {
+    searchBottomSheetRef.current?.dismiss();
+  }, []);
+
+  useEffect(() => {
+    if (searchKeyword !== '') {
+      let productList = [];
+      for (let i = 0; i < item.length; i++) {
+        productList = [...productList, ...item[i].data];
+      }
+      // console.log(productList.at(0));
+      setSearchResults(
+        productList.filter(product =>
+          product.product_name.toLowerCase().includes(searchKeyword.toLowerCase()),
+        ),
+      );
+    }
+  }, [searchKeyword]);
 
   const providerInfoModal = useRef();
   const openProviderInfoModal = () => {
@@ -201,7 +236,7 @@ export const DetailProvider = props => {
         menuCategoryId: item.menu_category_id,
         menuCategoryName: item.menu_category_name,
       }));
-      console.log(copied);
+      // console.log(copied);
       setMenuCategory(copied);
     }
   }, [item]);
@@ -269,7 +304,7 @@ export const DetailProvider = props => {
         continue;
       }
     }
-    console.log({sectionIndex, itemIndex});
+    // console.log({sectionIndex, itemIndex});
   };
 
   const scrollToIndex = (index, categoryTitle) => {
@@ -696,7 +731,9 @@ export const DetailProvider = props => {
                       <Text style={{fontSize: 19, fontWeight: '600', textAlign: 'center'}}>
                         Menu
                       </Text>
-                      <Feather name="search" size={20} color={'#000'} />
+                      <TouchableOpacity onPress={() => openSearchBottomSheet()}>
+                        <Feather name="search" size={20} color={'#000'} />
+                      </TouchableOpacity>
                     </View>
                   </View>
                   {/* {item.map((category, index) => {
@@ -988,6 +1025,76 @@ export const DetailProvider = props => {
             dismiss={() => modalizeRef.current?.close()}
           />
         </Modalize>
+        <BottomSheetModalProvider>
+          <BottomSheetModal
+            ref={searchBottomSheetRef}
+            snapPoints={searchBottomSheetSnapPoint}
+            index={0}
+            backdropComponent={props => (
+              <BottomSheetBackdrop {...props} disappearsOnIndex={-1} appearsOnIndex={0} />
+            )}>
+            <TextInput
+              ref={searchInputRef}
+              placeholder="Search for a food ... "
+              placeholderTextColor={'#c4c4c4'}
+              style={{width: '100%', padding: 15, backgroundColor: '#f2f2f2'}}
+              returnKeyType="search"
+              onChangeText={text => setSearchKeyword(text)}
+            />
+            <FlatList
+              data={searchResults}
+              keyExtractor={item => item.provider_id}
+              renderItem={({item}) => (
+                <View style={styles.menuContentWrapper}>
+                  <View style={styles.menuContent}>
+                    <TouchableOpacity
+                      disabled={item.product_status === 2 ? true : false}
+                      onPress={() => {
+                        closeSearchBottomSheet();
+                        props.navigation.navigate('ProductOptions', {
+                          data: item,
+                          provider_id: info.data.provider_id,
+                          provider_name: info.data.merchant_name,
+                          location: {
+                            latitude: parseFloat(info.data.latitude),
+                            longitude: parseFloat(info.data.longitude),
+                          },
+                          address: `${info.data.address} ${info.data.road}`,
+                        });
+                      }}
+                      style={styles.foodWrapper}>
+                      <View
+                        style={[
+                          styles.foodInfo,
+                          {width: '70%', opacity: item.product_status === 2 ? 0.6 : 1},
+                        ]}>
+                        <Text style={{fontWeight: '600', fontSize: 18, marginBottom: 10}}>
+                          {item.product_name}
+                        </Text>
+                        {/* <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                    <MaterialIcon name="sale" color={colors.boldred} size={17} />
+                    <Text style={{color: colors.boldred, marginHorizontal: 5}}>50%</Text>
+                    <Text style={{textDecorationLine: 'line-through', color: 'grey'}}>
+                      ${item.price.toFixed(2)}
+                    </Text>
+                  </View>
+                  <Text style={{marginTop: 10}}>${discount(item.price, 0.5).toFixed(2)}</Text> */}
+                        <Text style={{marginTop: 10}}>${item.price.toFixed(2)}</Text>
+                        <Text style={{color: 'gray', marginTop: 10}} numberOfLines={4}>
+                          {item.description}
+                        </Text>
+                      </View>
+                      <FastImage
+                        style={[styles.foodImage, {opacity: item.product_status === 2 ? 0.6 : 1}]}
+                        source={{uri: item.product_image}}
+                      />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+            />
+          </BottomSheetModal>
+        </BottomSheetModalProvider>
       </View>
     );
   }

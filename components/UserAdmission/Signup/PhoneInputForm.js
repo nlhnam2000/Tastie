@@ -67,7 +67,7 @@ export const PhoneInputForm = props => {
           placeholder="Your phone number"
           clearButtonMode="always"
           keyboardType="numeric"
-          returnKeyType="done"
+          // returnKeyType="done"
           ref={phoneInputRef}
           onFocus={() =>
             phoneInputRef.current.setNativeProps({

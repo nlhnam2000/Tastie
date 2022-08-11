@@ -92,9 +92,11 @@ export const UpcomingProduct = props => {
             <Text style={{color: 'gray', marginTop: 5}}>Required</Text>
           </View>
           <View style={styles.optionWrapper}>
-            {options.map((item, index) => (
+            {props.data.choice.map((item, index) => (
               <View key={index} style={styles.options}>
-                <TouchableOpacity style={styles.radioButton} onPress={() => setSelected(item)}>
+                <TouchableOpacity
+                  style={styles.radioButton}
+                  onPress={() => setSelected(item.content)}>
                   <View
                     style={{
                       borderRadius: 40,
@@ -103,7 +105,7 @@ export const UpcomingProduct = props => {
                       height: 15,
                     }}></View>
                 </TouchableOpacity>
-                <Text style={{fontSize: 17, fontWeight: '400'}}>{item}</Text>
+                <Text style={{fontSize: 17, fontWeight: '400'}}>{item.content}</Text>
               </View>
             ))}
           </View>

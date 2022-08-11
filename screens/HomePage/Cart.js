@@ -123,7 +123,8 @@ export const Cart = props => {
             style={styles.headerWrapper}
             onPress={() =>
               props.navigation.navigate('DetailProvider', {
-                data: {provider_id: state.userCart.provider_id},
+                data: state.userCart.provider_id,
+                // productTarget: 1050267,
               })
             }>
             <Text

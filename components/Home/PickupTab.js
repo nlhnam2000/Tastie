@@ -91,8 +91,12 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     // console.log(changed);
   };
   const onViewChangeRef = useRef(({viewableItems}) => {
-    console.log(viewableItems);
-    setSelectedMarker(viewableItems[0].item);
+    try {
+      console.log(viewableItems);
+      setSelectedMarker(viewableItems[0].item);
+    } catch (error) {
+      console.log(error);
+    }
   });
   const onViewChangeConfigRef = useRef({
     minimumViewTime: 1,
@@ -127,13 +131,17 @@ export const PickupTab = gestureHandlerRootHOC(props => {
   const renderItem = ({item, index}) => {
     return (
       <TouchableOpacity
-        onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
+        onPress={() => props.navigation.navigate('DetailProvider', {data: item.provider_id})}
         style={[
           styles.providerWrapper,
           {marginBottom: index === providerList.length - 1 ? 100 : 0, marginTop: 10},
         ]}>
         <FastImage
-          source={{uri: item.profile_pic ?? item.avatar}}
+          source={
+            item.profile_pic
+              ? {uri: item.profile_pic}
+              : require('../../assets/image/SlideShowImg/Picture1.jpg')
+          }
           resizeMode={FastImage.resizeMode.cover}
           style={{height: 150, width: width - 20}}
         />

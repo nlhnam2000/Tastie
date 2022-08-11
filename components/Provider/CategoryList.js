@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   ImageBackground,
   Dimensions,
+  Image,
 } from 'react-native';
 import {shuffle, IP_ADDRESS, OpenStatus, convertDollar} from '../../global';
 import axios from 'axios';
@@ -39,7 +40,9 @@ export const CategoryList = props => {
     );
     if (res.data.response) {
       // setProviderList(res.data.response.filter(r => OpenStatus(r.operation_time) !== 'OFF'));
-      setProviderList(res.data.response);
+      setProviderList(
+        res.data.response.filter(r => r.provider_name !== '2 Amigos Latinos Restaurant'),
+      );
     }
     setLoading(false);
   };
@@ -55,20 +58,23 @@ export const CategoryList = props => {
     }
   }, [props.location]);
 
-  const Item = ({item}) => {
-    const [isError, setIsError] = useState(false);
+  const renderItem = ({item}) => {
     // const [imageSrc, setImageSrc] = useState({uri: item.profile_pic});
     return (
       <TouchableOpacity
         onPress={() => props.navigation.navigate('DetailProvider', {data: item.provider_id})}
         style={styles.providerWrapper}>
         <FastImage
-          onError={() => setIsError(true)}
+          // onError={() => {
+          //   console.log('error');
+          //   setIsError(true);
+          // }}
           source={
-            isError || !item.profile_pic
-              ? require('../../assets/image/SlideShowImg/Picture1.jpg')
-              : {uri: item.profile_pic}
+            item.profile_pic
+              ? {uri: item.profile_pic}
+              : require('../../assets/image/SlideShowImg/Picture1.jpg')
           }
+          // source={{uri: item.profile_pic}}
           resizeMode={FastImage.resizeMode.cover}
           style={{
             height: 150,
@@ -133,11 +139,6 @@ export const CategoryList = props => {
     );
   };
 
-  const MemoizedItem = React.memo(Item, (prevProps, nextProps) => {
-    console.log({prevProps, nextProps});
-    return prevProps.item.provider_id === nextProps.item.provider_id;
-  });
-
   if (loading || providerList.length === 0) {
     return (
       <View style={styles.container}>
@@ -162,10 +163,10 @@ export const CategoryList = props => {
       </View>
       <FlatList
         data={providerList}
-        keyExtractor={item => item.provider_id}
+        keyExtractor={item => item.provider_id.toString()}
         horizontal
         showsHorizontalScrollIndicator={false}
-        renderItem={({item}) => <MemoizedItem item={item} />}
+        renderItem={renderItem}
         pagingEnabled
       />
     </View>

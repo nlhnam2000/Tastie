@@ -52,7 +52,7 @@ export const OrderStatus = props => {
   });
   const [shipperLocation, setShipperLocation] = useState(null);
   const [shipperInfo, setShipperInfo] = useState({
-    name: 'John Doe',
+    name: 'Nam',
     phone: 123123123,
     bikeNumber: '79N1 - 1234',
     estimatedTime: 14,

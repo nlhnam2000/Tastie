@@ -75,6 +75,7 @@ export const GoToCheckout = props => {
   const [webviewURL, setWebviewURL] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [toggleRecommendation, setToggleRecommendation] = useState(false);
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
 
   const promoBottomSheetRef = useRef();
   const paymentBottomSheetRef = useRef();
@@ -470,9 +471,36 @@ export const GoToCheckout = props => {
     };
 
     dispatch(AddToCart(cartForm));
-    setTimeout(() => {
-      setIsProcessing(false);
-    }, 500);
+    // setTimeout(() => {
+    //   setIsProcessing(false);
+    // }, 500);
+  };
+
+  useEffect(() => {
+    setIsProcessing(false);
+  }, [state.userCart.cart]);
+
+  const LoadRecommendedProducts = async () => {
+    const productList = [...state.userCart.cart].map(item => item.product_id);
+    console.log(productList);
+    const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
+      provider_id: state.userCart.provider_id,
+      product_list: productList,
+    });
+
+    return res.data.response;
+  };
+  const LoadDeliveryFee = async () => {
+    let res = await axios.post(
+      `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+      {
+        longitude: state.userLocation.longitude,
+        latitude: state.userLocation.latitude,
+        provider_id: state.userCart.provider_id,
+      },
+    );
+
+    return res.data.delivery_fee;
   };
 
   useEffect(() => {
@@ -505,19 +533,31 @@ export const GoToCheckout = props => {
     // };
     const loadData = async () => {
       dispatch(RetrieveCart(state.user_id)); // retrieve the cart data just in case missing data
-      let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
-        {
-          longitude: state.userLocation.longitude,
-          latitude: state.userLocation.latitude,
-          provider_id: state.userCart.provider_id,
-        },
-      );
-      if (res.data.delivery_fee) {
-        setDeliveryfee(convertDollar(res.data.delivery_fee));
-      }
-      setLoading(false);
-      setToggleRecommendation(true);
+      // let res = await axios.post(
+      //   `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+      //   {
+      //     longitude: state.userLocation.longitude,
+      //     latitude: state.userLocation.latitude,
+      //     provider_id: state.userCart.provider_id,
+      //   },
+      // );
+      // if (res.data.delivery_fee) {
+      //   setDeliveryfee(convertDollar(res.data.delivery_fee));
+      // }
+      // setLoading(false);
+      // setToggleRecommendation(true);
+
+      const loadDeliveryFee = LoadDeliveryFee();
+      const loadRecommendedProducts = LoadRecommendedProducts();
+
+      Promise.all([loadDeliveryFee, loadRecommendedProducts]).then(data => {
+        if (data[0] && data[1]) {
+          console.log(data[1].length);
+          setDeliveryfee(convertDollar(data[0]));
+          setRecommendedProducts(data[1]);
+          setLoading(false);
+        }
+      });
     };
 
     loadData();
@@ -528,6 +568,12 @@ export const GoToCheckout = props => {
       openRecommendProducts();
     }
   }, [toggleRecommendation]);
+
+  useEffect(() => {
+    if (recommendedProducts.length > 0) {
+      setToggleRecommendation(true);
+    }
+  }, [recommendedProducts]);
 
   useEffect(() => {
     setOrderForm(prev => ({
@@ -1013,7 +1059,7 @@ export const GoToCheckout = props => {
       <BottomSheetModalProvider>
         <BottomSheetModal
           ref={recommendationBottomSheetRef}
-          index={0}
+          index={1}
           snapPoints={recommendationSnapPoint}
           onDismiss={() => setToggleRecommendation(false)}
           backdropComponent={props => (
@@ -1024,6 +1070,9 @@ export const GoToCheckout = props => {
             navigation={props.navigation}
             onClose={closeRecommendProducts}
             onClick={item => handleAddToCart(item)}
+            selfToggle={() => console.log('Show')}
+            data={recommendedProducts}
+            provider_id={state.userCart.provider_id}
           />
         </BottomSheetModal>
       </BottomSheetModalProvider>

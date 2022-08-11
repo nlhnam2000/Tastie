@@ -21,7 +21,7 @@ export const RecommendedProducts = props => {
         `http://${IP_ADDRESS}:3007/v1/api/tastie/get-recommendations-for-customers/${user_id}`,
       );
       if (res.data.status) {
-        setData(res.data.response);
+        setData(res.data.response.filter(r => Object.keys(r).length > 2));
       }
     } catch (error) {
       console.log('Cannot get recommendation', error);

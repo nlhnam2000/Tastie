@@ -10,6 +10,7 @@ import {ActivityIndicator} from 'react-native-paper';
 import colors from '../colors/colors';
 import Feather from 'react-native-vector-icons/Feather';
 import {OrderProgressBarPickup} from '../components/Progress/OrderProgressBar';
+import {SimpleAlertDialog} from '../components/Error/AlertDialog';
 import axios from 'axios';
 
 export const PickupTracking = ({navigation, route}) => {
@@ -18,6 +19,8 @@ export const PickupTracking = ({navigation, route}) => {
   const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [polyline, setPolyline] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [notification, setNotification] = useState(null);
   const [orderData, setOrderData] = useState({
     merchant_name: null,
     merchant_location: {
@@ -89,7 +92,16 @@ export const PickupTracking = ({navigation, route}) => {
     state.socketServer.host.on('order-confirmed-from-provider', () => {
       setOrderStatus(2); //
     });
+    state.socketServer.host.on('order-canceled', message => {
+      // canceled
+      setNotification(message);
+    });
   };
+  useEffect(() => {
+    if (notification && notification !== '') {
+      setOpenModal(true);
+    }
+  }, [notification]);
 
   const OrderCompleted = async () => {
     try {
@@ -444,6 +456,11 @@ export const PickupTracking = ({navigation, route}) => {
           )}
         </View>
       </BottomSheet>
+      <SimpleAlertDialog
+        message={notification}
+        visible={openModal}
+        onCancel={() => setOpenModal(false)}
+      />
     </View>
   );
 };
