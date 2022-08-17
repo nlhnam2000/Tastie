@@ -52,13 +52,13 @@ export const NavigationBar = props => {
       name: 'Default Channel',
     });
 
-    await notifee.cancelAllNotifications();
+    // await notifee.cancelAllNotifications();
 
     // Display a notification
     await notifee.displayNotification({
       title: message.subject,
       body: message.content,
-      ios: {
+      android: {
         channelId,
       },
       data: {

@@ -485,7 +485,7 @@ export const GoToCheckout = props => {
     console.log(productList);
     const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
       provider_id: state.userCart.provider_id,
-      product_list: productList,
+      product_list: [1050267, 1099647, 1104675],
     });
 
     return res.data.response;

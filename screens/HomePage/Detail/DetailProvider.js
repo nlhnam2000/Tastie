@@ -442,8 +442,8 @@ export const DetailProvider = props => {
               <Text numberOfLines={1} style={{fontWeight: 'bold', fontSize: 20, width: '70%'}}>
                 {info.data.merchant_name}
               </Text>
-              <TouchableOpacity>
-                <Feather name="info" size={22} color={'#000'} />
+              <TouchableOpacity onPress={() => openSearchBottomSheet()}>
+                <Feather name="search" size={22} color={'#000'} />
               </TouchableOpacity>
             </Animated.View>
             <Animated.View

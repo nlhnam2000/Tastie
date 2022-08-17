@@ -115,7 +115,9 @@ export const countTotalPrice = (items, delivery_fee, discount, maxDiscountValue)
   }, 0.0);
 
   // const totalPrice = 100;
-  const discountedValue = totalPrice * (discount / 100);
+
+  // in some case the discount value is 50 or 0.5
+  const discountedValue = discount > 1 ? totalPrice * (discount / 100) : totalPrice * discount;
   if (discountedValue <= maxDiscountValue) {
     return {
       finalPrice: parseFloat((totalPrice - discountedValue + delivery_fee).toFixed(2)),

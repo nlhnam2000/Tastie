@@ -16,7 +16,7 @@ import {Header} from '../../../../components/Layout/Header/Header';
 import Feather from 'react-native-vector-icons/Feather';
 import moment from 'moment';
 import PushNotification from 'react-native-push-notification';
-import notifee, {EventType} from '@notifee/react-native';
+import notifee, {EventType, AuthorizationStatus, AndroidVisibility} from '@notifee/react-native';
 
 export const DetailEcoupon = props => {
   const {item} = props.route.params;
@@ -52,9 +52,12 @@ export const DetailEcoupon = props => {
     //   message: 'test123',
     // });
 
+    await notifee.requestPermission();
+
     const channelId = await notifee.createChannel({
       id: 'default',
       name: 'Default Channel',
+      visibility: AndroidVisibility.PUBLIC,
     });
 
     // if (Platform.OS === 'ios') {
@@ -76,6 +79,10 @@ export const DetailEcoupon = props => {
       },
       android: {
         channelId,
+        pressAction: {
+          id: 'default',
+        },
+        visibility: AndroidVisibility.PUBLIC,
       },
     });
     // } else {
@@ -124,7 +131,7 @@ export const DetailEcoupon = props => {
               title: item.ecoupon_name,
               ecoupon_id: item.ecoupon_id,
             })
-          //  notify('Hi', 'test')
+          // notify('Hi', 'test')
         }>
         <Text
           style={{

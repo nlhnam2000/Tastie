@@ -197,43 +197,46 @@ export const ProductOptions = props => {
             />
           </View>
         </View>
-        <View style={{width: '100%', padding: 10, marginTop: 10, backgroundColor: 'white'}}>
-          <Text style={{fontSize: 19, fontWeight: '600', marginBottom: 10}}>
-            Frequently Bought Together
-          </Text>
-          {FBT.map((item, index) => (
-            <View
-              key={index}
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginVertical: 10,
-                paddingHorizontal: 10,
-              }}>
-              <View style={{flexDirection: 'row', width: '70%'}}>
-                <TouchableOpacity onPress={() => handleTickFBT(index)}>
-                  <MaterialCommunityIcon
-                    name={item.checked ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                    size={25}
-                    color="black"
-                  />
-                </TouchableOpacity>
-                <View style={{marginLeft: 10}}>
-                  <Text style={{fontSize: 16, fontWeight: '500'}}>{item.product_name}</Text>
-                  <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>
-                    ${item.price.toFixed(2)}
-                  </Text>
+        {FBT.length > 0 ? (
+          <View style={{width: '100%', padding: 10, marginTop: 10, backgroundColor: 'white'}}>
+            <Text style={{fontSize: 19, fontWeight: '600', marginBottom: 10}}>
+              Frequently Bought Together
+            </Text>
+            {FBT.map((item, index) => (
+              <View
+                key={index}
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  marginVertical: 10,
+                  paddingHorizontal: 10,
+                }}>
+                <View style={{flexDirection: 'row', width: '70%'}}>
+                  <TouchableOpacity onPress={() => handleTickFBT(index)}>
+                    <MaterialCommunityIcon
+                      name={item.checked ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                      size={25}
+                      color="black"
+                    />
+                  </TouchableOpacity>
+                  <View style={{marginLeft: 10}}>
+                    <Text style={{fontSize: 16, fontWeight: '500'}}>{item.product_name}</Text>
+                    <Text style={{fontSize: 14, color: 'grey', marginTop: 3}}>
+                      ${item.price.toFixed(2)}
+                    </Text>
+                  </View>
                 </View>
+                <FastImage
+                  source={{uri: item.product_image}}
+                  style={{width: 80, height: 80}}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
               </View>
-              <FastImage
-                source={{uri: item.product_image}}
-                style={{width: 80, height: 80}}
-                resizeMode={FastImage.resizeMode.cover}
-              />
-            </View>
-          ))}
-        </View>
+            ))}
+          </View>
+        ) : null}
+
         <View style={styles.quantityWrapper}>
           <TouchableOpacity
             style={{marginRight: 20, opacity: quantity < 2 ? 0.4 : 1}}

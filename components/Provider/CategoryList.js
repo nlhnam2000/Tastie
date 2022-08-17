@@ -132,7 +132,9 @@ export const CategoryList = props => {
             </View>
           </View>
           <View style={{padding: 10, borderRadius: 40, backgroundColor: 'rgba(230,230,230,0.6)'}}>
-            <Text>{parseFloat(item.customer_rating).toFixed(1) ?? 0.0}</Text>
+            <Text>
+              {item.customer_rating ? parseFloat(item.customer_rating).toFixed(1) : 'New'}
+            </Text>
           </View>
         </View>
       </TouchableOpacity>
