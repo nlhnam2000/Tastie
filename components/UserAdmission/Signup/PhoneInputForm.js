@@ -36,7 +36,7 @@ export const PhoneInputForm = props => {
       // dispatch(CheckExistingEmail(phone, email));
       try {
         let res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/auth/check-exist-email-and-phone`,
+          `https://${IP_ADDRESS}/v1/api/auth/check-exist-email-and-phone`,
           body,
         );
         if (res.data.isPhoneDuplicated === true) {

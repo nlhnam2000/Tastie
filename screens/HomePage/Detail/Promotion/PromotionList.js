@@ -39,7 +39,7 @@ export const PromotionsList = props => {
   useEffect(() => {
     const LoadPromotionList = async provider_id => {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
       );
       if (res.data.status) {
         setPromotionList(prev => ({

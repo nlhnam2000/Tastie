@@ -49,7 +49,7 @@ export const ForgotForm = ({navigation, route}) => {
 
   const getResetPassword = async () => {
     try {
-      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/auth/resest-password`, {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/auth/resest-password`, {
         phone: data.phone,
         email: data.email,
       });
@@ -61,7 +61,7 @@ export const ForgotForm = ({navigation, route}) => {
   const handleSubmit = async password => {
     if (password !== '') {
       try {
-        let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/sign-in`, {
+        let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/sign-in`, {
           phone: data.phone,
           password: password,
         });

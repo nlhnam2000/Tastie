@@ -30,16 +30,13 @@ export const RatingProvider = props => {
 
   const SubmitRating = async () => {
     try {
-      const res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-order-review`,
-        {
-          order_id: order_id,
-          create_at: formatDate(new Date()),
-          content: comment,
-          image: null,
-          stars: selectedRating,
-        },
-      );
+      const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/order/add-order-review`, {
+        order_id: order_id,
+        create_at: formatDate(new Date()),
+        content: comment,
+        image: null,
+        stars: selectedRating,
+      });
 
       if (res.data.status) {
         props.navigation.navigate('Home Page');

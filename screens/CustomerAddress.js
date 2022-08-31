@@ -43,7 +43,7 @@ export const CustomerAddress = props => {
   const GetCustomerAddress = async user_id => {
     try {
       const res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get_contact/${user_id}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/checkout/get_contact/${user_id}`,
       );
       if (res.data.status && res.data.response !== null) {
         setCustomerAddress(res.data.response);

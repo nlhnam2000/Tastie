@@ -36,7 +36,7 @@ export const ChangePasswordForm = ({navigation, route}) => {
   const handleSubmit = async password => {
     if (password !== '') {
       try {
-        let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/change-password`, {
+        let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/change-password`, {
           phone: data.phone,
           password: password,
         });

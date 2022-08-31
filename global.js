@@ -2,7 +2,8 @@ import axios from 'axios';
 import moment from 'moment';
 
 // export const IP_ADDRESS = '192.168.55.5';
-export const IP_ADDRESS = '157.230.243.92';
+// export const IP_ADDRESS = '157.230.243.92';
+export const IP_ADDRESS = 'tastie18vp.com';
 export const GEOCODING_API = '4c75ce09d9294dc48ebc552677fcedea';
 export const GEOAPIFY = '936151db693c4437aefc3ab950f1c033';
 export const MAPBOXGS_ACCESS_TOKEN =
@@ -12,7 +13,7 @@ export const LONGITUDE_DELTA = 0.0121;
 
 export const getAccessToken = async refreshToken => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/get-access-token`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/get-access-token`, {
       token: refreshToken,
     });
     if (res.data.isAuth) {

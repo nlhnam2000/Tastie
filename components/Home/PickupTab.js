@@ -203,7 +203,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
     // closeBottomSheet2();
     try {
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-near-by-provider`,
+        `https://${IP_ADDRESS}/v1/api/provider/dashboard/home/get-near-by-provider`,
         {
           latitude: location.latitude,
           longitude: location.longitude,

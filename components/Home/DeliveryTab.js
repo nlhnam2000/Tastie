@@ -174,12 +174,12 @@ export const DeliveryTab = props => {
                 </Text>
                 <Feather name="chevron-down" size={20} color={'black'} />
               </TouchableOpacity>
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 style={{position: 'absolute', left: '100%'}}
                 // onPress={() => setShowFilter(true)}
                 onPress={() => openFilterModalize()}>
                 <Feather name="filter" size={20} color="black" />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </View>
           </View>
 

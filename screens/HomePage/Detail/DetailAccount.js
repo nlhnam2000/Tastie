@@ -101,7 +101,7 @@ export const DetailAccount = props => {
     setIsUploading(true);
 
     try {
-      const res = await axios.post(`http://${IP_ADDRESS}:3777/upload/user/avatar`, data, {
+      const res = await axios.post(`http://${'157.230.243.92'}:3777/upload/user/avatar`, data, {
         headers: {
           Accept: 'application/json',
           'Content-Type': 'multipart/form-data',
