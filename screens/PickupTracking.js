@@ -106,7 +106,7 @@ export const PickupTracking = ({navigation, route}) => {
   const OrderCompleted = async () => {
     try {
       console.log('completing ....');
-      await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`, {
+      await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/order/update_order_status`, {
         order_code: order_code,
         status: 5, // completed
         shipper_id: null,
@@ -125,7 +125,7 @@ export const PickupTracking = ({navigation, route}) => {
   const handleCancelOrder = async () => {
     try {
       const res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/update_order_status`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/update_order_status`,
         {
           order_code: order_code,
           status: 6,
@@ -154,7 +154,7 @@ export const PickupTracking = ({navigation, route}) => {
 
       const fetchOrderItems = async order_code => {
         let res = await axios.get(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+          `https://${IP_ADDRESS}/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
         );
 
         return res.data;
@@ -162,7 +162,7 @@ export const PickupTracking = ({navigation, route}) => {
 
       const getOrderStatus = async order_code => {
         let res = await axios.get(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-summary/${order_code}`,
+          `https://${IP_ADDRESS}/v1/api/tastie/order/get-order-summary/${order_code}`,
         );
 
         return res.data;

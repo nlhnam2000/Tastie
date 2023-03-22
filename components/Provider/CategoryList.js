@@ -28,7 +28,7 @@ export const CategoryList = props => {
 
   const loadProvider = async group_id => {
     let res = await axios.post(
-      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+      `https://${IP_ADDRESS}/v1/api/provider/dashboard/home/get-group-provider`,
       {
         group_provider_id: group_id,
         limit: 6,

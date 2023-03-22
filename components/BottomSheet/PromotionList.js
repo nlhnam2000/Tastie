@@ -48,7 +48,7 @@ export const PromotionList = props => {
   const LoadPromotionList = async provider_id => {
     try {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/checkout/get-all-promos/${provider_id}`,
       );
       if (res.data.status) {
         res.data.response.promotion.map(

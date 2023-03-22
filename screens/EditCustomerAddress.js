@@ -64,6 +64,16 @@ export const EditCustomerAddress = props => {
           latitude: formData.latitude.toString(),
         },
       );
+      const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/update-customer-address`, {
+        customer_id: state.user_id,
+        address: formData.address,
+        city: formData.city,
+        type: formData.type,
+        pre_longitude: formData.pre_longitude.toString(),
+        pre_latitude: formData.pre_latitude.toString(),
+        longtitude: formData.longitude.toString(),
+        latitude: formData.latitude.toString(),
+      });
 
       if (res.data.status) {
         props.navigation.navigate('CustomerAddress');

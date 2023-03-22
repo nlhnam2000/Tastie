@@ -58,7 +58,7 @@ export const Account = props => {
         console.log('There is no cached image');
         try {
           const res = await axios.get(
-            `http://${IP_ADDRESS}:3777/upload/image-user/${state.user_id}`,
+            `https://${IP_ADDRESS}:3777/upload/image-user/${state.user_id}`,
           );
           if (res.data.status && res.data.response.length > 0) {
             setAvatar(`data:image/png;base64,${res.data.response.at(-1).url_str}`);
@@ -79,7 +79,7 @@ export const Account = props => {
     const getUserAvatarCloudinary = async () => {
       try {
         const res = await axios.get(
-          `http://${'localhost'}:3777/upload/image-user-cloudinary/${state.user_id}`,
+          `https://${'localhost'}:3777/upload/image-user-cloudinary/${state.user_id}`,
         );
         if (res.data.url) {
           setAvatar(res.data.url);

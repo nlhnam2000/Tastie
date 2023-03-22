@@ -75,7 +75,7 @@ export const OrderHistory = props => {
   const LoadOrderHistory = async () => {
     try {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-history/${state.user_id}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/get-order-history/${state.user_id}`,
       );
       if (res.data.response) {
         if (props.filterStatus === 'History') {
@@ -103,13 +103,13 @@ export const OrderHistory = props => {
   const ReOrder = async (order_code, user_id) => {
     try {
       let fecthProductsFromOder = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
       );
 
       if (fecthProductsFromOder.data.status) {
         const insertProductToCart = async product => {
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+            `https://${IP_ADDRESS}/v1/api/tastie/tastie/insert_product-into-cart`,
             {
               user_id: user_id,
               product_id: product.product_id,

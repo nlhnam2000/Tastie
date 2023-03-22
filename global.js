@@ -14,7 +14,7 @@ export const LONGITUDE_DELTA = 0.0121;
 
 export const getAccessToken = async refreshToken => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/get-access-token`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/get-access-token`, {
       token: refreshToken,
     });
     if (res.data.isAuth) {

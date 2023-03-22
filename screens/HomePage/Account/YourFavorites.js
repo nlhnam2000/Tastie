@@ -7,7 +7,7 @@ export const YourFavorites = props => {
   useEffect(() => {
     const LoadData = async () => {
       try {
-        let res = await axios.post(`http://${IP_ADDRESS}:3010/v1/api/tastie/admin/get-all-user`, {
+        let res = await axios.post(`https://${IP_ADDRESS}:3010/v1/api/tastie/admin/get-all-user`, {
           limit: 20,
           offset: 1,
         });

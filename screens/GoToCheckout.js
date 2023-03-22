@@ -167,7 +167,7 @@ export const GoToCheckout = props => {
       // api add notification
       axios
         .post(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/order/add-notification`,
+          `https://${IP_ADDRESS}/v1/api/tastie/order/add-notification`,
           providerNotificationForm,
         )
         .then(res => {
@@ -192,7 +192,7 @@ export const GoToCheckout = props => {
     try {
       setIsProcessing(true);
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-delivery`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-info-delivery`,
         orderForm,
       );
       if (res.data.status && res.data.order_code) {
@@ -202,7 +202,7 @@ export const GoToCheckout = props => {
         if (selectedPayment === 'Momo') {
           console.log('payment momo');
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-momo`,
+            `https://${IP_ADDRESS}/v1/api/tastie/order/payment-by-momo`,
             {
               order_code: orderCode,
               orderInfo: 'Thanh toan tra sua',
@@ -221,7 +221,7 @@ export const GoToCheckout = props => {
               console.log(body);
               try {
                 let submitOrder = await axios.post(
-                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
                   body,
                 );
                 if (submitOrder.data.status) {
@@ -245,7 +245,7 @@ export const GoToCheckout = props => {
         } else if (selectedPayment === 'Zalo Pay') {
           console.log('payment zalo');
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-zalo`,
+            `https://${IP_ADDRESS}/v1/api/tastie/order/payment-by-zalo`,
             {
               customer_id: state.user_id,
               customer_name: `${state.first_name} ${state.last_name}`,
@@ -265,7 +265,7 @@ export const GoToCheckout = props => {
               console.log(body);
               try {
                 let submitOrder = await axios.post(
-                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
                   body,
                 );
                 if (submitOrder.data.status) {
@@ -294,7 +294,7 @@ export const GoToCheckout = props => {
           console.log(body);
           try {
             let submitOrder = await axios.post(
-              `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+              `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
               body,
             );
             if (submitOrder.data.status) {
@@ -324,7 +324,7 @@ export const GoToCheckout = props => {
     try {
       setIsProcessing(true);
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-info-pickup`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-info-pickup`,
         orderForm,
       );
       if (res.data.status && res.data.order_code) {
@@ -334,7 +334,7 @@ export const GoToCheckout = props => {
         if (selectedPayment === 'Momo') {
           console.log('payment momo');
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-momo`,
+            `https://${IP_ADDRESS}/v1/api/tastie/order/payment-by-momo`,
             {
               order_code: orderCode,
               orderInfo: 'Thanh toan tra sua',
@@ -353,7 +353,7 @@ export const GoToCheckout = props => {
               console.log(body);
               try {
                 let submitOrder = await axios.post(
-                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
                   body,
                 );
                 if (submitOrder.data.status) {
@@ -376,7 +376,7 @@ export const GoToCheckout = props => {
         } else if (selectedPayment === 'Zalo Pay') {
           console.log('payment zalo');
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/order/payment-by-zalo`,
+            `https://${IP_ADDRESS}/v1/api/tastie/order/payment-by-zalo`,
             {
               customer_id: state.user_id,
               customer_name: `${state.first_name} ${state.last_name}`,
@@ -396,7 +396,7 @@ export const GoToCheckout = props => {
               console.log(body);
               try {
                 let submitOrder = await axios.post(
-                  `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+                  `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
                   body,
                 );
                 if (submitOrder.data.status) {
@@ -424,7 +424,7 @@ export const GoToCheckout = props => {
           console.log(body);
           try {
             let submitOrder = await axios.post(
-              `http://${IP_ADDRESS}:3007/v1/api/tastie/order/submit-order-items`,
+              `https://${IP_ADDRESS}/v1/api/tastie/order/submit-order-items`,
               body,
             );
             if (submitOrder.data.status) {
@@ -483,7 +483,7 @@ export const GoToCheckout = props => {
   const LoadRecommendedProducts = async () => {
     const productList = [...state.userCart.cart].map(item => item.product_id);
     console.log(productList);
-    const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
+    const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/get-product-bundling`, {
       provider_id: state.userCart.provider_id,
       product_list: [1050267, 1099647, 1104675],
     });
@@ -492,7 +492,7 @@ export const GoToCheckout = props => {
   };
   const LoadDeliveryFee = async () => {
     let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+      `https://${IP_ADDRESS}/v1/api/tastie/tastie/delivery-fee-to-checkout`,
       {
         longitude: state.userLocation.longitude,
         latitude: state.userLocation.latitude,
@@ -518,7 +518,7 @@ export const GoToCheckout = props => {
     //   setAdditionalOptions(list);
 
     //   let res = await axios.post(
-    //     `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+    //     `https://${IP_ADDRESS}/v1/api/tastie/tastie/delivery-fee-to-checkout`,
     //     {
     //       longitude: state.userLocation.longitude,
     //       latitude: state.userLocation.latitude,
@@ -534,7 +534,7 @@ export const GoToCheckout = props => {
     const loadData = async () => {
       dispatch(RetrieveCart(state.user_id)); // retrieve the cart data just in case missing data
       // let res = await axios.post(
-      //   `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delivery-fee-to-checkout`,
+      //   `https://${IP_ADDRESS}/v1/api/tastie/tastie/delivery-fee-to-checkout`,
       //   {
       //     longitude: state.userLocation.longitude,
       //     latitude: state.userLocation.latitude,

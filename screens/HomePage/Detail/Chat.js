@@ -30,7 +30,7 @@ export const Chat = props => {
 
   useEffect(() => {
     // socket = io(`ws://5fbe-27-69-189-219.ngrok.io`); // ngrok
-    socket = io(`http://${IP_ADDRESS}:3007`);
+    socket = io(`https://${IP_ADDRESS}`);
     // socket.on('hello-from-server', data => {
     //   setServerMessage(prevState => setServerMessage([...prevState, data.message]));
     // });

@@ -56,7 +56,7 @@ export const clearAlertMessage = () => dispatch => {
 
 export const signinWithPhone = (phone, otp) => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/login-with-otp`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/login-with-otp`, {
       phone: phone,
       otp: otp,
     });
@@ -76,49 +76,60 @@ export const signinWithPhone = (phone, otp) => async dispatch => {
 };
 
 export const signin = (phone, password) => async dispatch => {
-  try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/sign-in`, {
-      phone: phone,
-      password: password,
+  if (!password) {
+    dispatch({
+      type: SIGN_IN_ERROR,
+      payload: {
+        triggerAlertMessage: true,
+        alertMessage: 'Please enter your password',
+        isLoading: false,
+      },
     });
-    // console.log('sign in');
-    if (res.data.loginState === true) {
-      let token = res.data.refreshToken;
-      let data = res.data.profile;
-      console.log(data);
-      console.log('refresh token', res.data.refreshToken);
-      await AsyncStorage.setItem('user_token', token);
-      dispatch({
-        type: SIGN_IN,
-        payload: {
-          user_id: data.user_id,
-          first_name: data.first_name,
-          last_name: data.last_name,
-          email: data.email,
-          phone: data.phone,
-          role: data.role,
-          gender: data.gender,
-          birthday: data.birthday,
-          registered_at: data.registered_at,
-          last_login_at: data.last_login_at,
-          delete_at: data.delete_at,
-          user_token: token,
-          isLoading: false,
-        },
+  } else {
+    try {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/sign-in`, {
+        phone: phone,
+        password: password,
       });
-    } else {
-      console.log('error');
-      dispatch({
-        type: SIGN_IN_ERROR,
-        payload: {
-          triggerAlertMessage: true,
-          alertMessage: res.data.err.message,
-          isLoading: false,
-        },
-      });
+      // console.log('sign in');
+      if (res.data.loginState === true) {
+        let token = res.data.refreshToken;
+        let data = res.data.profile;
+        console.log(data);
+        console.log('refresh token', res.data.refreshToken);
+        await AsyncStorage.setItem('user_token', token);
+        dispatch({
+          type: SIGN_IN,
+          payload: {
+            user_id: data.user_id,
+            first_name: data.first_name,
+            last_name: data.last_name,
+            email: data.email,
+            phone: data.phone,
+            role: data.role,
+            gender: data.gender,
+            birthday: data.birthday,
+            registered_at: data.registered_at,
+            last_login_at: data.last_login_at,
+            delete_at: data.delete_at,
+            user_token: token,
+            isLoading: false,
+          },
+        });
+      } else {
+        console.log('error');
+        dispatch({
+          type: SIGN_IN_ERROR,
+          payload: {
+            triggerAlertMessage: true,
+            alertMessage: res.data.err.message,
+            isLoading: false,
+          },
+        });
+      }
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
   }
 };
 
@@ -165,7 +176,7 @@ export const signout = () => async dispatch => {
 
 export const retrieveToken = token => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/get_profile`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/get_profile`, {
       accessToken: token,
     });
     if (res.data.status === true) {
@@ -220,13 +231,10 @@ export const TokenNotFound = () => dispatch => {
 
 export const CheckExistingEmail = (phone, email) => async dispatch => {
   try {
-    let res = await axios.post(
-      `http://${IP_ADDRESS}:3007/v1/api/auth/check-exist-email-and-phone`,
-      {
-        phone,
-        email,
-      },
-    );
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/check-exist-email-and-phone`, {
+      phone,
+      email,
+    });
     if (res.data.isPhoneDuplicated === true && res.data.isEmailDuplicated === true) {
       dispatch({
         type: EMAIL_PHONE_EXISTED,
@@ -263,7 +271,7 @@ export const AccountRegistration = body => dispatch => {
 
 export const SendOTP = email => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/send-code-with-email`, {
       email: email,
     });
     if (res.data.status === true) {
@@ -283,7 +291,7 @@ export const SendOTP = email => async dispatch => {
 
 export const EmailVerification = (emailToken, otp, email) => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/verify-code-with-email`, {
       verifyEmailToken: emailToken,
       code: otp,
       email: email,
@@ -313,7 +321,7 @@ export const EmailVerification = (emailToken, otp, email) => async dispatch => {
 export const SkipUpdate = body => async dispatch => {
   // SKIP UPDATE ==> signup then navigate to the HomeScreen
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/sign-up`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/sign-up`, {
       email: body.email,
       password: body.password,
       phone: body.phone,
@@ -353,7 +361,7 @@ export const SkipUpdate = body => async dispatch => {
 
 export const UpdateProfile = body => async dispatch => {
   try {
-    let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/update`, body);
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/update`, body);
     if (res.data.message === 'Update successfully') {
       if (res.data.refreshToken !== null) {
         await AsyncStorage.setItem('user_token', res.data.refreshToken); // set new refresh token when update email or phone

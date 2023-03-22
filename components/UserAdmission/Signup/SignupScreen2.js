@@ -71,7 +71,7 @@ export const SignupScreen2 = ({navigation, route}) => {
 
   const SendCodeToEmail = async email => {
     try {
-      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/send-code-with-email`, {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/send-code-with-email`, {
         email: email,
       });
       if (res.data.status === true) {
@@ -86,7 +86,7 @@ export const SignupScreen2 = ({navigation, route}) => {
 
   const EmailVerification = async (emailToken, otp, email) => {
     try {
-      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/auth/verify-code-with-email`, {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/api/auth/verify-code-with-email`, {
         verifyEmailToken: emailToken,
         code: otp,
         email: email,

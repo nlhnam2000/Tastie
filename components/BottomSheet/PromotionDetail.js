@@ -12,7 +12,7 @@ export const PromotionDetail = ({data, onClose}) => {
   const LoadPromotionDetail = async promotion_code => {
     try {
       let res = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-promos-detail/${promotion_code}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/get-promos-detail/${promotion_code}`,
       );
 
       if (res.data.status) {

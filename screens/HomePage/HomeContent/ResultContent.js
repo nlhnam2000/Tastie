@@ -64,7 +64,7 @@ export const ResultContent = ({navigation, route}) => {
   const LoadProvider = async (group_id, offset, limit = 20) => {
     try {
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+        `https://${IP_ADDRESS}/v1/api/provider/dashboard/home/get-group-provider`,
         {
           group_provider_id: group_id,
           limit: 20,
@@ -87,7 +87,7 @@ export const ResultContent = ({navigation, route}) => {
   const LoadMoreProvider = async () => {
     try {
       let res = await axios.post(
-        `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/home/get-group-provider`,
+        `https://${IP_ADDRESS}/v1/api/provider/dashboard/home/get-group-provider`,
         {
           group_provider_id: groupID,
           limit: 20,
@@ -108,7 +108,7 @@ export const ResultContent = ({navigation, route}) => {
 
   const LoadSearchResult = async keyword => {
     try {
-      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/search`, {
         q: keyword,
         type: '1',
         longitude: state.userLocation.longitude,
@@ -127,7 +127,7 @@ export const ResultContent = ({navigation, route}) => {
 
   const LoadCategoryResult = async filter => {
     try {
-      let res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/search`, {
+      let res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/search`, {
         type: '3',
         longitude: state.userLocation.longitude,
         latitude: state.userLocation.latitude,
@@ -150,7 +150,7 @@ export const ResultContent = ({navigation, route}) => {
   const LoadProviderByEcoupon = async ecoupon_id => {
     try {
       const res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/home/get-list-provider-by-ecoupon`,
+        `https://${IP_ADDRESS}/v1/api/tastie/home/get-list-provider-by-ecoupon`,
         {
           ecoupon_id: ecoupon_id,
           longitude: state.userLocation.longitude.toString(),
@@ -173,7 +173,7 @@ export const ResultContent = ({navigation, route}) => {
   const LoadFavoriteProvider = async (user_id, longitude, latitude) => {
     try {
       const res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/home/get-list-provider-favorite`,
+        `https://${IP_ADDRESS}/v1/api/tastie/home/get-list-provider-favorite`,
         {
           user_id: user_id,
           longitude: longitude.toString(),

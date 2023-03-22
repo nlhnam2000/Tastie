@@ -32,7 +32,7 @@ export const RecommendedProducts = ({
     console.log(productList);
     console.log(provider_id);
     try {
-      const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/get-product-bundling`, {
+      const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/get-product-bundling`, {
         provider_id: provider_id,
         product_list: productList,
       });

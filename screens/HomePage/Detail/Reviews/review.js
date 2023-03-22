@@ -111,7 +111,7 @@ export const Review = props => {
     const LoadReviews = async provider_id => {
       try {
         const res = await axios.get(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/store/customer_review/${provider_id}`,
+          `https://${IP_ADDRESS}/v1/api/tastie/store/customer_review/${provider_id}`,
         );
 
         if (res.data.status) {

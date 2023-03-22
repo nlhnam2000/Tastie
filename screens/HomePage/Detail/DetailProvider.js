@@ -111,19 +111,16 @@ export const DetailProvider = props => {
   const handleFavorite = async (provider_id, user_id) => {
     try {
       if (isFavorite) {
-        const res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/remove-from-favorite`,
-          {
-            provider_id,
-            user_id,
-          },
-        );
+        const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/remove-from-favorite`, {
+          provider_id,
+          user_id,
+        });
 
         if (res.data.status) {
           setIsFavorite(false);
         }
       } else {
-        const res = await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/add-to-favorite`, {
+        const res = await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/add-to-favorite`, {
           provider_id,
           user_id,
         });
@@ -139,20 +136,20 @@ export const DetailProvider = props => {
 
   const getListProduct = async provider_id => {
     let res = await axios.get(
-      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
+      `https://${IP_ADDRESS}/v1/api/provider/dashboard/menu-overview/${provider_id}/get-list-product`,
     );
 
     return res.data;
   };
 
   const getProviderInfo = async provider_id => {
-    let res = await axios.post(`http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/get-info`, {
+    let res = await axios.post(`https://${IP_ADDRESS}/v1/api/provider/dashboard/get-info`, {
       provider_id: provider_id,
       user_id: state.user_id,
     });
 
     // let res = await axios.get(
-    //   `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/${provider_id}/get-info`,
+    //   `https://${IP_ADDRESS}/v1/api/provider/dashboard/${provider_id}/get-info`,
     // );
 
     return res.data;
@@ -160,7 +157,7 @@ export const DetailProvider = props => {
 
   const getUpcomingProduct = async provider_id => {
     let res = await axios.get(
-      `http://${IP_ADDRESS}:3008/v1/api/provider/dashboard/get-up-coming-product/${provider_id}`,
+      `https://${IP_ADDRESS}/v1/api/provider/dashboard/get-up-coming-product/${provider_id}`,
     );
 
     return res.data;

@@ -19,7 +19,7 @@ import {IP_ADDRESS} from '../../global';
 
 export const RetrieveCart = user_id => async dispatch => {
   try {
-    let res = await axios.get(`http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/get_cart/${user_id}`);
+    let res = await axios.get(`https://${IP_ADDRESS}/v1/api/tastie/tastie/get_cart/${user_id}`);
     if (res.data.response) {
       dispatch({
         type: RETRIEVE_CART,
@@ -51,7 +51,7 @@ export const RetrieveCart = user_id => async dispatch => {
 export const ClearCart = user_id => async dispatch => {
   try {
     let res = await axios.delete(
-      `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/clear-cart/${user_id}`,
+      `https://${IP_ADDRESS}/v1/api/tastie/tastie/clear-cart/${user_id}`,
     );
     if (res.data.status) {
       dispatch({
@@ -66,7 +66,7 @@ export const ClearCart = user_id => async dispatch => {
 
 export const AddToCart = cartForm => async dispatch => {
   try {
-    await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`, {
+    await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/tastie/insert_product-into-cart`, {
       user_id: cartForm.user_id,
       product_id: cartForm.cartItem.product_id,
       quantity: cartForm.cartItem.quantity,
@@ -87,7 +87,7 @@ export const AddToCart = cartForm => async dispatch => {
 
 export const RemoveCart = (user_id, product_id, item_code) => async dispatch => {
   try {
-    await axios.post(`http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/delete_cart`, {
+    await axios.post(`https://${IP_ADDRESS}/v1/api/tastie/tastie/delete_cart`, {
       user_id,
       product_id,
       item_code,
@@ -107,7 +107,7 @@ export const UpdateQuantity =
   (user_id, product_id, special_instruction, quantity, item_code) => async dispatch => {
     try {
       await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/update-quantity-and-note-into-cart`,
+        `https://${IP_ADDRESS}/v1/api/tastie/tastie/update-quantity-and-note-into-cart`,
         {
           user_id,
           product_id,
@@ -184,13 +184,13 @@ export const SaveToHistoryCart = cart => async dispatch => {
 export const ReOrder = (order_code, user_id) => async dispatch => {
   try {
     let fecthProductsFromOder = await axios.get(
-      `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+      `https://${IP_ADDRESS}/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
     );
 
     if (fecthProductsFromOder.data.status) {
       const insertProductToCart = async product => {
         const res = await axios.post(
-          `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+          `https://${IP_ADDRESS}/v1/api/tastie/tastie/insert_product-into-cart`,
           {
             user_id: user_id,
             product_id: product.product_id,

@@ -67,7 +67,7 @@ const initialState = {
   currentTab: 'Home',
   toggleNavigationBar: true,
   socketServer: {
-    host: io(`http://${IP_ADDRESS}:3015`),
+    host: io(`wss://socket.tastie18vp.com`),
     rooms: [],
   },
   toggleNotification: false,
@@ -457,7 +457,7 @@ export const UserReducer = (state = initialState, action) => {
         ...state,
         socketServer: {
           ...state.socketServer,
-          host: io(`http://${IP_ADDRESS}:3015`),
+          host: io(`https://${IP_ADDRESS}`),
         },
       };
     }

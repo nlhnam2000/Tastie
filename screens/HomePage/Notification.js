@@ -48,7 +48,7 @@ export const Notification = props => {
   const GetAllEcoupon = async () => {
     try {
       const res = await axios.post(
-        `http://${IP_ADDRESS}:3010/v1/api/tastie/admin/get-all-ecoupon`,
+        `http://${'157.230.243.92'}:3010/v1/api/tastie/admin/get-all-ecoupon`,
         {
           limit: 20,
           offset: 1,

@@ -64,13 +64,13 @@ export const DetailOrder = props => {
     try {
       setIsProcessing(true);
       let fecthProductsFromOder = await axios.get(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+        `https://${IP_ADDRESS}/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
       );
 
       if (fecthProductsFromOder.data.status) {
         const insertProductToCart = async product => {
           const res = await axios.post(
-            `http://${IP_ADDRESS}:3007/v1/api/tastie/tastie/insert_product-into-cart`,
+            `https://${IP_ADDRESS}/v1/api/tastie/tastie/insert_product-into-cart`,
             {
               user_id: user_id,
               product_id: product.product_id,
@@ -102,7 +102,7 @@ export const DetailOrder = props => {
 
   const GetOrderSummary = async () => {
     const res = await axios.get(
-      `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-order-summary/${order_code}`,
+      `https://${IP_ADDRESS}/v1/api/tastie/order/get-order-summary/${order_code}`,
     );
 
     return res.data;
@@ -110,7 +110,7 @@ export const DetailOrder = props => {
 
   const GetOrderDetail = async () => {
     const res = await axios.get(
-      `http://${IP_ADDRESS}:3007/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
+      `https://${IP_ADDRESS}/v1/api/tastie/order/get-all-products-from-order/${order_code}`,
     );
     return res.data;
   };
