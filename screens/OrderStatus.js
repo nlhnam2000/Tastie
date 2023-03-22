@@ -117,7 +117,7 @@ export const OrderStatus = props => {
   const totalCartPrice = cart => {
     let price = 0.0;
     for (let i = 0; i < cart.length; i++) {
-      price += parseFloat(cart[i].price);
+      price += parseFloat(cart[i].price) * cart[i].quantity;
     }
 
     return price.toFixed(2);
@@ -139,6 +139,7 @@ export const OrderStatus = props => {
         setNotification('Your order has been canceled !');
         setOpenModal(true);
         dispatch(OrderCompleted(order_code));
+        state.socketServer.host.on('customer-cancel-order', order_code); // emit socket cancel order
 
         setTimeout(() => {
           props.navigation.navigate('Home Page');
@@ -151,6 +152,7 @@ export const OrderStatus = props => {
 
   useEffect(() => {
     const initialMap = () => {
+      console.log(order_code);
       state.socketServer.host.emit('join-room', order_code); // join the room which is also the order_code
 
       state.socketServer.host.off('shipperLocation').on('shipperLocation', data => {
@@ -463,25 +465,24 @@ export const OrderStatus = props => {
                 }
           }
           minZoomLevel={13}
-          // onMapLoaded={() => {
-          //   mapRef.current?.fitToCoordinates(
-          //     [
-          //       {
-          //         latitude: location.latitude,
-          //         longitude: location.longitude,
-          //       },
-          //       {
-          //         latitude: orderData.merchant_location.latitude,
-          //         longitude: orderData.merchant_location.longitude,
-          //       },
-          //     ],
-          //     {
-          //       edgePadding: {top: 40, right: 40, bottom: 40, left: 40},
-          //       animated: true,
-          //     },
-          //   );
-          // }}
-        >
+          onMapLoaded={() => {
+            mapRef.current?.fitToCoordinates(
+              [
+                {
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                },
+                {
+                  latitude: orderData.merchant_location.latitude,
+                  longitude: orderData.merchant_location.longitude,
+                },
+              ],
+              {
+                edgePadding: {top: 40, right: 40, bottom: 40, left: 40},
+                animated: true,
+              },
+            );
+          }}>
           <Marker
             coordinate={{
               latitude: orderData.merchant_location.latitude,

@@ -11,9 +11,9 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		4CD3BAD16E1F51E4B9783803 /* libPods-Tastie-TastieTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4E4D43E3EA10E51801DE24D6 /* libPods-Tastie-TastieTests.a */; };
+		1F46D5995D7B3AC169C1AF1A /* libPods-Tastie-TastieTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 334B613A472BD21BC3AB662E /* libPods-Tastie-TastieTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		EE094D387D481CEE26D8675C /* libPods-Tastie.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DB82C9F0743B51660DA86A8C /* libPods-Tastie.a */; };
+		FBBF50C39358481ED0F09E6F /* libPods-Tastie.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B7DFE492A6A226116943938A /* libPods-Tastie.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,7 +33,6 @@
 		00E356F21AD99517003FC87E /* TastieTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TastieTests.m; sourceTree = "<group>"; };
 		04EB8D0CF88443BEA5F32A11 /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		067E0556AC224A52854A712E /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
-		0F264AF6A727C4C688D4A93D /* Pods-Tastie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.release.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.release.xcconfig"; sourceTree = "<group>"; };
 		119C73F8BA9041E2987E1C99 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		12812F5E18DB45BDA79BA463 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Tastie.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tastie.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,23 +42,24 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Tastie/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Tastie/main.m; sourceTree = "<group>"; };
 		13FC7876E2CE46D9BEAE8CEC /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
-		3D4D248E55B6B9B562B14560 /* Pods-Tastie-TastieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.release.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.release.xcconfig"; sourceTree = "<group>"; };
-		4E4D43E3EA10E51801DE24D6 /* libPods-Tastie-TastieTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie-TastieTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		334B613A472BD21BC3AB662E /* libPods-Tastie-TastieTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie-TastieTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A324DCF2796D52A00A69FFB /* OpenSSL.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSL.xcframework; path = "Pods/OpenSSL-Universal/Frameworks/OpenSSL.xcframework"; sourceTree = "<group>"; };
 		5AFC600B283DBA2C00B5864D /* Tastie.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Tastie.entitlements; path = Tastie/Tastie.entitlements; sourceTree = "<group>"; };
+		6B160AF664A353E9094E6FA2 /* Pods-Tastie-TastieTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.debug.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7AB8540200CC461398E4A409 /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		7BC25C34A5034998B70F43D5 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Tastie/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		9243B1A1FA5603E5FF93177D /* Pods-Tastie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.debug.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.debug.xcconfig"; sourceTree = "<group>"; };
 		92BEFF6108934580B4DCA14A /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
 		94632AD6EECF40088BC90FB0 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
 		968FF693B1784801B98CA9E1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
+		9C069A5E608E284131644B2C /* Pods-Tastie.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.release.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.release.xcconfig"; sourceTree = "<group>"; };
 		9C247C1E2A6F4CE6A4F47B20 /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
-		A735E42965687819E5DBF69D /* Pods-Tastie-TastieTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.debug.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.debug.xcconfig"; sourceTree = "<group>"; };
 		AB19C3B2C1E04A0BB8F12B72 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		ACBD116D34824DF5AB64B411 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
+		B043805540CAD5C26756DAF8 /* Pods-Tastie.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie.debug.xcconfig"; path = "Target Support Files/Pods-Tastie/Pods-Tastie.debug.xcconfig"; sourceTree = "<group>"; };
+		B7DFE492A6A226116943938A /* libPods-Tastie.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		B928DC13E48189C8ACF8CC53 /* Pods-Tastie-TastieTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tastie-TastieTests.release.xcconfig"; path = "Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests.release.xcconfig"; sourceTree = "<group>"; };
 		D511683C38F44993857D46B5 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
-		DB82C9F0743B51660DA86A8C /* libPods-Tastie.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tastie.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DDF7E3AD181D42AE9E78B118 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -69,7 +69,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4CD3BAD16E1F51E4B9783803 /* libPods-Tastie-TastieTests.a in Frameworks */,
+				1F46D5995D7B3AC169C1AF1A /* libPods-Tastie-TastieTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -77,7 +77,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EE094D387D481CEE26D8675C /* libPods-Tastie.a in Frameworks */,
+				FBBF50C39358481ED0F09E6F /* libPods-Tastie.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,8 +143,8 @@
 			children = (
 				5A324DCF2796D52A00A69FFB /* OpenSSL.xcframework */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				DB82C9F0743B51660DA86A8C /* libPods-Tastie.a */,
-				4E4D43E3EA10E51801DE24D6 /* libPods-Tastie-TastieTests.a */,
+				B7DFE492A6A226116943938A /* libPods-Tastie.a */,
+				334B613A472BD21BC3AB662E /* libPods-Tastie-TastieTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -152,10 +152,10 @@
 		3922939AAC8E53082A3AEB1A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				9243B1A1FA5603E5FF93177D /* Pods-Tastie.debug.xcconfig */,
-				0F264AF6A727C4C688D4A93D /* Pods-Tastie.release.xcconfig */,
-				A735E42965687819E5DBF69D /* Pods-Tastie-TastieTests.debug.xcconfig */,
-				3D4D248E55B6B9B562B14560 /* Pods-Tastie-TastieTests.release.xcconfig */,
+				B043805540CAD5C26756DAF8 /* Pods-Tastie.debug.xcconfig */,
+				9C069A5E608E284131644B2C /* Pods-Tastie.release.xcconfig */,
+				6B160AF664A353E9094E6FA2 /* Pods-Tastie-TastieTests.debug.xcconfig */,
+				B928DC13E48189C8ACF8CC53 /* Pods-Tastie-TastieTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -199,11 +199,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "TastieTests" */;
 			buildPhases = (
-				7D610CEDC38C6F3A360FB936 /* [CP] Check Pods Manifest.lock */,
+				37E9A35910D84CC228FE4B94 /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
-				377671AAA4E498F84121F262 /* [CP] Copy Pods Resources */,
+				DD640386613959C68617370A /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -219,13 +219,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Tastie" */;
 			buildPhases = (
-				1239BB570369935D98783B79 /* [CP] Check Pods Manifest.lock */,
+				981407CED6D66DE32E15D911 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				87D9D02A3FDB10771E558771 /* [CP] Copy Pods Resources */,
+				8F82647AFCE82AA579832093 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -306,46 +306,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nexport NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
-		1239BB570369935D98783B79 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Tastie-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		377671AAA4E498F84121F262 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		7D610CEDC38C6F3A360FB936 /* [CP] Check Pods Manifest.lock */ = {
+		37E9A35910D84CC228FE4B94 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -367,7 +328,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		87D9D02A3FDB10771E558771 /* [CP] Copy Pods Resources */ = {
+		8F82647AFCE82AA579832093 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -382,6 +343,45 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie/Pods-Tastie-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		981407CED6D66DE32E15D911 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-Tastie-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DD640386613959C68617370A /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tastie-TastieTests/Pods-Tastie-TastieTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -436,7 +436,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A735E42965687819E5DBF69D /* Pods-Tastie-TastieTests.debug.xcconfig */;
+			baseConfigurationReference = 6B160AF664A353E9094E6FA2 /* Pods-Tastie-TastieTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -465,7 +465,7 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3D4D248E55B6B9B562B14560 /* Pods-Tastie-TastieTests.release.xcconfig */;
+			baseConfigurationReference = B928DC13E48189C8ACF8CC53 /* Pods-Tastie-TastieTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -491,7 +491,7 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9243B1A1FA5603E5FF93177D /* Pods-Tastie.debug.xcconfig */;
+			baseConfigurationReference = B043805540CAD5C26756DAF8 /* Pods-Tastie.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
@@ -520,7 +520,7 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0F264AF6A727C4C688D4A93D /* Pods-Tastie.release.xcconfig */;
+			baseConfigurationReference = 9C069A5E608E284131644B2C /* Pods-Tastie.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;

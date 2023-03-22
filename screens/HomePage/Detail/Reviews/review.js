@@ -8,6 +8,7 @@ import {
   Image,
   ImageBackground,
   ScrollView,
+  FlatList,
 } from 'react-native';
 
 // libaries
@@ -115,13 +116,15 @@ export const Review = props => {
 
         if (res.data.status) {
           setReviews(res.data.response);
+          setLoading(false);
         }
       } catch (error) {
         dispatch(DisplayAlertMessage('Cannot get reviews'));
         console.error('Cannot get review', error);
-      } finally {
-        setLoading(false);
       }
+      // finally {
+      //   setLoading(false);
+      // }
     };
 
     LoadReviews(provider_id);
@@ -142,10 +145,19 @@ export const Review = props => {
     }
   }, [reviews]);
 
+  const renderReviews = ({item}) => (
+    <CustomerReview
+      name={item.customer_info.username}
+      star={item.stars}
+      date={moment(item.create_at).startOf('hour').fromNow()}
+      content={item.content}
+    />
+  );
+
   if (loading) {
     return (
       <View style={[styles.container, {justifyContent: 'center'}]}>
-        <ActivityIndicator size={'large'} color={colors.boldred} />
+        <ActivityIndicator size={'small'} color={colors.boldred} />
       </View>
     );
   }
@@ -153,7 +165,7 @@ export const Review = props => {
   return (
     <View style={[styles.container]}>
       <Header title="Rating and Reviews" goBack {...props} />
-      <ScrollView style={styles.contentWrapper} contentContainerStyle={{paddingBottom: 20}}>
+      {/* <ScrollView style={styles.contentWrapper} contentContainerStyle={{paddingBottom: 20}}>
         <View style={styles.flexRowBetween}>
           <RatingSummary star={detailReview.averageRating} total={detailReview.numberOfRating} />
           <RatingChart />
@@ -169,7 +181,20 @@ export const Review = props => {
             />
           ))}
         </View>
-      </ScrollView>
+      </ScrollView> */}
+      <FlatList
+        data={reviews}
+        keyExtractor={item => item.order_id}
+        style={styles.contentWrapper}
+        contentContainerStyle={{paddingBottom: 20}}
+        ListHeaderComponent={() => (
+          <View style={styles.flexRowBetween}>
+            <RatingSummary star={detailReview.averageRating} total={detailReview.numberOfRating} />
+            <RatingChart />
+          </View>
+        )}
+        renderItem={renderReviews}
+      />
     </View>
   );
 };

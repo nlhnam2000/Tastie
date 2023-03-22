@@ -52,7 +52,7 @@ export const EditCustomerAddress = props => {
   const submitNewAddress = async formData => {
     try {
       const res = await axios.post(
-        `http://${IP_ADDRESS}:3007/v1/api/tastie/update-customer-address`,
+        `http://${'localhost'}:3007/v1/api/tastie/update-customer-address`,
         {
           customer_id: state.user_id,
           address: formData.address,

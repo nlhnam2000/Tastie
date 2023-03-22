@@ -533,7 +533,11 @@ export const DetailProvider = props => {
                       </View>
                       <FastImage
                         style={[styles.foodImage, {opacity: item.product_status === 2 ? 0.6 : 1}]}
-                        source={{uri: item.product_image}}
+                        source={
+                          item.product_status !== 5
+                            ? {uri: item.product_image}
+                            : require('../../../assets/image/commingsoon.webp')
+                        }
                       />
                     </TouchableOpacity>
                   </View>
@@ -1086,7 +1090,11 @@ export const DetailProvider = props => {
                       </View>
                       <FastImage
                         style={[styles.foodImage, {opacity: item.product_status === 2 ? 0.6 : 1}]}
-                        source={{uri: item.product_image}}
+                        source={
+                          item.product_status !== 5
+                            ? {uri: item.product_image}
+                            : require('../../../assets/image/commingsoon.webp')
+                        }
                       />
                     </TouchableOpacity>
                   </View>

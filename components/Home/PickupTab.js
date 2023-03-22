@@ -168,7 +168,7 @@ export const PickupTab = gestureHandlerRootHOC(props => {
 
   const renderHorizontalScroll = ({item, index}) => (
     <TouchableOpacity
-      onPress={() => props.navigation.navigate('DetailProvider', {data: item})}
+      onPress={() => props.navigation.navigate('DetailProvider', {data: item.provider_id})}
       style={[
         styles.providerHorizontalWrapper,
         {marginLeft: index === 0 ? 30 : 0, marginRight: 10},

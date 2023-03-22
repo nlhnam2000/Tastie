@@ -33,7 +33,7 @@ export const Rating = props => {
         <MaterialIcons name="star" size={20} color="black" />
       </View>
     );
-  } else if (props.rating === 5) {
+  } else {
     return (
       <View style={{flexDirection: 'row'}}>
         <MaterialIcons name="star" size={20} color="black" />

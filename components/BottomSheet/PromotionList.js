@@ -62,7 +62,7 @@ export const PromotionList = props => {
         setPromos(res.data.response.promotion.concat(res.data.response.ecoupon));
       }
     } catch (error) {
-      console.error('Cannot get promotion list', error);
+      console.log('Cannot get promotion list', error);
     } finally {
       setLoading(false);
     }

@@ -46,7 +46,7 @@ export const PickupTracking = ({navigation, route}) => {
   const totalCartPrice = cart => {
     let price = 0.0;
     for (let i = 0; i < cart.length; i++) {
-      price += parseFloat(cart[i].price);
+      price += parseFloat(cart[i].price) * cart[i].quantity;
     }
 
     return price.toFixed(2);

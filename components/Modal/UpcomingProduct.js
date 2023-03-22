@@ -100,7 +100,7 @@ export const UpcomingProduct = props => {
                   <View
                     style={{
                       borderRadius: 40,
-                      backgroundColor: selected === item ? 'black' : 'white',
+                      backgroundColor: selected === item.content ? 'black' : 'white',
                       width: 15,
                       height: 15,
                     }}></View>
